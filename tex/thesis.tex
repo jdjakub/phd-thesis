@@ -1,0 +1,45 @@
+\documentclass[12pt]{report}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{hyperref}
+\usepackage{amsthm}
+%\usepackage{pifont} % For checkmark / cross symbols
+\usepackage{microtype}
+\usepackage{flushend}
+
+\title{Thesis Title}
+\subtitle{Thesis Subtitle}
+\author{Joel Jakubovic}
+
+\begin{document}
+
+\newcommand{\joel}[1]{}
+\newcommand{\tomas}[1]{}
+\newcommand{\note}[1]{}
+\newcommand{\notes}[1]{}
+\newcommand{\todo}[1]{\textbf{TODO: #1}}
+\newcommand{\delete}[1]{\textbf{DELETE:}#1}
+\newcommand{\naive}{na\"ive}
+\providecommand{\tightlist}{}% Don't want Pandoc's tight lists
+% Nor do we want long tables by default
+\newenvironment{longtable}[2]{\begin{tabular}}{\end{tabular}}
+\newenvironment{head}{}{}
+%\newcommand{\hypertarget}[1]{}
+
+\input{ch-preamble.tex}
+\input{ch-intro.tex}
+\input{ch-background.tex}
+\input{ch-tech-dims.tex}
+\input{ch-state-first.tex}
+\input{ch-bl.tex}
+\input{ch-conclusion.tex}
+
+\appendix
+\input{appendix-misc.tex}
+\input{appendix-tech-dims.tex}
+\input{appendix-bl.tex}
+
+\bibliography{thesis}
+
+\end{document}
