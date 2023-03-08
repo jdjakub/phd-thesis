@@ -1,21 +1,15 @@
 \chapter{The ``Code-First'' Approach to BootstrapLab}
 
+\theoremstyle{definition}
+\newtheorem{force}{Force}
+\newtheorem{requirement}{Requirement}
+
 # Introduction
 
-In the ordinary lifecycle of software, there is a hard separation between the _product_ and its _source_. The product may be any end-user application such as a game, and is created from the source by a _producer_, which is a compiler or other similar tool built for programmers. In this arrangement, the product's user has little ability to re-program it, beyond setting configuration parameters anticipated ahead of time. The user's only option is to modify the source (if it is available) and use the producer to create a new version of the product.
-
-Curiously, this arrangement isn't limited to end-user products but also applies to most *programmer*-oriented products! In the ordinary programming experience, tools like the compiler or editor are themselves products with a separate source and producer. If the user of a language wants to re-program it beyond a customisation anticipated by its designer, they have to go and modify the compiler source code. If they are lucky, the compiler is also written in the same language. In this case, the user is already familiar with the language's notation and capabilities, making the task easier than learning an entirely new language. Even so, their changes still occur at a separate level from their ordinary use of the system.
-
-In this context of programming, the separation between the product and the source is particularly lamentable, as it makes it very hard for programmers to improve their tools^[This is true in a global sense, but even more important in the sense of local adaptations for their own purposes.]. If the language ecosystem is not created using itself, a programmer's mastery of the language is worthless for adapting it. Even if they get lucky as described, the burden of getting the source code, recompiling and deploying it, and maintaining a fork would prevent many from succeeding.
-
-An alternative to this arrangement is *self-sustainable* systems which dissolve the distinction between the product, source, and producer. A single environment provides not only for using and re-programming the *product*, but also for re-programming the *producer*, i.e. the system itself that is used for the programming. These systems are carefully designed to avoid "baking in" any of their behaviour. Instead, they expose as much of their own implementation as possible for modification at the user level. The advantage of such an approach is that innovation and improvement in the system can feed back into its own development.
-
-For example, consider mathematical notation. It involves many font styles and symbols as infix operators. Yet to express this in code we are limited to ASCII characters and, in many languages, prefix functional notation for custom operators. There are numerous domains where an improvement to this notation would make code easier to follow, such as rendering 3D graphics or computing text layout. If we implement a user interface for entering expressions in mathematical notation, not only would it help us program an end-user application such as a 3D game, but the same notation also becomes instantly available for our own use in-system. We could re-express parts of the code for the system's own user interface, such as its algorithms for text layout. In fact, we could even use our mathematical notation to re-implement the very user interface for the mathematical notation! This would not be the case if the end-user code existed in a different world than the programming system.
-
-This "innovation feedback" encourages a virtuous cycle of improvement regarding notations and beyond. The same can happen when we develop better debugging and testing tools, user interface builders, provenance tracking or performance optimisations. In other words, the development of the system itself will benefit from any improvement made while using the system. This is the key advantage self-sustainable systems have over others.
+Having tried the "state-first" approach with diminishing returns, we now turn to the much more successful "code-first" approach. We previously took the "state" half of the COLA design (i.e. the Id object model) as our starting point and made things happen with plain JavaScript. This left us at the mercy of text strings as a starting point for building the "code" half. In this chapter^[This chapter was adapted from my 2022 *Onward!* Essay entitled "Ascending the Ladder to Self-Sustainability" \cite{Onward22}], we look to the Lisp-like "behavioural" half of the COLA as our inspiration and seek to build up to it by means of *explicitly* structured code. We refer to this system during its development as *BootstrapLab*. Once again, we evaluate it at the end of the chapter according to the Technical Dimensions and the desiderata.
 
 # Contributions
-The goal of this essay is to lay the foundations for creating new self-sustainable programming systems. The user of such a system should be able to use it for building new products and, along the way, gradually learn how to make increasingly complex improvements to the system itself using domain-appropriate, often graphical, notations.
+The goal of this chapter is to lay the foundations for creating new self-sustainable programming systems. The user of such a system should be able to use it for building new products and, along the way, gradually learn how to make increasingly complex improvements to the system itself using domain-appropriate, often graphical, notations.
 
 To do so, we critically analyse the process of bootstrapping a single novel self-sustainable programming system, which we call BootstrapLab, and identify ideas that may apply more generally. This essay presents a rational reconstruction of the steps of the bootstrapping process. For each step, we describe the general task at hand, illustrate this with concrete decisions made in the implementation of BootstrapLab and, where appropriate, sketch possible alternative decisions and their likely consequences. In other words, it is a depth-first exploration of the process with some alternative branches suggested along the way.
 
@@ -26,28 +20,6 @@ The essay can be read at three different levels:
 * Third, it highlights design *forces* and *heuristics* for resolving them which can be used by designers of future self-sustainable systems.
 
 We conclude by identifying which parts of our journey ought to be transferrable to other contexts, suggesting a *general technique* for interactively bootstrapping self-sustainable systems from any starting platform.
-
-# Related Work
-
-The notion of "self-sustainable system" is difficult to discuss purely at the programming language level, because it crucially depends on how program execution and production is interconnected. For this reason, we talk about *programming systems*\ \cite{tds,plrev}, which include not only programming languages, but also IDEs, programming environments with non-textual notations, and other tools for creating software.   
-
-In the context of programming languages, the compiler or interpreter for a language can be implemented in the language itself. This is known as *bootstrapping* and it allows the language creator to co-evolve the language and the compiler. However, they typically have to do so outside of the environment used for building other products. A related concept is that of *meta-circular evaluator*, which is an interpreter for a language, written using the language, that implements features by deferring to its own inmplementation. For example, a meta-circular interpreter for Lisp in Lisp would implement `eval` by calling `eval`. This makes the task of writing the interpreter easier, but it does not eliminate the distinction between the product (application) source code and producer (interpreter) source code.
-
-The two best-known self-sustainable programming systems are Lisp and Smalltalk. Both are typically discussed in programming language terms, but they are more interesting as programming systems. In Smalltalk and many implementations of Lisp (e.g., Interlisp), the system itself (producer) can be modified from the same environment that is used for creating products. In other words, a Smalltalk image contains both the objects that make up the product as well as the objects that make up the Smalltalk environment itself. We also regard Unix as a whole to be a self-sustainable system, though the individual programs within it seldom have this property.
-
-Most literature discussing self-sustainability\ \cite{SSS08,SSS10} seems to focus on textual languages as the way to get there. We broaden the scope to programming systems, because this is necessary in order to talk about interaction and graphical capabilities. We desire to support graphical or structured ways of expressing programs that go beyond text\ \cite{subtext,infra,varv}, and feel that this has been neglected in prior work.
-
-The one system that directly influenced our work is the Combined Object Lambda Architecture or COLA\ \cite{COLAs}. The system is described as a mutually self-implementing pair of abstractions: a structural object model (the "Object" in the acronym) and a behavioural Lisp-like language (the "Lambda"). The system aims for maximal openness to modification, down to the basic semantics of object messaging and Lisp expressions. The self-sustainability allows for innovation feedback that the authors refer to as _internal evolution_:
-
-> Applying \[internal evolution\] locally provides scoped, domain-specific languages in which to express arbitrarily small parts of an application (these might be better called *mood-specific* languages). Implementing new syntax and semantics should be (and is) as simple as defining a new function or macro in a traditional language.
-
-The aim of the COLA design is to create a maximally flexible self-sustaining system, but its exposition has three limitations:
-
-1. It restricts the form of notations to text, curtailing the ambition of pervasive domain-specific adaptation. We would prefer mood-specific *notations* or *interfaces* generally, including *but not limited to* text.
-2. COLA's support of programming languages is presented as a pipeline of traditional batch-mode transformations such as parsing, analysis, and code generation. This further steeps it in a world of linear sequence transformations that obscure the interesting ideas.
-3. The bootstrapping process of implementing such a design is also cast in terms of batch-mode transformations of various source code files. We would rather have the ability to gradually *sculpt* a system into a self-sustainable state, interactively, through a combination of manual actions and automatic code.
-
-Because COLA was such a big influence on the present work, we will refer to it repeatedly for comparison and offer some analysis of our own.
 
 # Design Objectives
 
@@ -122,7 +94,7 @@ The other consideration is the primitives provided by the platform. They influen
 
 In the Altair 8800 of the 1970s, the platform was linear memory (state) and native CPU instructions (state change). The platform did not provide other tooling aside from switches to manually set memory values.
 
-In COLA, the platform is C\ \cite{OROM} or C++\ \cite{COLAs} and the Unix command-line environment; in other words, it is the Unix programming system\ \cite{tds}.
+In COLA, the platform is C\ \cite{OROM} or C++\ \cite{COLAs} and the Unix command-line environment; in other words, it is the Unix programming system\ \cite{TDs}.
 
 In BootstrapLab, we chose JavaScript and the Web platform generally. This provides us with built-in Web technologies and libraries (including graphics) and the browser developer tools. This platform provides a range of convenient tools to assist bootstrapping. Because of its large scope, we have to carefully choose primitives to expose to the product system.
 
@@ -192,7 +164,7 @@ At the lowest level, state in COLA consists of an array of bytes, addressed nume
 
 This bare-bones, low-level substrate does not require much development on top of the platform and so it is quicker to complete. The ontology of state is copied from the platform, and in this case the machine instructions can be inherited too.^[In general, the internal representation of code in the platform will be unavailable to us when programming with it, so we expect not to be able to inherit it. This low-level platform is a special case, where we do have access to code if we are willing to write instructions using their numerical codes.] Completing the substrate more quickly means we can start working in-system sooner, but there is a downside: it may be cumbersome to work with such minimal functionality. The unfortunate effect would be that we speed through a primitive substrate, only to suffer slow progress at the beginning of in-system development.
 
-Building back up from machine-code level may be an impressive hacker achievement or useful for pedagogy\ \cite{mu}. But it is clearly not optimal, speed-wise, when we already have a higher-level platform to program with.
+Building back up from machine-code level may be an impressive hacker achievement or useful for pedagogy\ \cite{Mu}. But it is clearly not optimal, speed-wise, when we already have a higher-level platform to program with.
 
 In the other direction, there is no limit to how fancy we could make the substrate in terms of high-level abstractions and convenient features. However, these would take much longer to implement and delay in-system development. Moreover, this risks doing a lot of work that can never benefit from in-system innovation, because the substrate's implementation will not be modifiable from within the system it supports.
 
@@ -341,7 +313,7 @@ In BootstrapLab, we chose to build off the THREE.js 3D graphics library as our p
 
 Immediate-mode in this case could be realised by, say, exposing all the relevant THREE.js functions as special instruction types. In actuality, however, this sounded far too tedious to work with; Force\ \ref{avoid-bp} won out and we opted for retained mode instead. The rest of the design then fell out via Alignment (Force\ \ref{alignment}).
 
-Consider the "flat bytes" substrate in which microcomputer games were programmed. In this world there is a special region of memory, the *framebuffer*, which is treated as the ground truth of pixels displaying on the screen. To draw, programs rasterise shapes into pixels and write to the framebuffer.^[In Commodore 64 BASIC, this would be accomplished with commands like `POKE 1024,1`.] The framebuffer has a flat structure---two-dimensional, yet not by any means nested---aligning with the substrate it sits within. A natural choice for retained-mode graphics representation can be found by inspecting the substrate. In BootstrapLab's case, a natural choice is not a flat "framebuffer" but a tree structure of data describing shapes and text---vector graphics.^[Further rationale for this approach can be seen in\ \cite{dadgum66}.]
+Consider the "flat bytes" substrate in which microcomputer games were programmed. In this world there is a special region of memory, the *framebuffer*, which is treated as the ground truth of pixels displaying on the screen. To draw, programs rasterise shapes into pixels and write to the framebuffer.^[In Commodore 64 BASIC, this would be accomplished with commands like `POKE 1024,1`.] The framebuffer has a flat structure---two-dimensional, yet not by any means nested---aligning with the substrate it sits within. A natural choice for retained-mode graphics representation can be found by inspecting the substrate. In BootstrapLab's case, a natural choice is not a flat "framebuffer" but a tree structure of data describing shapes and text---vector graphics.^[Further rationale for this approach can be seen in\ \cite{Dadgum66}.]
 
 \begin{heuristic}[In-state graphics]
 \label{in-state-graphics}
@@ -390,7 +362,14 @@ Computer state is a graph of maps; lists are just maps with numerical keys. Inst
 In most cases, the base platform will provide some way of viewing and modifying state, but this is typically inconvenient to use. The next step in bootstrapping a self-sustainable system involves implementing temporary infrastructure that lets us work with state more conveniently.
 
 ## Early Computing and COLA
-Temporary infrastructure to support in-system development can be found in many developments of self-sustainable systems. A historical example is the Teletype loader for the Altair 8800\ \cite{altair}. Here, the base platform was the Altair hardware with its memory and native CPU instructions. The only way to modify state through the platform was through the use of hardware switches at the front of the computer, which could be used to read and set values in a given range of memory.
+\begin{figure}
+\centering
+\includegraphics[width=8cm]{Altair-8800.jpg}
+\caption{The Altair 8800 microcomputer and its front panel of switches. \emph{Image credit: \cite{Altair}.}}
+\label{fig:altair}
+\end{figure}
+
+Temporary infrastructure to support in-system development can be found in many developments of self-sustainable systems. A historical example is the Teletype loader for the Altair 8800. Here, the base platform was the Altair hardware with its memory and native CPU instructions. The only way to modify state through the platform was through the use of hardware switches at the front of the computer (Figure\ \ref{fig:altair}), which could be used to read and set values in a given range of memory.
 
 Programming _in-system_ looks like the tedious setting of switches to poke numerical instructions to memory. To make entering programs easier, the recommended first step when using the Altair 8800 was to manually input instructions for a *boot loader* that communicated over the serial port. When finished, this could be run to load instructions from a paper tape. From here, programmers could write instructions more conveniently using a Teletype terminal and have them loaded into the Altair memory.
 
@@ -440,7 +419,7 @@ In COLA, it is unclear how the Lisp-like programming language is built beyond th
 ## High-Level Language for BootstrapLab
 If we take JavaScript, and strip away the concrete syntax, we get a resulting tree structure of function definitions, object literals, and imperative statements. A similar structure with similar semantics would be obtained from other dynamic languages. In fact, this would largely resemble Lisp S-expressions under Lisp semantics; hardly surprising considering Lisp's famously minimal syntax of expression trees. Furthermore, the evaluation procedure for Lisp is simple and well-established.
 
-For these reasons, we designed a Lisp-like tree language in the substrate. This way, we provide high-level constructs (`if-else`, loops, functions, recursion, etc.) for in-system programming. Alignment (Force\ \ref{alignment}) encouraged us to revisit Lisp's design to better fit with our substrate. For example, ordinary Lisp is based on lists whose entries have *implicit* meanings based on their positions. This fits with the substrate made of S-expressions. Our substrate comes with named labels and suggests a language based around maps whose entries are explicitly *named*, so we called it *Masp.*^[This is not too hard to come up with, but we would like to credit the origin of the name to\ \cite{masp} and related discussion.] Figure\ \ref{fig:lisp} contrasts the two.
+For these reasons, we designed a Lisp-like tree language in the substrate. This way, we provide high-level constructs (`if-else`, loops, functions, recursion, etc.) for in-system programming. Alignment (Force\ \ref{alignment}) encouraged us to revisit Lisp's design to better fit with our substrate. For example, ordinary Lisp is based on lists whose entries have *implicit* meanings based on their positions. This fits with the substrate made of S-expressions. Our substrate comes with named labels and suggests a language based around maps whose entries are explicitly *named*, so we called it *Masp.*^[This is not too hard to come up with, but we would like to credit the origin of the name to\ \cite{Masp} and related discussion.] Figure\ \ref{fig:lisp} contrasts the two.
 
 \tomas{Maybe use more verbose JSON like syntax, because figuring out the nesting rules below is not obvious. (Plus you need to have curly brackets if you want your language to take over the world, right??)}
 
@@ -497,7 +476,7 @@ In BootstrapLab, Force\ \ref{escape-plaf} encouraged us to get executing Masp ex
 
 A \naive\ implementation would simply implement the standard Lisp interpreter routines (`eval` and `apply`) as recursive JavaScript functions. However, this would miss an opportunity for visualisation and debugging that is already present in our substrate. Instead, we followed Heuristic\ \ref{in-state-op} and had intermediate interpreter state reside in-system. This made a later in-system port easier by doing half of the work now.
 
-Lisp evaluation is done by walking over the expression tree. At any point, we are looking at a subtree and will evaluate it until reaching a primitive value. Ordinarily, the "current subexpression" is an argument to `eval` at the top of the stack, while the stack records our path from the original top-level expression. Since we already had a tree visualisation, we used that instead of a stack. We did, however, need to maintain references to parent tree nodes (see Appendix\ \ref{graphs-vs.-trees}) in order to backtrack towards the next unevaluated subexpression once the current one is evaluated. Furthermore, instead of *destructively* replacing tree nodes with their "more-evaluated" versions, we "annotate" the tree instead. This design choice follows Subtext\ \cite{subtext} and will make it possible to trace provenance and enable novel programming experiences.
+Lisp evaluation is done by walking over the expression tree. At any point, we are looking at a subtree and will evaluate it until reaching a primitive value. Ordinarily, the "current subexpression" is an argument to `eval` at the top of the stack, while the stack records our path from the original top-level expression. Since we already had a tree visualisation, we used that instead of a stack. We did, however, need to maintain references to parent tree nodes (see Appendix\ \ref{graphs-vs.-trees}) in order to backtrack towards the next unevaluated subexpression once the current one is evaluated. Furthermore, instead of *destructively* replacing tree nodes with their "more-evaluated" versions, we "annotate" the tree instead. This design choice follows Subtext\ \cite{Subtext} and will make it possible to trace provenance and enable novel programming experiences.
 
 \note{Perhaps the idea of bootstrapping abstractions from the low-level (Heuristic\ \ref{use-asm}) has been refuted? Instead of writing BL-ASM in-system to build things up, it's been so tedious that I haven't touched it and instead leaped to Masp in JavaScript! It is of course still possible in principle, but the complex reality of how I did things and the design decisions I made, caused it to be uneconomical.}
 
@@ -590,13 +569,13 @@ To reprogram the editor to work like this, we would do the following from within
 ## A More Ambitious Novel Interface
 The above "taster" is a simple example of an interface that could be plausibly implemented early in BootstrapLab's self-sustaining lifetime. Beyond this, it points to a more general class of extensions which would support *projectional editing.* Projectional editors are a class of programming interfaces that provide domain-specific interfaces for certain program subexpressions, such as \LaTeX-style mathematical expressions to replace ASCII renderings. We would do well to import such ideas into BootstrapLab. We proceed to sketch how such an interface would be added to the system, and how its ramifications are different from ordinary non-self-sustainable projectional editors.
 
-As an example, suppose we want to program some fancy graphics. Fancy graphics require sophisticated vector mathematical formulae. In textual programming languages, these are expressed as ASCII with limited infix notation. The Gezira/Nile project\ \cite{gezira,nile} attempted to improve on this with Unicode mathematical syntax. Obviously the extreme endpoint would be \LaTeX. All we have at the moment is something worse than all of these: verbose, explicit tree views spanning multiple lines.
+As an example, suppose we want to program some fancy graphics. Fancy graphics require sophisticated vector mathematical formulae. In textual programming languages, these are expressed as ASCII with limited infix notation. The Gezira/Nile project\ \cite{Gezira,Nile} attempted to improve on this with Unicode mathematical syntax. Obviously the extreme endpoint would be \LaTeX. All we have at the moment is something worse than all of these: verbose, explicit tree views spanning multiple lines.
 
 We think ahead with a view towards making the fancy graphics programming more pleasant. Suppose we decide that we would ideally like to implement them with the aid of concise mathematical notation, as opposed to our current state of verbose trees. How can we achieve this?
 
 The broad approach would be similar to our previous taster example. We would have to start, again, at the code that renders state into graphics. Add a condition that checks for a `math` key, which we would use as a tag to hint at this display preference. Enter code to translate operator names to Unicode symbols, place them at infix positions, place parentheses appropriately, and render the whole thing to a single line in the tree view (ideally keeping the tree structure of the expressions in the graphics state). Then, modify the input handling and tree navigation code to appropriately work on this *inline* tree structure. And so on.
 
-The above points are, of course, a high-level sketch, but it is *programming* all the same and is plausible to achieve with a high-level language. Techniques from the literature would be helpful, such as Hazel's calculus for editing structures with holes\ \cite{hazel}, or bi-directional synchronisation between the rendered graphics and the state's ground truth\ \cite{SnS}.
+The above points are, of course, a high-level sketch, but it is *programming* all the same and is plausible to achieve with a high-level language. Techniques from the literature would be helpful, such as Hazel's calculus for editing structures with holes\ \cite{Hazel}, or bi-directional synchronisation between the rendered graphics and the state's ground truth\ \cite{SnS}.
 
 ## The Key Takeaway
 In the non-self-sustainable world, a projectional editor is implemented in some traditional programming language and interface; say, Java. The domain-specific notations can benefit a wide variety of programs created using the editor. Yet, this range of beneficiaries nevertheless forms a "light cone" emanating out from the editor, never including the editor itself. For example, any vector formulae used to render the interface of the editor will remain as verbose Java expressions, along with any code for new additions to the editor. The tragedy of non-self-sustainable programming is that it can never benefit from its own innovations.
@@ -604,6 +583,44 @@ In the non-self-sustainable world, a projectional editor is implemented in some 
 Conversely, in BootstrapLab, the benefits of the new notation spread across the whole system; the "light cone" *includes* the editor implementation itself. If we previously had to squint and parse verbose maths trees in the implementation of the maths rendering, we can now open up the code again and see it rendered in the more readable way that it itself implements!
 
 In COLA, notational variation appears to be limited to variation in concrete syntax. Our uncompromising insistence on *explicit, non-parsed structure* at the core of BootstrapLab, while costly in terms of interface implementation, was precisely in order to be free of such a restriction in the end. While one *could* implement a multiline text field with syntax highlighting in BootstrapLab, it is at least crystal-clear that a vast array of other interfaces are possible, unimpeded by any privileging of text strings.
+
+# Evaluation
+
+In this section we will evaluate BootstrapLab according to the relevant three Technical Dimensions as well as Olsen's criteria for User Interface Systems.
+
+It might seem appropriate to also perform an evaluation via the Cognitive Dimensions of Notation. However, this would not actually tell us anything interesting, because the novel contribution of this system is not its notation. The current interface of BootstrapLab is minimal and unpolished for reasons of expediency. The point is *not* that we have come up with a brilliant new notation or UI that will improve programming; the notation is something that each user should fit to him or herself according to subjective preference. The important point is that the system *supports* the usage of different notations for different contexts. Notations in BootstrapLab should be a free parameter, so it does not make sense to apply Cognitive Dimensions to BootstrapLab *itself*, and it does not provide any value to analyse the placeholder interface in this way.
+
+## Notational Diversity
+### Are there multiple syntaxes for textual notation? No.
+### Does the system make use of GUI elements? Yes.
+### Is it possible to view and edit data as tree structures? Yes.
+### Does the system allow freeform arrangement and sizing of data items? Maybe.
+
+## Surface / Internal Notations (Explicit Structure)
+### Is structure recovery necessary for non-behavioural "data"?
+
+### Is structure recovery necessary for behavioural "code"?
+
+
+
+## Self-Sustainability
+### Can you add new items to system namespaces without a restart? Yes.
+There is deliberately only one system namespace: the state graph rooted at the top-level registers. Some of these names have special functions in the low-level ASM, but otherwise this namespace is free for user additions. These can be added manually in the in-system editor or in code by the primitive `store` instruction.
+
+### Can programs generate programs and execute them? Yes.
+Because of Alignment (Force\ \ref{alignment}), low-level instructions that change state are represented as ordinary maps with certain format constraints. The instruction set is sufficient for constructing arbitrary graph structures in the state, including programs composed of instructions. The same goes for high-level Masp code which is also represented as maps.
+
+### Are changes persistent enough to encourage indefinite evolution? Maybe.
+Part or all of the state graph can be manually persisted via the `export_state()` JavaScript function in the browser console. This means that in-system progress can be saved, even though it would be better for the user experience to have this done automatically. It is clear that indefinite evolution is *permitted* but not that it is *encouraged*.
+
+### Can you reprogram low-level infrastructure within the running system? Not yet.
+As BootstrapLab currently stands, we have still not paid off the "substrate debt": the in-system editor and Masp interpreter are still mostly running in JavaScript. However, this is at least considered an incomplete state and when the porting is finished, the answer will switch to "yes".
+
+### Can the user interface be arbitrarily changed from within the system? Not yet.
+The present graphical state of the system *does* entirely live in a special part of the system state: the `scene` tree. Therefore, at any given moment, it is possible to change what the graphics window will display. However, there are two limitations:
+
+1. The range of these changes is constrained to the range of graphical primitives currently understood by the substrate which it passes on to THREE.js. Currently these are limited to axis-aligned flat-coloured rectangles and basic text of a uniform size, style, colour, etc.
+2. The behaviour that affects the graphics currently lives in JavaScript. This means that, for example, the logic according to which the tree editor renders map entries is inaccessible to in-system code. 
 
 # Future Work
 \tomas{Possibly draw a diagram of what are all the things that have to match? Like code-data in substrate, substrate-highLevelLanguage etc.}
@@ -614,7 +631,7 @@ At the first step (Choose A Platform), all sorts of other platforms could be cho
 
 We acknowledge that it might feel perverse to have files contain "primitive" values, such as a single number, or to represent instructions as directory trees, since files are normally used as "large" objects. However, it must be noted that there is precedent for using them more generally for data large and small, such as in Plan 9 and `procfs`. If this was still too much to stomach, the default option for "code", i.e. shell scripts, could simply be inherited (with the caveat that this would impose a text dependency at the core of the system). What is most unclear is how graphics would be displayed and interacted with---possibly requiring a special binary as part of the substrate, for opening and synchronising a main window.
 
-If we accept our chosen web-based platform, we can consider alternative substrates. One obvious possibility is inheriting the DOM as the state model. This is the choice made by Webstrates\ \cite{webstrates}, which stores textual JavaScript code for programmatic change. Following our approach, we might want a lower-level and structured instruction set instead. This would, at the very least, need to be capable of changing parent/child/sibling relationships, node attributes, and inner textual content. One warning is that the rest of the DOM API that would need to be exposed, in order to be able to produce a functional modern web page or web app, is somewhat daunting in scope. It would also be necessary to have some way of listening for changes to DOM nodes so that any constraints can be maintained or dependencies can be updated. Webstrates does provide synchronisation between networked clients on the same page, so perhaps its methods could be adapted.
+If we accept our chosen web-based platform, we can consider alternative substrates. One obvious possibility is inheriting the DOM as the state model. This is the choice made by Webstrates\ \cite{Webstrates}, which stores textual JavaScript code for programmatic change. Following our approach, we might want a lower-level and structured instruction set instead. This would, at the very least, need to be capable of changing parent/child/sibling relationships, node attributes, and inner textual content. One warning is that the rest of the DOM API that would need to be exposed, in order to be able to produce a functional modern web page or web app, is somewhat daunting in scope. It would also be necessary to have some way of listening for changes to DOM nodes so that any constraints can be maintained or dependencies can be updated. Webstrates does provide synchronisation between networked clients on the same page, so perhaps its methods could be adapted.
 
 As mentioned, we would also recommend going for an instruction set that is convenient enough to *use* that immediately building programs in-system is a worthwhile endeavour. Our own wild adventure in minimality was a mistake in this regard, causing us to stay in JavaScript, implement the high-level language there and port it later. It would be interesting to see the process of gradually building each component of a high-level language engine interactively in-system. Out of the four posibilities in Section\ \ref{choosing-an-appropriate-implementation}, we chose the *platform interpreter*, so exploring the others would be illuminating---particularly the *platform compiler*, which could self-host relatively quickly.
 
@@ -626,4 +643,4 @@ The process of developing a self-sustainable programming system that we followed
 
 This essay can be seen as a sketch of how we might build similar infrastructure on the back of modern computing environments with structured representation of data and graphical interfaces. In other words, we investigate what programming could look like if it were *re*-bootstrapped today, not on top of flat memory, but on a richer base platform such as that provided by web technologies.
 
-In his 1997 OOPSLA keynote "The Computer Revolution Hasn't Happened Yet"\ \cite{comprev}, Alan Kay hoped that future users of Squeak/Smalltalk would use it to start a virtuous cycle of innovation: "Think of how you can obsolete the damn thing by using its own mechanisms for getting the next version of itself." It appears that these hopes were not answered in the 25 years since his keynote. Our modest contribution is to broaden the scope. If we weren't able to obsolete the damn *status quo* of text-only programming from Squeak, perhaps we can do it from any other platform---by following a handy sequence of steps.
+In his 1997 OOPSLA keynote "The Computer Revolution Hasn't Happened Yet"\ \cite{Comprev}, Alan Kay hoped that future users of Squeak/Smalltalk would use it to start a virtuous cycle of innovation: "Think of how you can obsolete the damn thing by using its own mechanisms for getting the next version of itself." It appears that these hopes were not answered in the 25 years since his keynote. Our modest contribution is to broaden the scope. If we weren't able to obsolete the damn *status quo* of text-only programming from Squeak, perhaps we can do it from any other platform---by following a handy sequence of steps.

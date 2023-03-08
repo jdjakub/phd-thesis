@@ -1,5 +1,7 @@
 \chapter{Technical Dimensions of Programming Systems}
 
+\newtheorem*{defn}{Definition}
+
 \setlength{\epigraphwidth}{0.7\linewidth}
 \epigraph{A systematic presentation removes ideas from the ground that made them grow and arranges them in an artificial pattern.}{\textit{The Tyranny of Science} \\ \textsc{Paul Feyerabend}}
 
@@ -9,19 +11,6 @@
 }
 
 \epigraph{Irony is said to allow the artist to continue his creative production while immersed in a sociocultural context of which he is critical.}{\emph{Irony; or, the Self-Critical Opacity of Postmodernist Architecture} \\ \textsc{Emmanuel Petit} }
-
-
-# Introduction
-
-Many forms of software have been developed to enable programming. The classic form consists of a *programming language*, a text editor to enter source code, and a compiler to turn it into an executable program. Instances of this form are differentiated by the syntax and semantics of the language, along with the implementation techniques in the compiler or runtime environment. Since the advent of graphical user interfaces (GUIs), programming languages can be found embedded within graphical environments that increasingly define how programmers work with the language---for instance, by directly supporting debugging or refactoring. Beyond this, the rise of GUIs also permits diverse visual forms of programming, including visual languages and GUI-based end-user programming tools.
-
-This paper advocates a shift of attention from *programming languages* to the more general notion of "software that enables programming"---in other words, *programming systems*.
-
-\begin{defn}[Programming System]
-A \emph{programming system} is an integrated and complete set of tools sufficient for creating, modifying, and executing programs. These will include notations for structuring programs and data, facilities for running and debugging programs, and interfaces for performing all of these tasks. Facilities for testing, analysis, packaging, or version control may also be present. Notations include programming languages and interfaces include text editors, but are not limited to these.
-\end{defn}
-
-This notion covers classic programming languages together with their editors, debuggers, compilers, and other tools. Yet it is intentionally broad enough to accommodate image-based programming environments like Smalltalk, operating systems like UNIX, and hypermedia authoring systems like Hypercard, in addition to various other examples we will mention.
 
 ## The problem: no systematic framework for systems
 
@@ -162,7 +151,7 @@ We present the dimensions grouped under *clusters*. These may be regarded as "to
 
 Each cluster is named and opens with a boxed *summary*, followed by a longer *discussion*, and closes with a list of any *relations* to other clusters along with any *references* if applicable. Within the main discussion, individual *dimensions* are listed. Sometimes, a particular value along a dimension (or a combination of values along several dimensions) can be recognized as a familiar pattern---perhaps with a name already established in the literature. These are marked as *examples*. Finally, interspersed discussion that is neither a *dimension* nor an *example* is introduced as a *remark*.
 
-\input{prog22-alldims.tex}
+\input{all-tech-dims.tex}
 
 # Evaluation
 The technical dimensions should be evaluated on the basis of how useful they are for designing and analysing programming systems. To that end, this section demonstrates two uses of the framework. First, we use the dimensions to analyze the recent programming system Dark\ \cite{DarkWeb}, explaining how it relates to past work and how it contributes to the state of the art. Second, we use technical dimensions to identify a new unexplored point in the design space of programming systems and envision a new design that could emerge from the analysis.
@@ -262,5 +251,4 @@ There is a renewed interest in developing new programming systems. Such systems 
 
 The framework of technical dimensions puts the vast variety of programming systems, past and present, on a common footing of commensurability. This is crucial to enable the strengths of each to be identified and, if possible, combined by designers of the next generation of programming systems. As more and more systems are assessed in the framework, a picture of the space of possibilities will gradually emerge. Some regions will be conspicuously empty, indicating unrealized possibilities that could be worth trying. In this way, a domain of "normal science" is created for the design of programming systems.
 
-\acks
-(To be completed for publication.)
+Specifically for this thesis, however, we can note the following: now that we have established such a framework, we can use it in the next two chapters to evaluate the systems they describe.

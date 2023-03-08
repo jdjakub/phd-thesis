@@ -1,31 +1,73 @@
 \documentclass[12pt]{report}
 \usepackage[utf8]{inputenc}
 \usepackage{graphicx}
+\usepackage{tabularx}
 \usepackage{listings}
 \usepackage{hyperref}
-\usepackage{amsthm}
-%\usepackage{pifont} % For checkmark / cross symbols
 \usepackage{microtype}
 \usepackage{flushend}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage[backend=biber,style=alphabetic,sorting=ynt]{biblatex}
+\addbibresource{thesis.bib}
 
-\title{Thesis Title}
-\subtitle{Thesis Subtitle}
+% Tech Dims
+\usepackage{changepage} % For the single-page summary table PDF insert.
+\usepackage{pdfpages}
+\usepackage{pifont} % For checkmark / cross symbols for Appendix table :)
+\usepackage{amsthm} % For numberless Definition
+\usepackage{epigraph} % For the opening quotes
+
+\graphicspath{{../img/}}
+
+\lstset{breaklines=true, columns=fullflexible, breakatwhitespace=true, basicstyle=\ttfamily\footnotesize}
+\lstdefinelanguage{JavaScript}{
+  keywords={break, case, catch, continue, debugger, default, delete, do, else,
+  finally, for, function, if, in, instanceof, new, return, switch, this, throw,
+  try, typeof, var, void, while, with, let, false, true},
+  morecomment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  morestring=[b]',
+  morestring=[b]",
+  sensitive=true
+}
+\lstset{
+  language=JavaScript,
+  numbers=none,
+  columns=fullflexible,
+  basicstyle=\ttfamily,
+}
+
+\title{
+  {Achieving Self-Sustainability in Interactive, Graphical Programming Systems}\\
+  {\large University of Kent}
+}
 \author{Joel Jakubovic}
 
 \begin{document}
+\maketitle
 
 \newcommand{\joel}[1]{}
 \newcommand{\tomas}[1]{}
+\newcommand{\tp}[1]{}
 \newcommand{\note}[1]{}
 \newcommand{\notes}[1]{}
 \newcommand{\todo}[1]{\textbf{TODO: #1}}
 \newcommand{\delete}[1]{\textbf{DELETE:}#1}
 \newcommand{\naive}{na\"ive}
+\newcommand{\OROM}{Id}
+\newcommand{\svgel}[1]{\texttt{\textless{}#1\textgreater{}}}
+\newcommand{\OSFA}{One-Size-Fits-All}
+\newcommand{\xywh}{\texttt{x},\texttt{y},\texttt{width},\texttt{height}}
+% Thanks https://tex.stackexchange.com/a/32687
+\NewDocumentCommand{\rot}{O{45} O{1em} m}{\makebox[#2][l]{\rotatebox{#1}{#3}}}%
+\newcommand{\mybox}[1]{\noindent\fbox{\parbox{\textwidth}{#1}}}
 \providecommand{\tightlist}{}% Don't want Pandoc's tight lists
 % Nor do we want long tables by default
 \newenvironment{longtable}[2]{\begin{tabular}}{\end{tabular}}
 \newenvironment{head}{}{}
 %\newcommand{\hypertarget}[1]{}
+\newtheorem{heuristic}{Heuristic}
 
 \input{ch-preamble.tex}
 \input{ch-intro.tex}
@@ -35,11 +77,12 @@
 \input{ch-bl.tex}
 \input{ch-conclusion.tex}
 
+\chapter*{Appendices}
 \appendix
 \input{appendix-misc.tex}
 \input{appendix-tech-dims.tex}
 \input{appendix-bl.tex}
 
-\bibliography{thesis}
+\printbibliography
 
 \end{document}
