@@ -1,7 +1,5 @@
 \chapter{Technical Dimensions of Programming Systems}
 
-\newtheorem*{defn}{Definition}
-
 \setlength{\epigraphwidth}{0.7\linewidth}
 \epigraph{A systematic presentation removes ideas from the ground that made them grow and arranges them in an artificial pattern.}{\textit{The Tyranny of Science} \\ \textsc{Paul Feyerabend}}
 
