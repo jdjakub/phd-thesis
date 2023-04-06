@@ -10,16 +10,18 @@ Always be asking the question: ``how would I ideally prefer to express the (sub-
 
 An important aspect is that Heuristic\ \ref{ideal-expr} is about what is best for a *local context* rather than in general. Also important is that it is *subjective* based on the preferences of the programmer. This lets us sidestep unproductive debates about which notations are simply "better" or "worse", even for local contexts. The worthy goal is not that anyone should be forced to use a wonderful notation that I have come up with (I have done no such thing) but simply that, *if* a programmer would *prefer* to express their problem in a certain notation, they should not be *prevented* from doing so.
 
-This chapter^[Adapted from my 2020 Convivial Computing Salon paper entitled "What Does It Take To Create With Domain-Appropriate Tools?" \cite{CCS}.] details how I applied Heuristic\ \ref{ideal-expr} to implement Id as a prototype called "\OROM/SVG". It then draws lessons about the *costs* of doing it this way. It concludes with an evaluation of \OROM/SVG in terms of the Technical Dimensions with attention to key desiderata that BootstrapLab should meet. At the risk of spoiling the story, this "state-first" approach was aborted for falling short of these desiderata, and the complementary *code-first* approach, presented in Chapter\ \ref{the-code-first-approach-to-bootstraplab}, proved more successful.
+What follows in this chapter^[Adapted from my 2020 Convivial Computing Salon paper entitled "What Does It Take To Create With Domain-Appropriate Tools?" \cite{CCS}.] is an account of how I applied Heuristic\ \ref{ideal-expr} to implement Id atop a simple "box" substrate. Section\ \ref{the-id-system} gives an overview of Id. Section\ \ref{typical-requirements-of-common-software} discusses the work involved in obtaining said domain-appropriate substrate, and Section\ \ref{patterns-and-polyfilling} continues with an interpretation of the labour costs of doing it this way. In Section\ \ref{the-id-system-as-a-part-of-the-solution}, we return to the Id system and its role in supporting flexible software. It concludes with an evaluation of \OROM/SVG in terms of the Technical Dimensions with attention to key desiderata that BootstrapLab should meet. At the risk of spoiling the story, this "state-first" approach was aborted for falling short of these desiderata, and the complementary *code-first* approach, presented in Chapter\ \ref{the-code-first-approach-to-bootstraplab}, proved more successful.
 
-# Old Introduction
+### The \OROM{} Object Model
 
-All these considerations attract me to the design of a particular system called "Id", as a potential way out of this mess \cite{OROM}. True, it is a programmer's artefact, but it is still representative of what any normal person has to do, insofar as:
+The "structural" half of a COLA is described in \cite{OROM}. It describes a late-bound, Smalltalk-style objects and messaging environment that the authors call "Id". We will summarise the important points here.
 
-a) Wanting to create a piece of software (for whatever reason)
-b) Having in mind a natural way to represent it as it's being built.
+An \OROM{} *object* is a block of state which can change as a result of messages received by it. Messaging (analogous to *method invocation* in mainstream OOP) works as follows:
 
-What follows in this paper is an account of how I went about building Id, atop a preliminary "box" substrate. Section\ \ref{the-id-system} gives an overview of Id. Section\ \ref{typical-requirements-of-common-software} discusses the work involved in obtaining said domain-appropriate substrate, and Section\ \ref{patterns-and-polyfilling} continues with an interpretation of the labour costs of doing this. In Section\ \ref{the-id-system-as-a-part-of-the-solution}, we return to the Id system and its role in supporting flexible software. Section\ \ref{conclusions-and-future-work} addresses the question in the title,^[The original title was "What Does It Take to Create with Domain-Appropriate Tools?", but it has been changed for technical reasons.] and concludes with next steps for the project.
+* A message is sent by first *bind*-ing its name to its *method implementation*, which is specific code that gets run in the context of the receiver $R$. This binding is a dynamic operation that can use runtime conditions to make its decision---even create a method implementation on the fly. This *late binding* contrasts with *early binding* where the name is bound to the implementation statically and thus holds for the entire running lifetime of the system.
+* This "bind" step is accomplished by sending a further message; this time, to the receiver's *vtable* $V(R)$. A vtable is another object that maps "message name" to "implementation code"---it's analogous to a "class" in mainstream OOP.
+* Because this initial "bind" message is itself a message send, it triggers a similar "bind" to *its* vtable $V(V(R))$, and so on: recursing up the vtable-chain, and terminating at a base case.
+* The higher levels of the vtable-chain mean that different kinds of vtables can be supported,^[As well as different kinds of "kinds of vtables", and so on.] each implementing the "bind" operation in its own way. For example, one kind of vtable could employ a simple dictionary mapping names to implementations. A different kind might build the code for the implementation just-in-time, without looking anything up in a data structure.
 
 # Ideal Expression for Id
 
@@ -28,7 +30,7 @@ What follows in this paper is an account of how I went about building Id, atop a
        This gives it a prod, focusing its attention and making it realise its mistake.
        (As usual, LaTeX defies comprehension in non-anthromorphic terms.) }
 
-Inkeeping with its aims of minimality and self-describability, Id as a whole is "bootstrapped" into existence by its initialisation code. Each step of this code makes use of any parts of the system set up by the previous steps.
+In-keeping with its aims of minimality and self-sustainability, Id as a whole is "bootstrapped" into existence by its initialisation code. Each step of this code makes use of any parts of the system set up by the previous steps.
 
 The paper itself consists of mostly prose, several code listings, and full C sources for a sample implementation at the end. It also provides several diagrams. But to understand it, I repeatedly found myself drawing *extra* diagrams.
 
@@ -41,6 +43,11 @@ If I naturally think of this system as 2D tables, why can't that be how the runn
 
 Thus was my natural representation decided. My first attempt to make it a reality was a partial success: a webpage made of HTML tables, evolved via JavaScript (JS).
 
+In summary, the logic went as follows:
+
+a) I wish to create a piece of software (in this case, the Id system)
+b) I have in mind a natural way to represent it as it's being built.
+
 ## Id as HTML Tables
 
 \begin{figure}
@@ -50,7 +57,7 @@ Thus was my natural representation decided. My first attempt to make it a realit
            each other through numerical IDs. \label{fig:orom-html}}
 \end{figure}
 
-To emphasise the tendency of \OROM{} objects to be visualised as key-value mappings, I will refer to them as *obj-dicts*. Figure~\ref{fig:orom-html} shows the \OROM{}/HTML^[This is read ``Id over HTML'', to emphasise the specific substrate on which it sits.] implementation \cite{OROM-HTML}, in which they take the form of HTML tables.
+To emphasise the tendency of \OROM{} objects to be visualised as key-value mappings, I will refer to them as *obj-dicts*. Figure\ \ref{fig:orom-html} shows the \OROM{}/HTML^[This is read ``Id over HTML'', to emphasise the specific substrate on which it sits.] implementation \cite{OROM-HTML}, in which they take the form of HTML tables.
 
 Here, I was grateful for the browser's management of graphical layout, resizable text fields, and keeping the DOM tree synchronised with what one sees. This last property enabled me to make the decision to *directly* encode much of the system state in the DOM, achieving basic liveness ("The thing on the screen is the actual thing") for the keys and values of obj-dicts.
 
@@ -89,7 +96,7 @@ There's a way to take arbitrary domain and give it self-programmability. boundar
            referencing each other via \emph{real arrows}.\label{fig:orom-svg}}
 \end{figure}
 
-In \OROM{}/SVG, shown in Figure~\ref{fig:orom-svg}, obj-dicts are encoded as nested SVG \svgel{rect}s and other elements, reminiscent of Boxer \cite{Boxer}. This was a significant departure from the table representation, and even though SVG supports (some) nested HTML via `<foreignObject>`, I actually preferred the possibility of multiple levels of nesting.
+In \OROM{}/SVG, shown in Figure\ \ref{fig:orom-svg}, obj-dicts are encoded as nested SVG \svgel{rect}s and other elements, reminiscent of Boxer \cite{Boxer}. This was a significant departure from the table representation, and even though SVG supports (some) nested HTML via `<foreignObject>`, I actually preferred the possibility of multiple levels of nesting.
 
 Still, this version was far more challenging and took much longer to reach a satisfactory state. Yet it is precisely this drudgery that brings me to a better understanding of this paper's question: *what has it taken?* I shall discuss this in the form of broad patterns or themes that stand out to me from my development experience, hammered home by these \OROM{} implementations.
 
@@ -120,7 +127,7 @@ Most software is designed for the subset of people who have a colour display the
 
 On this requirement, SVG fits the bill very well. Although it is not part of the JavaScript language *per se*, it is a standard and widely supported technology of the Web *platform*. We can observe that anyone with a browser *in principle* has access to a powerful vector graphics editor---just one with no GUI.
 
-The SVG tree has the nice properties of the DOM, such as updating the display when shape parameters are changed. This is well-adapted to "I/O-bound" software like mine, where things change only in response to user input. If I wanted animation, this would boil down to a regular "advance simulation" signal, and would require setting up some rendering loop. Alternatively, there is the W3C's chosen ontology of CSS animations, but see Section~\ref{context-appropriate-ontologies}.
+The SVG tree has the nice properties of the DOM, such as updating the display when shape parameters are changed. This is well-adapted to "I/O-bound" software like mine, where things change only in response to user input. If I wanted animation, this would boil down to a regular "advance simulation" signal, and would require setting up some rendering loop. Alternatively, there is the W3C's chosen ontology of CSS animations, but see Section\ \ref{context-appropriate-ontologies}.
 
 ## Basic Assumptions about Physical Objects
 In any software making use of vector graphics, there is usually some level of "physics" expected by users. This need not be nearly as exhaustive as the word "physics" might imply, as in e.g. physics engines for games; I feel it is important to recognise it for what it is instead of conceiving physics as an inherently complex thing to be found only in specialised simulations. For example, pretty much all mobile apps have what could be called "phone touch physics" where menus and screens slide in and out.
@@ -181,7 +188,7 @@ This burden either falls on the author, or on the wider community to build and m
 
 It is true, we already have a term for bringing into existence some software feature that isn't already there: programming. The difference is that polyfilling is about filling in *boilerplate*, i.e. functionality *that should have been there in the first place, but isn't*. This injects some subjectivity and value judgement into the term. But ultimately, all platforms are designed with certain features "out of the box" and leave other features for us to implement "if needed".
 
-When the *normal* problem domain "requires batteries", yet the tools available say "batteries not included", it is quite reasonable to want the batteries to be part of the platform. Section~\ref{what-did-it-take-and-why} will expand on this further, but here I will list the "batteries not included" I found myself polyfilling in \OROM{}/SVG.
+When the *normal* problem domain "requires batteries", yet the tools available say "batteries not included", it is quite reasonable to want the batteries to be part of the platform. Section\ \ref{what-did-it-take-and-why} will expand on this further, but here I will list the "batteries not included" I found myself polyfilling in \OROM{}/SVG.
 
 \joel{
 making something programmable / raising substrate
@@ -214,7 +221,7 @@ The simple desire to move and resize boxes with the mouse motivated a lot of the
 > if you followed the structure with motivating example first followed by an analysis...
 }
 
-It starts with a consideration of translational rigidity. In its most primitive form, this is a relation between two points. Thus it is natural to draw a line or "rod" between them. It seems that this rod transmits changes in one of its endpoints directly to the other endpoint. Since they both feel the same deltas, the displacement vector between them is preserved (Figure~\ref{fig:delta-transmission}).
+It starts with a consideration of translational rigidity. In its most primitive form, this is a relation between two points. Thus it is natural to draw a line or "rod" between them. It seems that this rod transmits changes in one of its endpoints directly to the other endpoint. Since they both feel the same deltas, the displacement vector between them is preserved (Figure\ \ref{fig:delta-transmission}).
 
 \begin{figure*}
   \centering
@@ -224,7 +231,7 @@ It starts with a consideration of translational rigidity. In its most primitive 
 
 I like to see what I'm doing, so I wanted these rods to be visible and thus somehow *present in the SVG*. For this, I have a Point class that is used wherever manipulable points (SVG circles) are needed, and a Rod class that draws a \svgel{line} and transmits endpoint deltas across its length.
 
-Resizing of boxes could be achieved through rods that stay horizontal or vertical. In the language of "small differences" spoken by the live-state infrastructure, this is expressed as a rod "transmitting deltas" in the vertical and horizontal, "absorbing" the other component into itself (Figure~\ref{fig:rods}). Mirroring a DOM rect to these rods is as simple as subscribing its width and height to horizontal and vertical rods' `length` Observables. This way, boxes can be resized from whatever corner is convenient.
+Resizing of boxes could be achieved through rods that stay horizontal or vertical. In the language of "small differences" spoken by the live-state infrastructure, this is expressed as a rod "transmitting deltas" in the vertical and horizontal, "absorbing" the other component into itself (Figure\ \ref{fig:rods}). Mirroring a DOM rect to these rods is as simple as subscribing its width and height to horizontal and vertical rods' `length` Observables. This way, boxes can be resized from whatever corner is convenient.
 
 \begin{figure*}
   \centering
@@ -252,7 +259,7 @@ First of all, SVG shapes (e.g. \svgel{rect}) are strictly *leaf* nodes of the DO
 
 All child elements of a node transform with it, so already SVG has baked in a basic facility for translational rigidity. This is only available as a tree hierarchy,^[This highlights the mismatch between the tree-based DOM and any system that is graph-structured.] but it is still useful. However, it conflicts with my early decision to have Point objects all share the global co-ordinate system (this was to ensure that simple relations, such as a point following the mouse pointer, are not infuriating to express). Still, it was necessary in the case of certain elements---especially those which must transcend the tree structure altogether, like arrows between boxes---to bite this bullet, one way or another.
 
-Again, I return to how we tend to work things out in the freedom of paper. Co-ordinate systems, here merely positionally displaced, have their origins here and there and have vectors between them. The rods thus far let me visually express relations between global Points; now was a question of expressing one global Point as a displacement from another (the \svgel{g} transform). New rod Observables `p2_from_p1` and `p1_from_p2` do the vector subtraction, which can then be propagated as local co-ordinates to children. It is nice to express the relation (as well as see it!) this way (Figure~\ref{fig:rods}).
+Again, I return to how we tend to work things out in the freedom of paper. Co-ordinate systems, here merely positionally displaced, have their origins here and there and have vectors between them. The rods thus far let me visually express relations between global Points; now was a question of expressing one global Point as a displacement from another (the \svgel{g} transform). New rod Observables `p2_from_p1` and `p1_from_p2` do the vector subtraction, which can then be propagated as local co-ordinates to children. It is nice to express the relation (as well as see it!) this way (Figure\ \ref{fig:rods}).
 
 ## Context-Appropriate Ontologies
 Each API has its own conventions, including a way of naming and structuring expressions: an *ontology* \cite{Crit-semprola}. The \OSFA{} approach is exemplified in such interfaces.
@@ -273,7 +280,7 @@ To start with, the situation is modelled not as the *changing* of some time-vary
 
 In \OROM{}/SVG I did not quite want to re-map keys, but I did often want to have things follow the mouse when dragged. In order to do this, I reified the mouse pointer and its position, letting me write `subscribe(point.position, pointer.position)`. The Point has an `is-considering-me?` Observable wrapping `onmouseover` and `onmouseout`, while a `LMB_is_down` Observable reifies the LMB state. The aforementioned subscription is set up whenever `is-considering-me?` and `LMB_is_down` become true, and torn down otherwise. I tended to think of this in the form "subscribe to pointer *only when* pointer is-considering-me *and* LMB is down", but I could live with this notation as a future polyfill in JavaScript.
 
-The way these things are connected to the browser's event listeners could be called "device drivers"---an approach described in \cite{Prog21-bbox}. It amounts to translating information from the Web's ontology into that of my substrate, as early as possible (Listing~\ref{lst:drvs}).
+The way these things are connected to the browser's event listeners could be called "device drivers"---an approach described in \cite{Prog21-bbox}. It amounts to translating information from the Web's ontology into that of my substrate, as early as possible (Listing\ \ref{lst:drvs}).
 
 \begin{lstlisting}[
   label={lst:drvs},float,captionpos=b,
@@ -361,16 +368,16 @@ a.get('b2').set('c4', w);
 
 The latter style is unfortunately still required in JavaScript for extensional functions with *non-string* inputs.
 
-My original flat, tabular representation in \OROM{}/HTML did support a single level of such "extensional functions", but no more. In other words, the output of such a mapping could not be a further mapping itself. This was problematic because vtables, conceptually, have two levels of such nesting: the top-level fields, and the "methods dictionary" which contains its own input-output pairs. To distinguish between these, I actually stored method mappings with an ad-hoc "-" character (Figure~\ref{fig:orom-html}).
+My original flat, tabular representation in \OROM{}/HTML did support a single level of such "extensional functions", but no more. In other words, the output of such a mapping could not be a further mapping itself. This was problematic because vtables, conceptually, have two levels of such nesting: the top-level fields, and the "methods dictionary" which contains its own input-output pairs. To distinguish between these, I actually stored method mappings with an ad-hoc "-" character (Figure\ \ref{fig:orom-html}).
 
-By contrast, after switching to the fully nestable box substrate in \OROM{}/SVG, I could directly express the model I was thinking in. Quite simply, the \texttt{vtable} box has a \texttt{methods} box, and that's where the method boxes go (Figure~\ref{fig:orom-svg}). If I had stayed in HTML, there is a good risk I would have had to polyfill in extensional functions---whether through nested \svgel{table} elements, additional "-" characters, or something else.
+By contrast, after switching to the fully nestable box substrate in \OROM{}/SVG, I could directly express the model I was thinking in. Quite simply, the \texttt{vtable} box has a \texttt{methods} box, and that's where the method boxes go (Figure\ \ref{fig:orom-svg}). If I had stayed in HTML, there is a good risk I would have had to polyfill in extensional functions---whether through nested \svgel{table} elements, additional "-" characters, or something else.
 
 ## Persistence
 This refers to exposing structured program state to the user. This data can then be saved and used to restore the system at a later date, but it can also be tweaked with corresponding changes reflected in the system.
 
 Persistence was absolutely necessary to continue \OROM{}/SVG development, past a certain point. This is because, upon discovering a bug and fixing it in the source code, the web page must be refreshed and started anew. In the beginning, when verifying that box drawing with the mouse is working correctly, this is not much of a problem: upon refresh, the blank initial state is restored and I could draw again. But as the substrate matured, and I began to implement parts of the target system (\OROM{})---the cycle of finding a bug, tearing down the system, refreshing and losing work, and manually building it up again, proved frustrating. Because the system could only be patched externally and restarted, there needed to be some way to persist changes which live in the DOM, rather than the source files.
 
-Normally, this can be as simple as autosave to the filesystem. But the Web platform is very wary of this,^[As anyone who learns WebGL can attest to, when they discover they must run a local Web server to provide image files for textures (since any filesystem requests will be rejected for security).] so the solution I turned to was manually copying the markup in the browser's inspector (Figure~\ref{fig:html-inspector}).
+Normally, this can be as simple as autosave to the filesystem. But the Web platform is very wary of this,^[As anyone who learns WebGL can attest to, when they discover they must run a local Web server to provide image files for textures (since any filesystem requests will be rejected for security).] so the solution I turned to was manually copying the markup in the browser's inspector (Figure\ \ref{fig:html-inspector}).
 
 \begin{figure}
   \centering
@@ -403,7 +410,7 @@ Further, there is perhaps a risk of optimising for *formal* rather than *practic
 In the conclusion of \cite{OROM}, the authors note that "it is not necessarily a friendly model for hand-written code", suggesting its use as a compilation target. In a similar vein, it could function as the kernel of a much more familiar system (on the surface)---it is, after all, supposed to be a vehicle that other things sit on, rather than the final user interface itself. In fact, this is precisely the approach set out in the related paper \cite{COLAs}.
 
 ## Self-Implementation
-Said related "COLAs" paper expands on \OROM{}, giving it a "structural" role complemented by a LISP-like programming language. Section~6.1 sketches out the intended "bootstrapping" process, ending with a self-sufficent, self-hosting version of the system.
+Said related "COLAs" paper expands on \OROM{}, giving it a "structural" role complemented by a LISP-like programming language. Section\ 6.1 sketches out the intended "bootstrapping" process, ending with a self-sufficent, self-hosting version of the system.
 
 However, this task again suffers from the same cognitive complexity as any other self-referential circle. This is even more so for me, having made the complexity of graphics and interaction somehow still "part of the system". Figuring out exactly how the authors' bootstrapping process of their wholly *language-based* system maps on to my task is, as far as I know, uncharted territory.
 
@@ -411,6 +418,61 @@ Finally, in \cite{Crit-semprola}, there is a warning against "obsession with com
 
 1. Is there a difference in (final, intermediate) goals between the two views?
 2. Could systems like \OROM{} and COLAs plausibly succeed at their own stated goals?
+
+# Evaluation
+
+In this section we will evaluate \OROM{}/SVG according to the relevant three Technical Dimensions as well as Olsen's criteria for User Interface Systems.
+
+It might seem appropriate to also perform an evaluation via the Cognitive Dimensions of Notation. However, this would not actually tell us anything interesting, because the novel contribution of this system is not its notation. The interface is minimal and unpolished for reasons of expediency. The point is *not* that we have come up with a brilliant new notation or UI that will improve programming; the notation is something that each user should fit to him or herself according to subjective preference. The important point is that the system *supports* the usage of different notations for different contexts. Notations in BootstrapLab should be a free parameter, so it does not make sense to apply Cognitive Dimensions to BootstrapLab *itself*, and it does not provide any value to analyse the placeholder interface in this way.
+
+## Notational Freedom
+### Are there multiple syntaxes for textual notation? No.
+Only JavaScript syntax is available.
+
+### Does the system make use of GUI elements? Yes.
+The nested boxes have draggable corners for resizing/repositioning. There are also arrows that transcend the tree structure and certainly would not fit in a purely textual model.
+
+### Is it possible to view and edit data as tree structures? Yes.
+The nested boxes use spatial containment to represent explicit tree structure. They can be drawn into existence.
+
+### Does the system allow freeform arrangement and sizing of data items? Yes.
+The boxes can be repositioned and resized arbitrarily and this preserves any arrow topology.
+
+### Is there support for custom user-supplied grammars? No.
+The system only implements the "structural" half of a COLA, so it lacks support for mood-specific languages.
+
+### Is there support for custom user-supplied notations? No.
+Ditto.
+
+## Surface / Internal Notations (Explicit Structure)
+### Is structure recovery necessary for non-behavioural "data"?
+
+### Is structure recovery necessary for behavioural "code"?
+
+## Self-Sustainability
+### Can you add new items to system namespaces without a restart? Yes
+
+### Can programs generate programs and execute them? Yes
+JavaScript code in text boxes can be run with a key combination. This code can call functions defined in the source file, and browser APIs, to create new boxes and obj-dicts. These can contain text boxes which can then be filled with JavaScript code strings.
+
+### Are changes persistent enough to encourage indefinite evolution? Maybe
+
+### Can you reprogram low-level infrastructure within the running system? Maybe
+
+### Can the user interface be arbitrarily changed from within the system? No
+It might be thought that this is possible because JS boxes can use browser APIs to change the DOM styling. While this is true, there is still inaccessible code in functions defined in the source file. Some of these functions create boxes, and the style they use is confined to the source file and is not a runtime-accessible variable.
+
+### Is there a language mismatch? Maybe
+The system state is stored in the DOM, which is serialised to HTML, while the code lives in JavaScript. It supports JS boxes as part of a graph structure, so this slight mismatch would need overcoming to generate a replacement system.
+
+### Is there a scale mismatch?
+
+### Is there an interpreter/compiler mismatch? Yes
+Code in JS boxes can only be executed, changing the runtime environment; it does not have the effect of constructing an external artefact with the same code and data.
+
+### Is there significant regeneration delay? No
+
+### Is there significant loss of state when replacing the system? Yes
 
 # Conclusions and Future Work
 ## What Did It Take, and Why?
@@ -438,6 +500,6 @@ Nevertheless, I wanted to explicitly highlight the obstacles one is likely to me
 
 Still, in this mostly-suitable substrate for \OROM{}, I can continue with my project of seeing whether the *allure* of \cite{COLAs} can be saved from the text-based "hidden world" limitation that pervades it. The obvious next step is attempting "self-implementation". This is desirable is because I still have not escaped my text editor. Any changes to my \OROM{}/SVG substrate (of nested box drawing) require going back to the script files; I still cannot take advantage of the system I have developed, to ease its own development. In the words of \cite{COLAs}, I wish to make it so that the original JavaScript files can be "jettisoned without remorse".
 
-In Section~\ref{retained-mode-vector-graphics}, I touched on how everyone with a browser has access to a powerful vector graphics editor (SVG) locked behind a completely inappropriate UI (the JS Console). It is similar for 3D graphics (WebGL), and sound and music (Web Audio). Similar observations are made about "native" OS apps in \cite{Prog21-dyn}. Unfortunately for that domain, the interface that unlocks your operating system's range of functionalities---batch-mode compilation---is quite far from the affordances of the (interactive) JS Console.
+In Section\ \ref{retained-mode-vector-graphics}, I touched on how everyone with a browser has access to a powerful vector graphics editor (SVG) locked behind a completely inappropriate UI (the JS Console). It is similar for 3D graphics (WebGL), and sound and music (Web Audio). Similar observations are made about "native" OS apps in \cite{Prog21-dyn}. Unfortunately for that domain, the interface that unlocks your operating system's range of functionalities---batch-mode compilation---is quite far from the affordances of the (interactive) JS Console.
 
-I intend to use \OROM{}/SVG to "tame" SVG and other JavaScript APIs, with some minimal on-demand visualisation in the large portion of the screen next to the JS console. This is an attempt to generalise the "rect controls", which allow the obvious geometric properties of a \svgel{rect} to be directly manipulated (Section~\ref{context-appropriate-ontologies}). Giving \OROM{} access to Web technologies in this way is essential for evolving it into a *fully-featured* self-changeable software environment, which could allow as much domain-specifc representation as its user wishes.
+I intend to use \OROM{}/SVG to "tame" SVG and other JavaScript APIs, with some minimal on-demand visualisation in the large portion of the screen next to the JS console. This is an attempt to generalise the "rect controls", which allow the obvious geometric properties of a \svgel{rect} to be directly manipulated (Section\ \ref{context-appropriate-ontologies}). Giving \OROM{} access to Web technologies in this way is essential for evolving it into a *fully-featured* self-changeable software environment, which could allow as much domain-specifc representation as its user wishes.

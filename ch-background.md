@@ -4,8 +4,6 @@
 3. Re-building the software stack with the benefit of hindsight and better tech.
 }
 
-\todo{Why the 2 properties?}
-
 \chapter{Background}
 
 \joel{
@@ -18,13 +16,13 @@ But why is all this so hard? / big picture: Against Conv Wisdom.
 
 In order for the later chapters to make sense, we begin by covering the relevant background concepts and research. This chapter is organised by themes because each one emerges as a reaction to the previous:
 
-* To start with, this thesis is about building programming systems. In order for this to make sense, we first need to introduce "programming systems" and explain how the concept is related to that of a programming language.
-* Then, we will examine the COLA system design which exhibits *self-sustainability*, but whose *notational freedom* is limited to *syntactic* freedom.
+* To start with, this thesis is about building programming systems. In order for this to make sense, we first need to introduce "programming systems" and explain how the concept is related to that of a programming language. We will distinguish the general concepts of *state* and *change* in programming systems and cover three important paradigms: Batch Mode, Unix, and Interactive.
+* Then we will be able to define *self-sustainability*, *notational freedom* and *explicit structure* as properties of programming systems.
+* We can then examine the COLA system design which exhibits self-sustainability, but whose *notational freedom* is limited to *syntactic* freedom and which relies on implicit structure.
 * Furthermore, the way that a COLA is *bootstrapped* is in terms of batch-mode language transformations, and we explain why we see this as a related limitation.
-* These concerns straightforwardly point to an unexplored opportunity which constitutes the contribution of this thesis.
-* Finally, we suggest reasons why such a thing has not already been tried and why the Two Properties are so rare.
+* These concerns straightforwardly point to an unexplored opportunity which constitutes the contribution of this thesis. We discuss how the Three Properties feed into each other and hence why it makes sense to study them together. We close with a summary of what the thesis contribution is.
 
-## Programming Systems vs Languages
+# Programming Systems vs Languages
 Many forms of software have been developed to enable programming. The classic form consists of a *programming language*, a text editor to enter source code, and a compiler to turn it into an executable program. Instances of this form are differentiated by the syntax and semantics of the language, along with the implementation techniques in the compiler or runtime environment. Since the advent of graphical user interfaces (GUIs), programming languages can be found embedded within graphical environments that increasingly define how programmers work with the language---for instance, by directly supporting debugging or refactoring. Beyond this, the rise of GUIs also permits diverse visual forms of programming, including visual languages and GUI-based end-user programming tools.
 
 The classic essay by Gabriel\ \cite{PLrev} distinguishes the *languages* and *systems* paradigms in programming research. The topic of this thesis, and many of the examples we will use to illustrate concepts, rely on understanding this distinction and only make sense within the systems paradigm.
@@ -39,52 +37,16 @@ This notion covers classic programming languages together with their editors, de
 In Chapter\ \ref{tech-dims}, we propose a common language as an initial step towards more progressive research on programming systems. Our set of "technical dimensions" seeks to break down the holistic view of systems along various specific “axes”. The dimensions identify a range of possible design choices, characterised by two extreme points in the design space. They are not quantitative, but they allow comparison by locating systems on a common axis. We do not intend for the extreme points to represent “good” or “bad” designs; we expect any position to be a result of design trade-offs. At this early stage in the life of such a framework, we encourage agreement on descriptions of systems first in order to settle any normative judgements later. The set of dimensions can be understood as a map of the design space of programming systems (Figure 1). Past and present systems will serve as landmarks, and with enough of them, we may reveal unexplored or overlooked possibilities. So far, the field has not been able to establish a virtuous cycle of feedback; it is hard for practitioners to situate their work in the context of others’ so that subsequent work can improve on it. Our aim is to provide foundations for the study of programming systems that would allow such development.
 
 While we do have new ideas to propose, part of our contribution is integrating a wide range of existing concepts under a common umbrella. This work is spread out across different domains, but each part connects to programming systems or focuses on a specific characteristic they may have.
-\cite{Liveness}
-\cite{KellComm}
-\cite{STdesign}
-\cite{DesPats}
-\cite{CogDims}
-\cite{MemmodPLs}
 
-\cite{EvProgSys}
-\cite{UISTAuthor}
-\cite{EvUISR}
-\cite{ComplementaryBasic}
-\cite{Chang}
-\cite{Kuhn}
+\joel{
+The notion of "self-sustainable system" is difficult to discuss purely at the programming language level, because it crucially depends on how program execution and production are connected. For this reason, we talk about *programming systems*\ \cite{TDs,PLrev}, which include not only programming languages, but also IDEs, programming environments with non-textual notations, and other tools for creating software.}
 
-The notion of "self-sustainable system" is difficult to discuss purely at the programming language level, because it crucially depends on how program execution and production are connected. For this reason, we talk about *programming systems*\ \cite{TDs,PLrev}, which include not only programming languages, but also IDEs, programming environments with non-textual notations, and other tools for creating software.  
-
-\cite{Jupyter}
-\cite{CodaWeb}
-\cite{DarkWeb}
-\cite{ReplitWeb}
-
-[UIST](https://uist.acm.org/)^[ACM Symposium on User Interface Software and Technology]
-[VL/HCC](https://conferences.computer.org/VLHCC/)^[IEEE Symposium on Visual Languages and Human-Centric Computing]
-[LIVE](https://liveprog.org/)
-[PX](https://2021.programming-conference.org/home/px-2021)^[Programming eXperience].
-
-\cite{FPexplain}
-\cite{Boomerang}
-\cite{Sketchnsketch}
-
-\cite{Domain-workbench}
-
-\cite{Hazel}
-\cite{Webstrates}
-[Squeak](https://squeak.org/)
-[Lively Kernel](https://lively-kernel.org/)
-[Pharo](https://pharo.org/)
-[Fizzygum](http://fizzygum.org/)
-[Io language](https://iolanguage.org)
-
-### Two Fundamentals: State and Change
+## Two Fundamentals: State and Change
 A good general model of a programming system is like a physical system in the sense of analytical mechanics. There is always a current *state* of the system, and this will necessarily *change over time*. We stress that this is the case regardless of whether the underlying programming metaphor is imperative, purely functional, logic-based, or otherwise eschews a notion of "state" in its conceptual model. This is perhaps vacuously true in the following way. In working with a declarative or functional programming system, the expression you are currently editing or the output you are seeing at a given moment is, by definition, a single state, and this changes whether you interact or simply wait for progress. In other words, anything to which this view is not applicable will not be interactive or interesting.
 
 We include both the visible interface and the "hidden" internal state of the system in this model. Such an all-encompassing "state", of course, isn't comprehensible atomically but is always broken down into substructures (whether byte lists, object graphs, trees or otherwise). Likewise, the actual *change* from one state to another usually does not involve all of the state but only a small part of it. In the limit, there is usually some smallest unit of state (a byte, dictionary entry, tree node) and this gives rise naturally to primitive *instructions* describing a change to such a small unit. Different choices for how to represent the instructions have implications for where it is possible to take the evolution of a system. We will see in Chapter\ \ref{ch-bl} that some choices are more appropriate than others for ensuring a system can be made self-sustainable.
 
-### The Batch-Mode Paradigm
+## The Batch-Mode Paradigm
 Computer programs originated as “batch-mode” processes. A calculation chugs away and delivers a result at the end. A compiler combs through source code and outputs a machine-level program. In the batch-mode paradigm, a program starts, runs, and then stops. The effect or “behaviour” of a program is its *output;* to change its behaviour, we need to change the executable program. But we can’t change the program directly;^[Most nontrivial changes would invalidate various binary offsets, which would then have to be discovered and adjusted.] instead we change its *source code*, and then *re-generate* the program as another batch-mode operation. However, this is not a problem because any important effects of the program are outside it, whether on a paper printout or saved to magnetic tape. Any data structures the program creates occur within its “working memory”, a temporary scratchpad internal to the program and discarded when it’s done its job.
 
 Thus, the key assumptions of batch-mode programming are:
@@ -106,7 +68,9 @@ The batch-mode paradigm can be considered an appropriate adaptation to the early
 
 Of the four assumptions, no.\ 4 is surprisingly consequential. We will refer to it as BMA4 for short.
 
-### The Unix Paradigm
+\todo{What about the meaning of "static" / "early" bound properties here?}
+
+## The Unix Paradigm
 Let us fast-forward to the era of Unix, whose concepts and programming model are the water we swim in whether on Windows, Mac, Linux or something else. Unix was created before the rise of GUIs and naturally preserved the batch-mode norm from its surroundings. Still, a different “interactive” paradigm had been around in embryo for a while.
 
 An "Operating System" like Unix is a *continuously* running master-program (kernel) which allocates compute and storage to batch-mode programs under its supervision. Unix calls these *processes;* each one a sort of virtual processor plus working memory (which it calls "core".) As before, core is merely *instrumental* for the process to do its job quickly, and is discarded upon termination. The other world, of "things that matter", is a hierarchical tree of *files* shared between processes and persisted as they come and go. Users can access the current state of processes and files via the command line *terminal* or *shell*. This runs as a process but is, like the kernel, continuously running, passing input and output between the user and the kernel. Let us summarise all this as the *Unix Paradigm:* a compromise between the batch-mode and interactive paradigms where limited interaction is used to organise batch-mode computation.
@@ -115,11 +79,11 @@ There is one further small innovation worth noting. As an Operating System, Unix
 
 How do we analyse Unix as a programming system? Unix is one big system managing many smaller processes. To the extent that *other* programming systems are implemented as Unix processes, Unix functions as a meta-system supporting subordinate programming systems. Thus there are always *two* levels to programming in the Unix Paradigm: the "large" scope and the "small" scope. In both of these, *state* consists of both core and files thanks to the Volatility Split. However, the two levels emphasise these to different degrees.
 
-At the large scope, it seems appropriate to describe the filesystem as the primary "state" of the Unix system. There is, of course, nontrivial state in core such as the currently running processes and bookkeeping information for them, which will be lost if the system is restarted. Nevertheless, from its own perspective, the "important data" for users all lives in the filesystem; what happens to be running at any given time in core is merely instrumental.^[C.f. Assumption\ 2: if a data structure was important, the programmer would have written code to save it to a file!] The agent of *change* at the large scope is the kernel, and the primitive "instructions" are the system calls used to write to files and change the file tree.
+At the large scope, it seems appropriate to describe the filesystem as the primary "state" of the Unix system. There is, of course, nontrivial state in core such as the currently running processes and bookkeeping information for them, which will be lost if the system is restarted. Nevertheless, from its own perspective, the "important data" for users all lives in the filesystem; what happens to be running at any given time in core is merely instrumental.^[C.f. Consequence\ 2: if a data structure was important, the programmer would have written code to save it to a file!] The agent of *change* at the large scope is the kernel, and the primitive "instructions" are the system calls used to write to files and change the file tree.
 
 Meanwhile, at the small scope of an individual programming system *process*, the manifestation of state and change will depend on the particular system itself. Yet because we know it is running as a Unix process, we can at least be assured that the lowest level of "state" will be split between core and files, and "change" will occur through the execution of machine instructions.
 
-### The Interactive Paradigm
+## The Interactive Paradigm
 The interactive paradigm, in its fully developed form, emerges from a feeling of compute/storage abundance. This frees us from having to start with the question "what purposes can computers currently cope with?" and instead ask "what are computers for?" with the answer being roughly equivalent to "anything". This paradigm relaxes or rejects the basic axioms of batch-mode programming:
 
 1. The point of a program is to simulate a piece of the world somehow useful to a human, free of the constraints of physical media substances. Producing an output is but one of many such effects useful to humans.
@@ -137,20 +101,20 @@ This paradigm is embodied in systems like Lisp (which pre-dates Unix) and Smallt
 
 From this perspective, the Volatility Split, carefully preserved by Unix from the dawn of computing, looks like an *implementation detail* being obnoxiously raised to the level of major design concern. The question of whether the variable X should live as dancing electrons or as magnetic domains resembles the question of at which precise address a new string buffer should live in memory. So-called "manual" memory allocation routines like `malloc()` actually remove the need for the programmer to "manually" decide such an implementation detail.^[The "manual" term refers to the management of allocation *lifetime*, in contrast to *garbage collection* which automatically decides when to free memory.]
 
-Meanwhile, the Change By Re-creation model seems like an unnecessarily convoluted path to do a simple thing. Suppose we want the field `foo` of object `greeter` to change to `"Hello"`. The system knows the object referred to by the name `greeter` and knows how the field `foo` is stored. It seems odd to have to dig through code and re-generate the object along with everything it touched. Surely we ought be able to just type `greeter.foo = "Hello"`. Bret Victor dubbed this "destroy-the-world programming", though Basman et al. rescue the concept as "Queen of Sheba Adaptation" by addressing the cost (I lose all my data, see Consequence 1)—presumably as an implementation detail (i.e. you can still just type greeter.foo = "Hello".)
+Meanwhile, the Change By Re-creation model seems like an unnecessarily convoluted path to do a simple thing. Suppose we want the field `foo` of object `greeter` to change to `"Hello"`. The system knows the object referred to by the name `greeter` and knows how the field `foo` is stored. It seems odd to have to dig through code and re-generate the object along with everything it touched. Surely we ought be able to just type `greeter.foo = "Hello"`. Bret Victor dubbed this "destroy-the-world programming" \cite{BretVictor}, though Basman et al. \cite{Externalize} rescue the concept as "Queen of Sheba Adaptation" by addressing the cost (I lose all my data, see Consequence 1)—presumably as an implementation detail (i.e. you can still just type `greeter.foo = "Hello"`.)
 
-As examined by Gabriel\ \cite{WIB} and Kell\ \cite{KellOS}, Unix "won" in a way that Lisp and Smalltalk did not, firmly establishing the Unix Paradigm as ubiquitous. Where Lisp and Smalltalk exist, they are processes sitting within Unix and saving to "image" files. For implementors of novel programming systems, the tenacious Volatility Split and Change By Re-creation model clash with the Interactive Paradigm natural to the enterprise.
+As examined by Gabriel\ \cite{WIB} and Kell\ \cite{Kell-OS}, Unix "won" in a way that Lisp and Smalltalk did not, firmly establishing the Unix Paradigm as ubiquitous. Where Lisp and Smalltalk exist, they are processes sitting within Unix and saving to "image" files. For implementors of novel programming systems, the tenacious Volatility Split and Change By Re-creation model clash with the Interactive Paradigm natural to the enterprise.
 
-## Self-sustainability
+# Self-sustainability
 This is one of the properties of programming systems that we are interested in for this thesis. To a first approximation, self-sustainability involves being able to evolve and re-program a system, using itself, while it is running. 
 
 It is instructive to start by examining Unix in this light. At the "large" scope, we have shell scripts coordinating files and processes within the running Unix system. We also have individual processes---text editors, compilers, interpreters, debuggers---which change the large-scale system state (files), such as by creating new programs. In this way, a Unix system is evolved and re-programmed using itself, while it is running; Unix (i.e. Programming-in-the-large) is self-sustainable.
 
 The matter is complicated by the fact that a small minority of special changes require restarting the system to take effect. However, the spirit of the "while it is running" condition is that the system does not need to be *destroyed and rebuilt from scratch*. Because the "state" of the large scope is mainly files, the destructive operation here is not so much "restart" as perhaps "reset" or "reinstall".
 
-In contrast, for a programming system that exists as a process within Unix, its data structures in volatile memory will be permanently lost if it is restarted, and these data structures may well be an important part of its state as a continuously running interactive programming system. Indeed, when we turn our attention to the "small" scope of the Unix Paradigm, we mostly do not see self-sustainability.
+In contrast, for a programming system that exists as a process *within* Unix, its data structures in volatile memory will be permanently lost if it is restarted, and these data structures may well be an important part of its state as a continuously running interactive programming system. Indeed, when we turn our attention to the "small" scope of the Unix Paradigm, we mostly do not see self-sustainability.
 
-### Self-Sustainability at the Small Scope
+## Self-Sustainability at the Small Scope
 Compiled programming languages like C++ or Java are used via several different Unix processes. These include interactive ones like text editors, and batch-mode ones like the compiler. Some compilers are *self-hosting*, meaning that they can compile their own source code into a functionally identical compiler program:
 
 1. Say we design a novel language *NovLang* that we want to use.
@@ -168,7 +132,7 @@ It is worth noting that the "meaning" of code is different depending on whether 
 
 Furthermore, this is all still in the batch-mode world where the memory used by the process is disposable and unimportant, hence Change by Re-creation does not cause too many problems. For programming systems, this is often inappropriate or at least highly inconvenient. Since interactive processes are meant to run as long as the user wishes, they contain a lot of important state in memory. Furthermore, the Volatility Split was traditionally just forwarded into the user's mental model, making no guarantees about whether work would be saved in the event of a crash and recommending the user to save regularly. While many applications and programming systems did eventually implement "auto-save", they nevertheless form a clear case where BMA4 fails and re-creating the system risks important data loss (or, at the very least, inconvenience.)
 
-### Key Components of Self-Sustainability
+## Key Components of Self-Sustainability
 In light of these points, we can discover some key criteria of self-sustainability by considering the Web browser as a programming system. What would it take to make the Web browser self-sustainable?
 
 1. In the first place, the browser is not even *self-hosting*. In order to be self-hosting, it would need to be able to generate a slightly different web browser binary, from slightly different JavaScript source code.
@@ -179,83 +143,58 @@ In light of these points, we can discover some key criteria of self-sustainabili
 
 We see a number of hurdles to achieving a self-hosting state: there must be no language, scale or interpreter/compiler mismatch. This is followed by one or two for self-sustainability: evolving the system must not incur a disproportionate regeneration delay or a loss of important state. We will use these criteria in Chapter\ \ref{tech-dims} as "penalties" for measuring self-sustainability.
 
-## Notational Freedom
+## The Key Benefit: Innovation Feedback
+Beyond mere convenience or coolness, a system that is self-sustainable (or self-hosting) has an advantage over those that are not: we call this *innovation feedback*. Innovations programmed using the system---useful functions, notations, or tools---can benefit their *own* development as well as the rest of the system. In contrast, for a system whose internals cannot be affected by any program within it, innovations can only be exploited for the system's development by *duplicating* the work in the system's implementation level.
 
+In the case of Unix, a text editor may be used to improve its own source code, which can then be compiled into an even better text editor. The shell interface, graphical interfaces and all tools are just *programs* which can be replaced with newly compiled improvements, all using other Unix programs. Therefore, a Unix system is not limited to improving detached *separate* distributions of programs destined for a different user, but naturally improves itself as well.
 
-## The Legacy of VPRI
-With the "programming systems" frame established, we can properly consider some related work downstream of Smalltalk. It emerged from the now-retired Viewpoints Research Institute (VPRI), on whose foundations this thesis is built. VPRI aimed at creating "fundamentally new computing technologies", which is particularly visible throughout the 6-year project known as "STEPS towards a new computing" \cite{Steps08,Steps09,Steps10,Steps11,Steps12}. The aim was to fully replicate a familiar graphical end-user operating system with applications in under 20,000 total lines of code. Such an ambitious goal provided the constraint needed to force innovation in taming complexity, motivating widespread use of domain-specific languages and investment in the "meta"-level. Several writings describing programming systems, or parts of them, came out of STEPS, but the most important for this thesis is the COLA.
+When put this way, it sounds obvious: "of course computer software is used to improve computer software!" Yet how different it is at the "small" scope: the very same text editor *on its own* cannot compile its improved replacement. A Python interpreter written in C++ may empower us to create useful tools, but to improve the interpreter itself we need to inhabit the world of C++ in which our Python tools are unavailable.
 
-### COLAs
+From our presentation it may appear that self-sustainability is a peculiar special case that is naturally hard to achieve. Yet the world of software as a whole is self-sustainable, as is an individual Unix system (large-scope programming.) Perhaps, instead, self-sustainability is a natural *default*, *prevented* by the historical accident of Unix enforcing *its* peculiar model on small-scope programming?
 
-The one system that directly influenced our work is the Combined Object Lambda Architecture or COLA\ \cite{COLAs}: a small but expressive starting system that could be self-improved into anything. The system is described as a mutually self-implementing pair of abstractions: a structural object model (the "Object" in the acronym) and a behavioural Lisp-like language (the "Lambda"). The system aims for maximal openness to modification, down to the basic semantics of object messaging and Lisp expressions.
+# Notational Freedom
+A famous maxim in programming is "use the right tool for the job". A noble aspiration, but one that is not widely fulfilled. At the "large scope" of the Unix paradigm, there is indeed a dizzying array of programming languages specialised for different jobs. Yet there are non-trivial barriers to using multiple languages for the same project, a practice unusual enough to merit a name: "polyglot programming". Going further, the scale of the "job" stops, as might be expected, at the process level.
 
-The two key features we see in the COLA idea are *self-sustainability* and *mood-specific languages.* Self-sustainability is straightforwardly inherited from the Smalltalk tradition and amplified, while mood-specific languages are a continuation of the more familiar idea of Domain-Specific Languages.
+At the "small scope" of a single program binary, it is rare to see multiple languages used to build the thing. And within the scope of a single source file, multiple languages are out of the question. Yet it is not unreasonable to expect that a single function, or perhaps even a single line of code, might be best expressed in a different language to the rest of the code. For example, a common occurrence in scientific or graphics-heavy programming is a few lines of mathematical operations; it would be convenient to have these render as familiar mathematical notation instead of a butchered ASCII approximation.
 
-Self-sustainability allows for innovation feedback that the authors refer to as _internal evolution_:
+As another example, it is common to embed SQL commands somehow in the source code of another programming language. In C#, these are forced into the syntax of the host language as "embedded queries", yet a programmer may prefer to use SQL directly as part of the source. The traditional alternative to both of these was to have SQL code inside program strings, which created significant security risks; however, this is by no means intrinsic to having SQL source be what the programmer *types* or *sees* (see Section\ \ref{explicit-structure} below.)
 
-> Applying \[internal evolution\] locally provides scoped, domain-specific languages in which to express arbitrarily small parts of an application (these might be better called *mood-specific* languages). Implementing new syntax and semantics should be (and is) as simple as defining a new function or macro in a traditional language.
+More generally, the ideal is where a component at any scale can be expressed in a *notation* that is particularly suited to it. We prefer to consider "notations" in general, including the different syntaxes of programming languages but not limited to them. Language isn't everything---diagrams and pictures are sometimes the form in which a problem or solution is delivered (e.g. in vector mathematics). Programmers ought not to be forced to describe pictures using words.
 
-We wish to have mood-specific *notations* more generally, which we call *notational freedom.* A self-sustainable system is brought into existence in a way that is analogous to self-hosting languages; this is called *bootstrapping*. COLA presents its bootstrapping process as if it were such a language, which is odd considering it is a system. (text stuff goes here?)
+The "language" that we consider too narrow a constraint consists of renderings of text. This is as opposed to other uses of "language" in areas such as design: "visual language" may not include text at all, but uses the "language" term metaphorically for the arrangement of elements. Under this latter meaning, the "domain-specific language" idea has all the degrees of freedom it deserves. Nevertheless, our use of the word "language" will stick to denoting renderings of text glyphs and we shall use words like "notation" or "interface" for the fully general extension.
 
-Instead of only being able to make changes to a mass of source code written in the same language, a COLA is supposed to permit easy proliferation of languages optimised for individual sub-problems. Such languages are typically known as domain-specific languages or DSLs, but the STEPS project sees a range of granularity all the way down to “mood-specific languages” (MSLs). An example of an MSL might be expressing a single line of code with mathematical notation instead of the usual monospaced ASCII subset. The language half of a COLA is designed to make it feasible for a programmer to do this sort of thing on a whim; encouraging “the right language for the job” no matter how small the context, in a way that normal language infrastructure makes too costly to be worthwhile.
+We should also clarify that we are using the terms "notation" and "interface" interchangeably; we're not just talking about static pictures but dynamic entities on a screen. The "text editor" interface is one such example. One could use a text editor to work on the hex code `0xff00ff` representing the colour magenta. Alternatively, and perhaps more appropriately, one could work via a colour picker interface instead.
 
-\cite{Nile,Gezira}
+The key thing is that this property is called Notational *Freedom*, rather than something like Awesome Notation. We recognise that different notations suit different purposes and respect the art of developing them as a separate area of expertise, which we do not claim for ourselves. The idea is to support the *subjective* productivity of the programmer, who we assume is best equipped to judge the appropriateness of notations for herself. This property is about *supporting* the usage of different notations for different contexts.
 
-The aim of the COLA design is to create a maximally flexible self-sustaining system, but its exposition has three limitations:
+It is true that there is no such thing as a free lunch; we do not go so far as to suggest that the system should turn a natural language description into a working interface (recent advances in AI notwithstanding.) So long as the programmer is willing to do the necessary work to program a new notation, this should suffice to use it in harmony with all the others. However, the Unix paradigm and text editors impose an *additional* "tax" in terms of effort beyond this reasonable standard. In the best case, it might have some plugin architecture, while at worst it may require forking the editor's source code. Notational Freedom means the system was designed without the assumption that there will only be one notation and lacks these taxes to the extent possible.
 
-1. It restricts the form of notations to text, curtailing the ambition of pervasive domain-specific adaptation. We would prefer mood-specific *notations* or *interfaces* generally, including *but not limited to* text.
-2. COLA's support of programming languages is presented as a pipeline of traditional batch-mode transformations such as parsing, analysis, and code generation. This further steeps it in a world of linear sequence transformations that obscure the interesting ideas.
-3. The bootstrapping process of implementing such a design is also cast in terms of batch-mode transformations of various source code files. We would rather have the ability to gradually *sculpt* a system into a self-sustainable state, interactively, through a combination of manual actions and automatic code.
+## Key Components of Notational Freedom
+We can propose three tiers of notational freedom:
 
-Because COLA was such a big influence on the present work, we will refer to it repeatedly for comparison and offer some analysis of our own.
+1. Many syntaxes
+2. Many syntaxes and notations
+3. User-supplied syntaxes and notations
 
-### The \OROM{} Object Model
+Consider the Web browser again; what would it take to achieve notational freedom in its JavaScript editor?
 
-The "structural" half of a COLA is described in \cite{OROM}. It describes a late-bound,^[Fewer commitments; more things determined by runtime conditions.] Smalltalk-style^[OOP with more emphasis on object instances and messaging, as in a distributed system; less emphasis on class hierarchies implementing traditional data structures.] objects and messaging environment that the authors call "Id". We will summarise the important points here.
+1. Again, we see that it does not yet satisfy the more modest condition of *syntactic freedom*. To achieve this, it would need to support *mood-specific languages* (see Section\ \ref{colas} below.) This means it would need some way of accepting user-supplied grammars (*Custom Grammars*) and some way of detecting which should be used for different parts of the source code (*Grammar Map.*) This latter task is made particularly troublesome because of a reliance on Implicit Structure (see Section\ \ref{explicit-structure}.)
+2. *Even if* we get this syntactic freedom, we probably still have to force everything to fit in monospaced ASCII (or perhaps Unicode, as we see in the Nile/Gezira projects \cite{Nile,Gezira}.) We still do not have full *linguistic freedom,* whereby we could, for example, render mathematics with the proper layout and formatting (as this does not quite fit into a horizontal list of non-overlapping characters.) This may require a leap from specifying grammars (which describe legal symbol sequences) to interfaces (how input causes shapes to appear, and how these are rendered.) Call these *Custom Interfaces* and *Interface Map.*
+3. Once we have such infrastructure in place, it is not so small a step to generalise these interfaces to things that needn't resemble a language (e.g. a colour picker.) This gives us full *notational freedom.*
 
-An \OROM{} *object* is a block of state which can change as a result of messages received by it. Messaging (analogous to *method invocation* in mainstream OOP) works as follows:
-
-* A message is sent by first *bind*-ing its name to its *implementation*: specific code, which is then run in the context of the receiver $R$.
-* This "bind" step is accomplished by sending a further message; this time, to the receiver's *vtable* $V(R)$. A vtable is another object that maps "message name" to "implementation code"---it's analogous to a "class" in mainstream OOP.
-* This initial "bind" message triggers a similar "bind" to *its* vtable $V(V(R))$, and so on: recursing up the vtable-chain, and terminating at a base case.
-* The higher levels of the vtable-chain mean that different kinds of vtables can be supported,^[As well as different kinds of "kinds of vtables", and so on.] each implementing the "bind" operation in its own way.
-
-\cite{OMeta}
-\cite{COLAs}
-\cite{OROM}
-\cite{OECM}
-
-\joel{Bootstrapping allows the language creator to co-evolve the language and the compiler. However, they typically have to do so outside of the environment used for building other products.}
-
-\todo{This is hard to understand.}
-A related concept is that of *meta-circular evaluator*, which would be an interpreter for NovLang, written in NovLang, that implements features by deferring to its own implementation. For example, a meta-circular interpreter for Lisp in Lisp would implement `eval` by calling `eval`. This makes the task of writing the interpreter easier, but it does not eliminate the distinction between the product (application) source code and producer (interpreter) source code. \cite{ProcRefl}.
-
-\joel{
-The two best-known self-sustainable programming systems are Lisp and Smalltalk. Both are typically discussed in programming language terms, but they are more interesting as programming systems. In Smalltalk and many implementations of Lisp (e.g., Interlisp), the system itself (producer) can be modified from the same environment that is used for creating products. In other words, a Smalltalk image contains both the objects that make up the product as well as the objects that make up the Smalltalk environment itself. We also regard Unix as a whole to be a self-sustainable system, though the individual programs within it seldom have this property.
-
-Most literature discussing self-sustainability\ \cite{SSS08,SSS10} seems to focus on textual languages as the way to get there. We broaden the scope to programming systems, because this is necessary in order to talk about interaction and graphical capabilities. We desire to support graphical or structured ways of expressing programs that go beyond text\ \cite{Subtext,Infra,Varv}, and feel that this has been neglected in prior work.
-}
-
-## Text as *presentation*, not *re*presentation
-STEPS was a project dedicated to critically examining assumptions about the nature of how computing and programming must work, yet it is surprising that the reliance on "text" or "language" seems to have been preserved wholesale. We find the "domain-specific at many levels" idea appealing, but would prefer to consider "notations" in general, rather than narrow syntax or semantics of languages.
-
-The "language" that we consider too narrow a constraint consists of renderings of text. This is as opposed to other uses of “language” in areas such as design: "visual language" may not include text at all, but uses the "language" term metaphorically for the arrangement of elements. Under this latter meaning, the "domain-specific language" idea has all the degrees of freedom it deserves. Nevertheless, our use of the word "language" will stick to denoting renderings of text glyphs and we shall use words like "notation" or "interface" for the fully general extension.
-
+# Explicit Structure
 The problem with "plain text" is that it fuses together two independent concepts: what we could call *presentation* (how one reads and modifies the data) and *representation* (how the data is stored in memory or on disk). For example, the AST of a program *could* be stored in its tree form and *presented* as indented text. But what we do instead is serialise the text, store that, and parse it back before we are able to work with it.
 
 This thesis approaches the default text-centrism of programming with skepticism. We direct the reader to the fuller arguments from the authors of Subtext \cite{Subtext} and Infra \cite{Infra}, but we will summarise the most important points here and offer some of our own. 
 
-### Language isn't everything
-Diagrams and pictures are sometimes the form in which a problem or solution is delivered (e.g. in vector mathematics). Programmers ought not to be forced to describe pictures using words.
-
-### Language can be stored differently to a character list
-Language always contains *structure*: English paragraphs contain sentences, containing clauses, containing words. Natural language, like English, is typically entered into a digital medium only to be poured out again at some other end, like photo uploads; normally, the computer does not need to dive into the structure at all. On the other hand, for programming languages, the abstract syntax tree is the entire point.
+## Language can be stored differently to a character list
+Language always contains *structure*: English paragraphs contain sentences, containing clauses, containing words. Natural language, like English, is typically entered into a digital medium only to be poured out again at some other end, like photo uploads; normally, the computer does not need to dive into the structure at all. On the other hand, for programming languages, the AST is the entire point.
 
 Despite this, programming language source code is universally stored as a sequential recording of keystrokes, rather than as the tree or graph that it represents. This has the downside that every program that consumes or transforms the code must recover (parse) this structure out, discovering any mistakes only at this point of consumption (since these were just recorded with the other characters.) This is like storing vector graphics diagrams as arrays of pixels and using Computer Vision to haphazardly recognise shapes and lines: unnecessary work to recover information that was thrown away at creation time.
 
 More unfortunate work results from having to "escape" characters that have been reserved to denote structure instead of their literal selves. In the worst case, the storage of language as character lists is largely responsible for the class of attacks known as SQL injection. This would not be possible with SQL commands represented as trees containing holes to be filled with user-submitted strings.
 
-### Digital "plain text" is not inherently human-readable
+## Digital "plain text" is not inherently human-readable
 This argument is made best by Hall\ \cite{Infra}, p.\ 14:
 
 > The critical observation is that software infrastructure is heavily involved in supporting the human-readability of text. It is not the case that the bit sequences of UTF8 or any other text encodings are somehow intrinsically understandable to a human. An application interprets the bytes as character codes as per a known standard, which are mapped to glyphs in a font, and rendered to a grid of pixels. This chain of interpretation and transformation starts with clusters of electrons and ends with clusters of photons before the human nervous system takes over. The point being that there is still a necessary software layer performing a transformation in the middle.
@@ -264,47 +203,63 @@ This argument is made best by Hall\ \cite{Infra}, p.\ 14:
 
 > “Human readability” just colloquially implies that it is a standard encoding understood by most text editors. The sense of inherent readability merely comes from the ready availability of tools that render ASCII and Unicode. One can assume that a text editor or some text rendering infrastructure exists in the target system. Therefore, any encoding could technically achieve the same ‘human readable’ status as ASCII if it and its editors were general-purpose enough to warrant an equally ubiquitous install base. Thus, there is an opportunity to expand or upgrade the realm of what can be considered human readable.
 
+## We Study the Spherical Cow
+Text usually functions as a *medium* or rendering of something that is not inherently text. In the first place, text was invented to record speech made by human beings. In programming, text is used as a *proxy* for a nested tree-like structure, but is *not the structure itself.* Therefore, to study a programming idea like self-sustainability, it is unfortunate to have the contingencies of text representation "getting in the way" of studying the idea itself. Therefore, even though a real-world programming system may use text, we wish to avoid this obscuring layer for much the same reason as a physicist studies a frictionless sphere in a vacuum instead of, say, a cow in a field. We want to not be distracted with air resistance and complex shapes, so as to focus on the property we're interested in; future work can then add the practical complexities back in again for a more realistic model.
 
-\cite{Subtext}
-[schematic tables](http://www.subtext-lang.org/OOPSLA07.pdf)
+## Key Components of Explicit Structure
+Given all this, how can we detect explicit structure in a programming system? Consider once again the Web browser. It has two major subdivisions of state: the DOM tree and the JavaScript object graph. For change, it only has those special JavaScript objects known as functions, worked on via the console and the source code view. We can examine these three areas separately:
 
-### We Study the Spherical Cow
-Text usually functions as a *medium* or rendering of something that is not inherently text. In the first place, text was invented to record speech made by human beings. In programming, text is used a *proxy* for a nested tree-like structure, but is *not the structure itself.* Therefore, to study a programming idea like self-sustainability, it is unfortunate to have the contingencies of text representation "getting in the way" of studying the idea itself. Therefore, even though a real-world programming system may use text, we wish to avoid this obscuring layer for much the same reason as a physicist studies a frictionless sphere in a vacuum instead of, say, a cow in a field. We want to not be distracted with air resistance and complex shapes, so as to focus on the property we're interested in; future work can then add the practical complexities back in again for a more realistic model.
+\paragraph{DOM Tree.} The DOM tree is accessed manually through the Element Inspector and programmatically through JavaScript APIs, but is in both cases largely explicitly structured. The main exception involves the APIs taking HTML strings to create elements, and the initial stage of loading the HTML and JS source files. But once these structures have been recovered and built, much can take place without the intermediary of strings.
 
-## Visual / End-User Programming
-Beyond supporting language-based notations not stored as text, there are situations (domains) where a graphical notation is best. It is important to support these to truly realise the goal of mood-specific notations.
-\cite{Boxer}
-\cite{Sketchpad}
-\cite{WWID}
-[Briar](https://graphics.cs.wisc.edu/Papers/1994/Gle94/constraints.pdf)
-\cite{Palimpsest}
-\cite{DDV}
-[Apparatus](http://aprt.us/)
-\cite{YWIMC}
-\cite{VPcodex}
-\cite{VPsurvey}
-\cite{GalleryUIs}
-\cite{Forms3}
-\cite{Hopscotch}
+The other important exception to this occurs in SVG structures. SVG uses element *attributes* for composite data like matrix transformations, and hence has to store these as strings. For example, a node might have a `transform` of `translate(100,200)`. This means that, in order to move the element 10 units horizontally, the programmer must write code to extract the first co-ordinate as a number, add 10, and render the whole expression back to a string.
 
-## Towards a "bootstrapping" theory
-There is a well-established art of bootstrapping self-hosting compilers and meta-circular languages. However, the same cannot be said for more general programming systems. The seeds of such a foundation are scattered around several papers and blog posts.
-[BootstrapLab](https://programmingmadecomplicated.wordpress.com/2018/01/18/3-hacking-together-orom-domctrlshiftj/)
-[Ideal goal](https://programmingmadecomplicated.wordpress.com/2018/09/13/what-am-i-aiming-for-again/)
-[CookClay](https://www.cemetech.net/forum/viewtopic.php?p=270092#270092)
-\cite{Meta-helix}
-\cite{PRinPLs}
-\cite{Bootfrom0}
+Related to attributes, CSS classes are a mixed case; on the one hand, the `style` attribute contains CSS source code, yet the JavaScript API does include properties for accessing this information explicitly.
 
-## Against Conventional Wisdom
-A plausible hypothesis about *why* programming is the way it is---and hence why this thesis has a novel contribution to make---concerns a mismatch between programming's *military-industrial* history and its modern potential for *personal* computing. This is the logic behind the work of Kell and Basman.
-\cite{Kell-os}
-\cite{Externalise}
-\cite{Kell-mmm}
-\cite{OAP}
-\cite{Entangle}
-\cite{Entangle-critique}
-\cite{TcherDiss}
-\cite{SwStudies}
-\cite{Wisdom}
-\cite{Top}
+\paragraph{JSOG.} The JavaScript object graph is also explicitly structured at runtime, while object definitions in the source code are obviously not.
+
+\paragraph{JS Code.} Unlike the other two areas, JavaScript code is not explicitly structured even in the running system. There is a minimal level of structure: namely, the source file is split into Function objects (intervening lines with any side effects have already been executed and are inaccessible.) Beyond this, however, the body of each function is only accessible as a string. The obvious condition to meet here is that the AST should be navigable via some JavaScript API (*AST Access.*)
+
+It appears that there are two realms in which explicit structure may be sought, corresponding to the Volatility Split: the contents of the source files vs. the content of the running system. Each of these could be further split between State and Change; in the Web browser, State largely has explicit structure in memory, but not on disk, and Change lacks it in both places.
+
+\todo{Unix Files, spreadsheet, database}
+
+# COLAs
+
+The one system that directly influenced our work is the Combined Object Lambda Architecture or COLA\ \cite{COLAs}: a small but expressive starting system that could be self-improved into anything. The system is described as a mutually self-implementing pair of abstractions: a structural object model (the "Object" in the acronym) and a behavioural Lisp-like language (the "Lambda"). The system aims for maximal openness to modification, down to the basic semantics of object messaging and Lisp expressions.
+
+The two key features we see in the COLA idea are *self-sustainability* and *mood-specific languages.* Self-sustainability is straightforwardly inherited from the Smalltalk tradition and amplified. It allows for innovation feedback that the authors refer to as _internal evolution_:
+
+> Applying \[internal evolution\] locally provides scoped, domain-specific languages in which to express arbitrarily small parts of an application (these might be better called *mood-specific* languages). Implementing new syntax and semantics should be (and is) as simple as defining a new function or macro in a traditional language.
+
+These Mood-Specific Languages (MSLs) are a continuation of the more familiar idea of Domain-Specific Languages (DSLs.) Instead of only being able to make changes to a mass of source code written in the same language, a COLA is supposed to permit easy proliferation of languages optimised for individual sub-problems. Where DSLs may limit the minimum size of a "domain" to a module or file or even a function, the MSL scope lifts this restriction. An example of such an MSL might be expressing a single line of code with mathematical notation instead of the usual monospaced ASCII subset. The language half of a COLA is designed to make it feasible for a programmer to do this sort of thing on a whim; encouraging "the right language for the job" no matter how small the context, in a way that normal language infrastructure makes too costly to be worthwhile.
+
+This is a step in the right direction, but it is incomplete: we dream of mood-specific *notations* more generally, which we called *notational freedom* in Section\ \ref{notational-freedom}. Moreover, MSL support is presented in the paper \cite{COLAs} as a pipeline of traditional *batch-mode transformations* such as parsing, analysis, and code generation. Similarly, it presents its bootstrapping process in terms of batch-mode transformations of various source code files. This steeps it in the Unix Paradigm (Section\ \ref{the-unix-paradigm}) and feels like it obscures the interesting ideas (recall Section\ \ref{we-study-the-spherical-cow}.)
+
+We would rather have the ability to gradually *sculpt* a system into a self-sustainable state, interactively, through a combination of manual actions and automatic code. This requires that the system should be conceived primarily through a graphical interface, yet the COLA design does not provide guidance in this respect. It is possible to see how a COLA's various languages and components work together as a sort of self-sustainable command-line REPL, but less easy to see how its text-centric approach may apply to arbitrary graphical interfaces.
+
+We mention COLA because it was the most important influence on the work in this thesis. It gestures so tantalisingly at a way to escape the Small Scope of the Unix Paradigm, yet only while making puzzling concessions to it that seem to limit its ambition. We will refer to COLA repeatedly for comparison and offer some analysis of it on our own terms.
+
+# The Missing Synthesis
+Each of our Three Properties brings advantages to a programming system:
+
+* Self-sustainability permits innovation feedback.
+* Notational Freedom makes it easier to use the Right Tool For The Job.
+* Explicit Structure avoids various pitfalls of text, both in terms of correctness and convenience.
+
+No doubt, they also have drawbacks. Yet the advantages are certainly clear enough that they at least deserve *further exploration* in programming. Unfortunately, these properties are rarely exhibited. Even where they do exist, they are isolated from one another and not combined in the same system.
+
+The Three Properties are entangled with each other from a research perspective. Self-sustainability makes it easier to add *new* notations to a system with Notational Freedom. It also makes it easier to add Notational Freedom *itself* to a system that lacks it, and lets the benefits flow into all aspects of the system's development. Yet self-sustainability is currently best understood as a vague analogy to self-hosting compilers, with even the COLA work not making it clear how such a property can be achieved in interactive, graphical systems. Notational Freedom is impossible to achieve in a world of parsed strings and text editors (that's merely *syntactic* freedom) so it needs Explicit Structure as a necessary foundation. Finally, as we remarked in Section\ \ref{we-study-the-spherical-cow}, Explicit Structure lets us study the other two properties more purely, without getting confused by the accidental complexities of parsing and escaping.
+
+We can roughly topological-sort such dependencies into these priorities:
+
+1. Explore Notational Freedom in interactive, graphical programming systems.
+2. To support this, achieve Self-Sustainability first.
+3. To do all this with minimal distraction, begin with Explicit Structure.
+
+In this thesis, we do not follow this order strictly, but it shows a sort of logic as to how each property fits into the bigger picture. We see that the only way discover how to achieve these goals is by *doing,* so we work to build a prototype programming system called *BootstrapLab* that makes progress on the Three Properties simultaneously.
+
+This system itself is only a secondary contribution; primarily, we contribute the necessary steps and principles that its construction led us to *discover.* We believe that it should be possible to build these three properties atop a wide variety of programming systems, and our hope is to document enough of a generalisable technique to make this feasible for the average programmer.
+
+Instead of seeking to master the ins-and-outs of Smalltalk, Unix or BootstrapLab, what is needed is to steal the best ideas and synthesise them into something fresh---to have our cake and eat it too. It is as if we have developed the study of sorting by coming up with a prototype sorting algorithm---the new clarity is the important part, while the concrete program was just the vehicle that got us there.
+
+However, before we embark on this journey, we must first go into a little more detail on programming systems in general and establish how we will evaluate according to the Three Properties. This is the topic of the next chapter.

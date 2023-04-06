@@ -590,7 +590,7 @@ In this section we will evaluate BootstrapLab according to the relevant three Te
 
 It might seem appropriate to also perform an evaluation via the Cognitive Dimensions of Notation. However, this would not actually tell us anything interesting, because the novel contribution of this system is not its notation. The current interface of BootstrapLab is minimal and unpolished for reasons of expediency. The point is *not* that we have come up with a brilliant new notation or UI that will improve programming; the notation is something that each user should fit to him or herself according to subjective preference. The important point is that the system *supports* the usage of different notations for different contexts. Notations in BootstrapLab should be a free parameter, so it does not make sense to apply Cognitive Dimensions to BootstrapLab *itself*, and it does not provide any value to analyse the placeholder interface in this way.
 
-## Notational Diversity
+## Notational Freedom
 ### Are there multiple syntaxes for textual notation? No.
 ### Does the system make use of GUI elements? Yes.
 ### Is it possible to view and edit data as tree structures? Yes.

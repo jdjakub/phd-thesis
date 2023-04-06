@@ -1,3 +1,9 @@
+chapter.pdf: *.tex
+	lualatex chapter
+	biber chapter
+	lualatex chapter
+	lualatex chapter
+
 thesis.pdf: *.tex
 	lualatex thesis
 	biber thesis
