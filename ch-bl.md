@@ -591,32 +591,34 @@ In this section we will evaluate BootstrapLab according to the relevant three Te
 It might seem appropriate to also perform an evaluation via the Cognitive Dimensions of Notation. However, this would not actually tell us anything interesting, because the novel contribution of this system is not its notation. The current interface of BootstrapLab is minimal and unpolished for reasons of expediency. The point is *not* that we have come up with a brilliant new notation or UI that will improve programming; the notation is something that each user should fit to him or herself according to subjective preference. The important point is that the system *supports* the usage of different notations for different contexts. Notations in BootstrapLab should be a free parameter, so it does not make sense to apply Cognitive Dimensions to BootstrapLab *itself*, and it does not provide any value to analyse the placeholder interface in this way.
 
 ## Notational Freedom
-### Are there multiple syntaxes for textual notation? No.
-### Does the system make use of GUI elements? Yes.
-### Is it possible to view and edit data as tree structures? Yes.
-### Does the system allow freeform arrangement and sizing of data items? Maybe.
+\criterion{Are there multiple syntaxes for textual notation? No.}
+\criterion{Does the system make use of GUI elements? Yes.}
+\criterion{Is it possible to view and edit data as tree structures? Yes.}
+\criterion{Does the system allow freeform arrangement and sizing of data items? Maybe.}
 
-## Surface / Internal Notations (Explicit Structure)
-### Is structure recovery necessary for non-behavioural "data"?
+## Implicit Structure
+\criterion{Is structure recovery necessary for non-behavioural "data"?}
 
-### Is structure recovery necessary for behavioural "code"?
+\criterion{Is structure recovery necessary for behavioural "code"?}
 
+\criterion{Can syntax errors be saved and discovered later?}
 
+\criterion{Can extra-syntactic errors be saved and discovered later?}
 
 ## Self-Sustainability
-### Can you add new items to system namespaces without a restart? Yes.
+\criterion{Can you add new items to system namespaces without a restart? Yes.}
 There is deliberately only one system namespace: the state graph rooted at the top-level registers. Some of these names have special functions in the low-level ASM, but otherwise this namespace is free for user additions. These can be added manually in the in-system editor or in code by the primitive `store` instruction.
 
-### Can programs generate programs and execute them? Yes.
+\criterion{Can programs generate programs and execute them? Yes.}
 Because of Alignment (Force\ \ref{alignment}), low-level instructions that change state are represented as ordinary maps with certain format constraints. The instruction set is sufficient for constructing arbitrary graph structures in the state, including programs composed of instructions. The same goes for high-level Masp code which is also represented as maps.
 
-### Are changes persistent enough to encourage indefinite evolution? Maybe.
+\criterion{Are changes persistent enough to encourage indefinite evolution? Maybe.}
 Part or all of the state graph can be manually persisted via the `export_state()` JavaScript function in the browser console. This means that in-system progress can be saved, even though it would be better for the user experience to have this done automatically. It is clear that indefinite evolution is *permitted* but not that it is *encouraged*.
 
-### Can you reprogram low-level infrastructure within the running system? Not yet.
+\criterion{Can you reprogram low-level infrastructure within the running system? Not yet.}
 As BootstrapLab currently stands, we have still not paid off the "substrate debt": the in-system editor and Masp interpreter are still mostly running in JavaScript. However, this is at least considered an incomplete state and when the porting is finished, the answer will switch to "yes".
 
-### Can the user interface be arbitrarily changed from within the system? Not yet.
+\criterion{Can the user interface be arbitrarily changed from within the system? Not yet.}
 The present graphical state of the system *does* entirely live in a special part of the system state: the `scene` tree. Therefore, at any given moment, it is possible to change what the graphics window will display. However, there are two limitations:
 
 1. The range of these changes is constrained to the range of graphical primitives currently understood by the substrate which it passes on to THREE.js. Currently these are limited to axis-aligned flat-coloured rectangles and basic text of a uniform size, style, colour, etc.

@@ -426,53 +426,61 @@ In this section we will evaluate \OROM{}/SVG according to the relevant three Tec
 It might seem appropriate to also perform an evaluation via the Cognitive Dimensions of Notation. However, this would not actually tell us anything interesting, because the novel contribution of this system is not its notation. The interface is minimal and unpolished for reasons of expediency. The point is *not* that we have come up with a brilliant new notation or UI that will improve programming; the notation is something that each user should fit to him or herself according to subjective preference. The important point is that the system *supports* the usage of different notations for different contexts. Notations in BootstrapLab should be a free parameter, so it does not make sense to apply Cognitive Dimensions to BootstrapLab *itself*, and it does not provide any value to analyse the placeholder interface in this way.
 
 ## Notational Freedom
-### Are there multiple syntaxes for textual notation? No.
+\criterion{Are there multiple syntaxes for textual notation? No.}
 Only JavaScript syntax is available.
 
-### Does the system make use of GUI elements? Yes.
+\criterion{Does the system make use of GUI elements? Yes.}
 The nested boxes have draggable corners for resizing/repositioning. There are also arrows that transcend the tree structure and certainly would not fit in a purely textual model.
 
-### Is it possible to view and edit data as tree structures? Yes.
+\criterion{Is it possible to view and edit data as tree structures? Yes.}
 The nested boxes use spatial containment to represent explicit tree structure. They can be drawn into existence.
 
-### Does the system allow freeform arrangement and sizing of data items? Yes.
+\criterion{Does the system allow freeform arrangement and sizing of data items? Yes.}
 The boxes can be repositioned and resized arbitrarily and this preserves any arrow topology.
 
-### Is there support for custom user-supplied grammars? No.
+\criterion{Is there support for custom user-supplied grammars? No.}
 The system only implements the "structural" half of a COLA, so it lacks support for mood-specific languages.
 
-### Is there support for custom user-supplied notations? No.
+\criterion{Is there support for custom user-supplied notations? No.}
 Ditto.
 
-## Surface / Internal Notations (Explicit Structure)
-### Is structure recovery necessary for non-behavioural "data"?
+## Implicit Structure
+\criterion{Is structure recovery necessary for non-behavioural "data"? No.}
+There are user-level JavaScript functions for locating a box based on its path and accessing sub-structures inside it. It is interesting to note that internally, these functions do need to analyse the "shape" of SVG trees and recognise the patterns that identify boxes, arrows, and so on. This is recovery of higher-level structures implicit in a tree, rather than tree structures implicit in a sequence. Regardless, because this takes place at the implementation level rather than the user level, the answer here is a "no".
 
-### Is structure recovery necessary for behavioural "code"?
+\criterion{Is structure recovery necessary for behavioural "code"? Yes.}
+Code only exists in the system as JavaScript strings. Therefore, if user-level code ever wants to process or generate code, it needs to convert to/from these strings.
+
+\criterion{Can syntax errors be saved and discovered later? Yes.}
+The JavaScript code is edited in HTML text boxes. No syntax checks are performed by the substrate; errors are only discovered when calling the platform's `eval()` function to try and run the code.
+
+\criterion{Can extra-syntactic errors be saved and discovered later? No.}
+The system allows boxes and arrows to be created only in valid places. (If not, this is a bug rather than the intended behaviour of the system.)
 
 ## Self-Sustainability
-### Can you add new items to system namespaces without a restart? Yes
+\criterion{Can you add new items to system namespaces without a restart? Yes.}
 
-### Can programs generate programs and execute them? Yes
+\criterion{Can programs generate programs and execute them? Yes.}
 JavaScript code in text boxes can be run with a key combination. This code can call functions defined in the source file, and browser APIs, to create new boxes and obj-dicts. These can contain text boxes which can then be filled with JavaScript code strings.
 
-### Are changes persistent enough to encourage indefinite evolution? Maybe
+\criterion{Are changes persistent enough to encourage indefinite evolution? Maybe.}
 
-### Can you reprogram low-level infrastructure within the running system? Maybe
+\criterion{Can you reprogram low-level infrastructure within the running system? Maybe.}
 
-### Can the user interface be arbitrarily changed from within the system? No
+\criterion{Can the user interface be arbitrarily changed from within the system? No.}
 It might be thought that this is possible because JS boxes can use browser APIs to change the DOM styling. While this is true, there is still inaccessible code in functions defined in the source file. Some of these functions create boxes, and the style they use is confined to the source file and is not a runtime-accessible variable.
 
-### Is there a language mismatch? Maybe
+\criterion{Is there a language mismatch? Maybe.}
 The system state is stored in the DOM, which is serialised to HTML, while the code lives in JavaScript. It supports JS boxes as part of a graph structure, so this slight mismatch would need overcoming to generate a replacement system.
 
-### Is there a scale mismatch?
+\criterion{Is there a scale mismatch?}
 
-### Is there an interpreter/compiler mismatch? Yes
+\criterion{Is there an interpreter/compiler mismatch? Yes.}
 Code in JS boxes can only be executed, changing the runtime environment; it does not have the effect of constructing an external artefact with the same code and data.
 
-### Is there significant regeneration delay? No
+\criterion{Is there significant regeneration delay? No.}
 
-### Is there significant loss of state when replacing the system? Yes
+\criterion{Is there significant loss of state when replacing the system? Yes.}
 
 # Conclusions and Future Work
 ## What Did It Take, and Why?
