@@ -1,3 +1,5 @@
+\chapter{Technical Dimensions methodological remarks}
+
 # Making dimensions quantitative
 
 To generate numerical co-ordinates for *self-sustainability* and *notational diversity*, we split both dimensions into a small number of yes/no questions and counted the "yes" answers for each system. We came up with the questions informally, with the goal of achieving three things:

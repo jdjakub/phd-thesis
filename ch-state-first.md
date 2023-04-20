@@ -1,6 +1,5 @@
 \chapter{The ``State-First'' Approach to BootstrapLab}
 
-# Introduction
 The first attempt to build BootstrapLab was anchored in the COLA design for a self-sustainable system; specifically, the Id object model covering the "state" or "structural" half. I could have sought to merely build Id using the sample C code, but instead I took the opportunity to explore notational freedom. This proceeded from the following heuristic:
 
 \begin{heuristic}[Ideal Expression]
@@ -12,7 +11,7 @@ An important aspect is that Heuristic\ \ref{ideal-expr} is about what is best fo
 
 What follows in this chapter^[Adapted from my 2020 Convivial Computing Salon paper entitled "What Does It Take To Create With Domain-Appropriate Tools?" \cite{CCS}.] is an account of how I applied Heuristic\ \ref{ideal-expr} to implement Id atop a simple "box" substrate. Section\ \ref{the-id-system} gives an overview of Id. Section\ \ref{typical-requirements-of-common-software} discusses the work involved in obtaining said domain-appropriate substrate, and Section\ \ref{patterns-and-polyfilling} continues with an interpretation of the labour costs of doing it this way. In Section\ \ref{the-id-system-as-a-part-of-the-solution}, we return to the Id system and its role in supporting flexible software. It concludes with an evaluation of \OROM/SVG in terms of the Technical Dimensions with attention to key desiderata that BootstrapLab should meet. At the risk of spoiling the story, this "state-first" approach was aborted for falling short of these desiderata, and the complementary *code-first* approach, presented in Chapter\ \ref{the-code-first-approach-to-bootstraplab}, proved more successful.
 
-### The \OROM{} Object Model
+# The \OROM{} Object Model
 
 The "structural" half of a COLA is described in \cite{OROM}. It describes a late-bound, Smalltalk-style objects and messaging environment that the authors call "Id". We will summarise the important points here.
 
@@ -23,7 +22,7 @@ An \OROM{} *object* is a block of state which can change as a result of messages
 * Because this initial "bind" message is itself a message send, it triggers a similar "bind" to *its* vtable $V(V(R))$, and so on: recursing up the vtable-chain, and terminating at a base case.
 * The higher levels of the vtable-chain mean that different kinds of vtables can be supported,^[As well as different kinds of "kinds of vtables", and so on.] each implementing the "bind" operation in its own way. For example, one kind of vtable could employ a simple dictionary mapping names to implementations. A different kind might build the code for the implementation just-in-time, without looking anything up in a data structure.
 
-# Ideal Expression for Id
+## Ideal Expression for Id
 
 \vspace{-0.1em}
 \joel{ ^ Without this command, LaTeX absent-mindedly inserts a giant vertical gap at this point.

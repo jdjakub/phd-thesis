@@ -1,3 +1,5 @@
+\chapter{BootstrapLab Trivia}
+
 # The Cutting Room Floor
 Force \ref{escape-plaf} directed us to do without several advanced substrate features we were tempted to include. For example, it would be useful to attach state change listeners to keep parts of the state in sync with others. We could go even further and include constraint-based programming features.
 
