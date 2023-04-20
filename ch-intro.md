@@ -32,6 +32,8 @@ In the worst case, both of these approaches could be blocked; run-time tampering
 
 It may well be the case that in this or an analogous situation, the app's authors have a good reason to restrict access like this. There is good rationale for forbidding this sort of tinkering in a game, so as to prevent cheating. Unfortunately, we are not so lucky as to have a *choice* in the matter---this is the only software we know how to make. Even if *we* wrote the app and desire to support adaptation beyond what we anticipated, it is unclear how to do this. We are resigned to the fact that our tools can only output *hermetically sealed* software. The task of "supporting unanticipated modification" is itself a *feature* that we must somehow figure out and implement on top, and it is unclear how to achieve such a feature. Nevertheless, it is worth striving for a world where this accidental complexity is as reduced as possible. This involves a mix of *removing* barriers that we are forced to work around, and *constructing* tools that help us work more effectively.
 
+# How Should Things Work?
+
 Imagine a world where the average computer user can patch or improve their software the same way they might change a lightbulb or perform DIY in their home. This clearly relies on the ability to make small *piecemeal* changes to their home, without having to demolish the place and re-build it anew. Let's call this *naïve pokeability*:
 
 > A change has *naïve pokeability* if it is possible to make the change while the software is *running* without having to consider the implications of restarting it.
@@ -53,6 +55,7 @@ Traditional programming largely works as a progress of bulk fabrication accordin
 
 Here's how programming could or should work instead. A software system is *designed* to be adapted and modified by its users. By performing an explicit action (e.g. switching to "edit mode") the user can inspect the visible surface of the application to find the causes of its appearance in the form of code and data. They can also inspect a map of the non-visible implementation of the software's functionality and navigate to the relevant parts. There may be a common programming notation as a default, but where possible, parts of the implementation are presented in local notations or interfaces that are more easily understood. And of course, these interfaces can also be traced to *their* implementations and modified if desired. The user can then change any aspect of the software while it is running, without having to edit an external blueprint and destroy the running instance.
 
+# A Fragmented Vision
 Several pieces of this vision do exist, but not in an integrated whole.
 
 *Web pages, web apps, and browsers.* The *web browser* displays web pages, but also has a powerful set of *developer tools*. This includes the "element inspector" which can be used to edit the web page's underlying elements. For example, an ad can be vanished by locating and deleting its element. Note that the "state" here is mostly visible, since it is directly responsible for visual elements appearing on the page. Some of the state may have no visual effects (e.g. an element's ID attribute) and is thus "hidden" from an ordinary user. However, this state *is* visible from the inspector in the developer tools. From this perspective, all of the "structural" state is *potentially* visible in the web browser---and importantly, it's also editable.
@@ -73,7 +76,9 @@ These aspects of HyperCard's design encouraged a community of producer-consumers
 
 That being said, Smalltalk systems tend to run on VMs that are implemented in a separate lower-level language like C++. Fundamental infrastructure such as object layout and memory management is available only as opaque primitives from the point of view of Smalltalk. Thus, to change these aspects one must still switch to a different programming system and re-compile.
 
-The COLA architecture makes this basic infrastructure self-supplied so as to approximate a truly self-sustainable system. It is also designed to encourage domain-specific adaptations down to a small scale of "mood-specific languages" beyond the coarse-grained variation found with ordinary programming languages. However, the architecture as described does not have much to say about the user interface or graphics,  taking place instead in the world of batch-mode transformations of streams.
+The COLA architecture makes this basic infrastructure self-supplied so as to approximate a truly self-sustainable system. It is also designed to encourage domain-specific adaptations down to a small scale of "mood-specific languages" beyond the coarse-grained variation found with ordinary programming languages. However, the architecture as described does not have much to say about the user interface or graphics, taking place instead in the world of batch-mode transformations of streams.
+
+# The Missing Synthesis
 
 The situation is that we can pick at most two from:
 
@@ -91,7 +96,37 @@ If we see programming as coding, then we unwittingly limit the scope of innovati
 * Instead of being able to make changes to a running program, we are stuck changing its blueprint and re-creating it. It is easy to make hermetically-sealed programs this way and hard to make open ones. 
 * Instead of seeking a software *system* open to unanticipated changes as it runs, we might seek intricate *language* features that give flexibility only for *compiling* a program.
 
-This last point is the crux of the matter: we need a more general programming *systems* approach instead. In this thesis, I will discuss this approach in great detail and make an initial offering of a systematic framework by which to analyse programming systems. I will then present my contribution towards the vision of open, malleable software: a prototype programming system called BootstrapLab. It constitutes a fusion of the three desirable properties above, and as far as I am aware is the first attempt to do this.
+This last point is the crux of the matter: we need a more general programming *systems* approach instead. In Chapters\ \ref{analysis} and\ \ref{technical-dimensions-of-programming-systems} I will discuss this and make an initial offering of a systematic framework by which to analyse programming systems. This framework will include three properties that are central to the dissertation and develop them in detail. However, it is still worth giving a summary at this early point.
+
+\joel{
+I will then present my contribution towards the vision of open, malleable software: a prototype programming system called BootstrapLab. It constitutes a fusion of the three desirable properties above, and as far as I am aware is the first attempt to do this.
+}
+
+# The Three Properties
+
+We are interested in exploring, developing, and achieving these three properties in a programming system:
+
+1. *Self-sustainability:* being able to evolve and re-program a system, using itself, while it is running.
+2. *Notational Freedom:* being free to use any notation as desired to create any part of a program, at no additional cost beyond that required to implement the notation itself.
+3. *Explicit Structure:* being able to work with data structures directly, unencumbered by the complexities of parsing and serialising strings.
+
+As mentioned, we will refine and expand these definitions in later chapters, but they are reasonable to start with. Each one brings advantages to a programming system:
+
+1. Self-sustainability permits *innovation feedback:* anything helpful created using the system can benefit not only other programs sitting atop the system, but also the system's own development.
+2. Notational Freedom makes it easier to use the "Right Tool For The Job." There is always the difficulty of *deciding* what this is, but at least once a programmer has made this decision they can get on with using it more easily.
+3. Explicit Structure avoids various pitfalls of strings, both in terms of correctness and convenience. Consumers of a structure benefit from an editor that can only save valid structures, and producers benefit by discovering errors early instead of later during consumption. Writing programs to use such structures is improved if one does not have to maintain parsing/serialising code.
+
+No doubt, these properties also have drawbacks. Yet the advantages mean that they at least deserve *further exploration* in programming. Unfortunately, these properties are rarely exhibited. Even where they do exist, they are isolated from one another and not combined in the same system.
+
+These properties are also entangled with each other from a research perspective. Self-sustainability makes it easier to add *new* notations to a system with Notational Freedom. It also makes it easier to add Notational Freedom *itself* to a system that lacks it, and lets the benefits flow into all aspects of the system's development. Yet self-sustainability is currently best understood as a vague analogy to self-hosting compilers, with even the COLA work not making it clear how such a property can be achieved in interactive, graphical systems. Notational Freedom is impossible to achieve in a world of parsed strings and text editors (that's merely *syntactic* freedom) so it needs Explicit Structure as a necessary foundation. Finally, Explicit Structure lets us study the other two properties more purely, without getting confused by the accidental complexities of parsing and escaping.
+
+We can roughly topological-sort these dependencies as follows. Our primary goal is to explore Notational Freedom in interactive, graphical programming systems. To support this, we should achieve Self-Sustainability. To do both of these with minimal distraction, we should make sure to build on a foundation of Explicit Structure.
+
+In this dissertation, we do not follow this order strictly, but it shows a sort of logic as to how each property fits into the bigger picture. We see that the only way discover how to achieve these goals is by *doing,* so we work to build a prototype programming system called *BootstrapLab* that makes progress on the Three Properties simultaneously.
+
+This system itself is only a secondary contribution; primarily, we contribute the necessary steps and principles that its construction led us to *discover.* We believe that it should be possible to build these Three Properties atop a wide variety of programming systems, and our hope is to document enough of a generalisable technique to make this feasible for the average programmer.
+
+Instead of seeking to master the ins-and-outs of Smalltalk, Unix or indeed BootstrapLab, what is needed is to steal the best ideas and synthesise them into something fresh---to have our cake and eat it too. It is as if we have developed the study of sorting by coming up with a prototype sorting algorithm---the new clarity is the important part, while the concrete program was just the vehicle that got us there.
 
 # Imported from Convivial Salon '20
 As someone who can code, I have already passed the first and most important hurdle for making full use of the potential of my computer. However, even in this supposedly empowered state, I am still far away from feeling the relationship between myself and software as between artisan and material, free to shape it into any form with effort proportional to complexity.

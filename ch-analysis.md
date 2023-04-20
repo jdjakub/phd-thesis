@@ -14,9 +14,11 @@ On the latter: here's why COLA's text reliance is a liability.
 But why is all this so hard? / big picture: Against Conv Wisdom.
 }
 
-Now we have covered the existing background work, we will add our own interpretations and introduce novel concepts. This chapter is organised by themes because each one emerges as a reaction to the previous.
+Here, we will introduce the relevant background knowledge for the dissertation. We will define concepts that we will repeatedly use and the ideas on which they depend. Some of these concepts will already exist, in which case we may use established terms or define new ones as necessary. Others will be novel concepts or interpretations of existing ideas.
 
-To start with, this thesis is about building "programming systems". We will define this concept and explain how it is related to that of a programming language. We will distinguish the general concepts of *state* and *change* in programming systems and cover three important paradigms: Batch Mode, Unix, and Interactive. Then, we will be able to define *self-sustainability*, *notational freedom* and *explicit structure* as properties of programming systems.
+This chapter is organised by themes because each one emerges as a reaction to the previous.
+
+To start with, this work is about building "programming systems". We will define this concept and explain how it is related to that of a programming language. We will distinguish the general concepts of *state* and *change* in programming systems and cover three important paradigms: Batch Mode, Unix, and Interactive. This will help to define *self-sustainability*, *notational freedom* and *explicit structure* as properties of programming systems.
 
 This will let us return to examine the COLA system design in terms of these. While it exhibits self-sustainability, its *notational freedom* is limited to *syntactic* freedom and relies on implicit structure. Furthermore, the way that a COLA is *bootstrapped* is in terms of batch-mode language transformations, and we explain why we see this as a related limitation.
 
@@ -46,25 +48,32 @@ A good general model of a programming system is like a physical system in the se
 
 We include both the visible interface and the "hidden" internal state of the system (e.g. heap data structures) in this model. Such an all-encompassing "state", of course, is not comprehensible atomically but is always broken down into substructures (whether byte lists, object graphs, trees or otherwise). Likewise, the actual *change* from one state to another usually does not involve all of the state but only a small part of it. In the limit, there is usually some smallest unit of state (a byte, dictionary entry, tree node) and this gives rise naturally to primitive *instructions* describing a change to such a small unit. Different choices for how to represent the instructions have implications for where it is possible to take the evolution of a system. We will see in Chapter\ \ref{ch-bl} that some choices are more appropriate than others for ensuring a system can be made self-sustainable.
 
+# Paradigms of Programs and Programming
+The concept of a scientific "paradigm" was popularised by Kuhn \cite{Kuhn}. It refers to the set of norms and conventions in which scientific questions are pursued and results are interpreted. In computing, a "programming paradigm" is a set of norms around the concepts and style in which programs are built.
+
+In this section, we wish to broaden the scope and consider the foundational assumptions of programming itself, and the effects this has on how it is performed. A paradigm here is a set of norms and conventions centred around an idea of what a "program" is, what programs are for, and what is technologically feasible in the current environment.
+
+We observe that certain periods of computing history and influential programming systems embody distinct paradigms in this way. We propose three: Batch Mode, Unix, and Interactive. Each one accommodates our Three Properties differently. It is important to understand the Interactive Paradigm, whose assumptions pose the least resistance to achieving the Three Properties. Equally important is to be clear on the Unix Paradigm we currently inhabit, because we can only realistically achieve our goals from within it. However, the Unix Paradigm is best understood as inheriting from its predecessor, which we will introduce first.
+
 ## The Batch-Mode Paradigm
 Computer programs originated as “batch-mode” processes. A calculation chugs away and delivers a result at the end. A compiler combs through source code and outputs a machine-level program. In the batch-mode paradigm, a program starts, runs, and then stops. The effect or “behaviour” of a program is its *output;* to change its behaviour, we need to change the executable program. But we cannot change the program binary directly; most nontrivial changes would invalidate various binary offsets, which would then have to be discovered and adjusted. Instead, we change its *source code*, and then *re-generate* the program as another batch-mode operation. However, this is not a problem because any important effects of the program are outside it, whether on a paper printout or saved to magnetic tape. Any data structures the program creates occur within its “working memory”, a temporary scratchpad internal to the program and discarded when it’s done its job.
 
 Thus, the key assumptions of batch-mode programming are:
 
-1. The point of a program is to output a result (i.e. the answer to a question.)
-2. Compute and storage (fast and slow) are scarce resources that we can only afford for essential tasks.
-3. Because of this, as well as the task itself, it typically takes a long time to create the result.
+1. The point of a program is to output a result, or the answer to a question. We will refer to this assumption as *Program Outputs Result.*
+2. Compute and storage (fast and slow) are scarce resources that we can only afford for essential tasks. We will call this *Resource Scarcity.*
+3. Because of this, as well as the task itself, it typically takes a long time to create the result. We will call this *Expect To Wait.*
 4. There are only one or two data items we care about long-term (e.g. the result). Any intermediate steps it takes to create the result are unimportant or uninteresting, so they should be discarded to free resources. This is a surprisingly consequential assumption; we will refer to it as *delete-by-default.*
 
 The three key consequences of these assumptions are:
 
 1. We implicitly design programs to run in fast (volatile) storage to ensure performance and that the uninteresting intermediate state is not wastefully persisted.
-2. For the one or two exceptional data items that we do care about (e.g. the output), we have to remember to write code to move these out of volatile memory and into non-volatile storage. This is not tricky, because there are only a few items we care about!
-3. The time during which the program is running is an *obstacle* to us getting the result; a better program is one that terminates sooner.
+2. For the one or two exceptional data items that we do care about (e.g. the output), we have to remember to write code to move these out of volatile memory and into non-volatile storage. This is not tricky, because there are only a few items we care about! We will call this *Few Things To Save.*
+3. The time during which the program is running is an *obstacle* to us getting the result; a better program is one that terminates sooner. We will call this *runtime-as-obstacle.*
 
-Note how the stages of *compile-time* and *run-time* are of comparable importance in this paradigm. Properties that are *static*, or *early-bound*, are invariant over the entire run-time of a program and are "baked in" at compile-time. Those that are *dynamic* or *late-bound* may vary over the run-time. Since a program has a specific answer to work out (Assumption 1), then the only properties that *need* to be dynamic are those that directly pertain to such a process. All other properties are candidates for *static commitment:* the compiler (suitably informed, e.g. by type annotations) can assume they will never change, and hence can avoid generating code to deal with the consequences of such changes.
+Note how the stages of *compile-time* and *run-time* are of comparable importance in this paradigm. Properties that are *static*, or *early-bound*, are invariant over the entire run-time of a program and are "baked in" at compile-time. Those that are *dynamic* or *late-bound* may vary over the run-time. Since a program has a specific answer to work out (Program Outputs Result), then the only properties that *need* to be dynamic are those that directly pertain to such a process. All other properties are candidates for *static commitment:* the compiler (suitably informed, e.g. by type annotations) can assume they will never change, and hence can avoid generating code to deal with the consequences of such changes.
 
-Beyond optimising the program's performance, this also gives programmers an opportunity to make mathematical guarantees about certain properties. This all follows from Consequence 3: a program's destiny is to terminate with an answer, and a better program terminates sooner. If requirements change, and some formerly static properties now need to be dynamic, there is no problem: the program is simply re-compiled, ready to run under the new conditions.
+Beyond optimising the program's performance, this also gives programmers an opportunity to make mathematical guarantees about certain properties. This all follows from *runtime-as-obstacle:* a program's destiny is to terminate with an answer, and a better program terminates sooner. If requirements change, and some formerly static properties now need to be dynamic, there is no problem: the program is simply re-written and re-compiled, ready to run under the new conditions.
 
 The batch-mode paradigm can be considered an appropriate adaptation to the early conditions of computing: specialised, industrial-scale use cases and extreme resource scarcity (in terms of storage and compute.) Its key contributions to the world are:
 
@@ -86,24 +95,24 @@ In any case, we see that the Volatility Split, Change By Re-creation, and Static
 ### Unix as a Programming System
 How do we analyse Unix as a programming system? Unix is one big system managing many smaller processes. To the extent that *other* programming systems are implemented as Unix processes, Unix functions as a meta-system supporting subordinate programming systems. Thus there are always *two* levels to programming in the Unix Paradigm: the "large" scope and the "small" scope. In both of these, *state* consists of both core and files thanks to the Volatility Split. However, the two levels emphasise these to different degrees.
 
-At the large scope, it seems appropriate to describe the filesystem as the primary "state" of the Unix system. There is, of course, nontrivial state in core such as the currently running processes and bookkeeping information for them, which will be lost if the system is restarted. Nevertheless, from its own perspective, the "important data" for users all lives in the filesystem; what happens to be running at any given time in core is merely instrumental.^[C.f. Consequence\ 2: if a data structure was important, the programmer would have written code to save it to a file!] The agent of *change* at the large scope is the kernel, and the primitive "instructions" are the system calls used to write to files and change the file tree.
+At the large scope, it seems appropriate to describe the filesystem as the primary "state" of the Unix system. There is, of course, nontrivial state in core such as the currently running processes and bookkeeping information for them, which will be lost if the system is restarted. Nevertheless, from its own perspective, the "important data" for users all lives in the filesystem; what happens to be running at any given time in core is merely instrumental.^[C.f. Few Things To Save: if a data structure was important, the programmer would have written code to save it to a file!] The agent of *change* at the large scope is the kernel, and the primitive "instructions" are the system calls used to write to files and change the file tree.
 
 Meanwhile, at the small scope of an individual programming system *process*, the manifestation of state and change will depend on the particular system itself. Yet because we know it is running as a Unix process, we can at least be assured that the lowest level of "state" will be split between core and files, and "change" will occur through the execution of machine instructions.
 
 ## The Interactive Paradigm
-We define the *interactive paradigm* as the programming model that emerges from a feeling of compute/storage abundance. Such abundance frees us from having to start with the question "what purposes can computers currently cope with?" and instead ask "what are computers for?" with the answer being roughly equivalent to "anything". This paradigm relaxes or rejects the basic axioms of batch-mode programming:
+We define the *interactive paradigm* as the programming model that emerges from conditions of compute/storage abundance. Such abundance frees us from having to start with the question "what purposes can computers currently cope with?" and instead ask "what are computers for?" with the answer being roughly equivalent to "anything". This paradigm relaxes or rejects the basic axioms of batch-mode programming:
 
-1. The point of a program is to simulate a piece of the world somehow useful to a human, free of the constraints of physical media substances. Producing an output is but one of many such effects useful to humans.
-2. Compute and storage are (or will be^[This was the attitude at Xerox PARC summed up in the principle "design for the hardware of tomorrow".]) sufficiently abundant that we can use them generously in service of higher goals.
-3. Therefore, we can expect batch-mode tasks to complete instantaneously to the human eye. For those that still take time, it is important to continue the rest of the simulation and keep it responsive.
-4. We do not know *a priori* and in full generality which data items we care about long-term, because the space of human purposes is large. For some tasks, the journey is more important than the destination.^["Maybe the real result was the data we made along the way!"]
+1. "Program Outputs Result" is rejected. The point of a program is to simulate a piece of the world somehow useful to a human, free of the constraints of physical media substances. Producing an output is but one of many such effects useful to humans.
+2. "Resource Scarcity" is rejected. Compute and storage are (or will be^[This was the attitude at Xerox PARC summed up in the principle "design for the hardware of tomorrow".]) sufficiently abundant that we can use them generously in service of higher goals.
+3. "Expect To Wait" is relaxed. We can expect batch-mode tasks to complete instantaneously to the human eye. For those that still take time, it is important to continue the rest of the simulation and keep it responsive.
+4. "Few Items To Save" is rejected. We do not know *a priori* and in full generality which data items we care about long-term, because the space of human purposes is large. For some tasks, the journey is more important than the destination.^["Maybe the real result was the data we made along the way!"]
 
 And the consequences:
 
-1. We cannot *commit* on principle to saving some data and discarding or hiding other data; we persist everything by default and provide means to free up resources explicitly. We reluctantly abstain from this only where necessary for performance, treating this as a temporary optimisation to relax in future. But we cannot decide for the user what they will be interested in.
-2. Code can simply create and manipulate data structures without the programmer needing to keep in mind what type of storage they live in---there is no Volatility Split.
-3. It ought to be possible to change the state or behaviour of the system directly, as opposed to changing some upstream specification and re-creating the system from that. This is important both for performance and for avoiding premature deletion of data. Instead of Change By Re-creation, we have "Change by Changing".
-4. It is no longer the case that a good program terminates quickly. There may not even be any reason for it to terminate at all.
+1. Delete-by-default is invalidated: we cannot *commit* on principle to saving some data and discarding or hiding other data. We persist everything by default and provide means to free up resources explicitly. We reluctantly abstain from this only where necessary for performance, treating this as a temporary optimisation to relax in future. But we cannot decide for the user what they will be interested in.
+2. The Volatility Split is gone: code can simply create and manipulate data structures without the programmer needing to keep in mind what type of storage they live in.
+3. Instead of Change By Re-creation, we have "Change by Changing". It ought to be possible to change the state or behaviour of the system directly, as opposed to changing some upstream specification and re-creating the system from that. This is important both for performance and for avoiding premature deletion of data.
+4. Runtime-as-obstacle is invalidated: it is no longer the case that a good program terminates quickly. There may not even be any reason for it to terminate at all.
 
 This paradigm is embodied in systems like Lisp (which pre-dates Unix) and Smalltalk (which does not), both for different reasons. Lisp originated as a sort of "executable mathematics and logic" for AI research; it makes sense that such a tool had little need to import "batch-mode, industrial-scale computation" as its primary concept. Smalltalk, on the other hand, deliberately rejected this convention to serve its goal of shifting computing out of the industrial capability and into the personal. In neither do we find a mandatory separation between volatile and non-volatile storage, nor between "large objects" (files and processes) and "small objects" (variables and code.) Instead we find a graph of data structures, called "expressions" in Lisp and "objects" in Smalltalk.
 
@@ -116,7 +125,7 @@ Finally, *static commitment* now plays a much less helpful role, even an obstruc
 As examined by Gabriel\ \cite{WIB} and Kell\ \cite{Kell-OS}, Unix "won" in a way that Lisp and Smalltalk did not, firmly establishing the Unix Paradigm as ubiquitous. Where Lisp and Smalltalk exist, they are processes sitting within Unix and saving to "image" files. For implementors of novel programming systems, the tenacious Volatility Split, Change By Re-creation model and Static Commitments clash with the Interactive Paradigm natural to the enterprise.
 
 # Self-sustainability
-This is one of the properties of programming systems that we are interested in for this thesis. To a first approximation, self-sustainability involves being able to evolve and re-program a system, using itself, while it is running. It is instructive to start by examining Unix in this light.
+This is one of the properties of programming systems that we are interested in. To a first approximation, self-sustainability involves being able to evolve and re-program a system, using itself, while it is running. It is instructive to examine Unix in this light.
 
 ## Self-Sustainability at the Large Scope
 At the "large" scope, we have individual processes---text editors, compilers, interpreters, debuggers---which change the large-scale system state (files), such as by creating new programs. Some of these processes run *shell scripts* to coordinate this activity, this being the de-facto programming language^[Technically, the various shell *dialects* (bash, csh, etc.) form the de-facto *languages* plural, but this is not important for the point.] at the large scope. In this way, a Unix system is evolved and re-programmed using itself, while it is running. Hence, Unix (i.e. Programming-in-the-large) is self-sustainable.
@@ -141,11 +150,30 @@ We say the self-hosting compiler has been *bootstrapped* into existence. From th
 
 However, programming systems exhibit this more rarely because they more closely resemble *interpreters* than compilers. If we apply a compiler to its own source code, we get the (functionally) same compiler. But if we apply an *interpreter* to its own source code, all we get is a much slower interpreter! The job of a compiler is to generate a new program, which could (in principle) be a *replacement* for the old compiler. The job of an interpreter is to execute the program that *would* have been generated by the compiler---but unless *that* program is itself a compiler, its effect cannot *replace* the original interpreter. Usually, interpreters are used to run ordinary programs, not compilers.
 
-\todo{Define impl vs user level!}
-
 It is worth noting that the "meaning" of code is different depending on whether it is run through a compiler or an interpreter. Code being compiled can be viewed as describing how data structures and instructions should be outputted to a file; the actual execution is left to a later step. On the other hand, code being interpreted describes how these same things are built up in memory, and possibly executed right away.
 
 Furthermore, the discussion so far has taken place in the batch-mode world, where the memory used by the process is disposable and unimportant, hence Change by Re-creation does not cause too many problems. For programming systems, this is often inappropriate or at least highly inconvenient. Since interactive processes are meant to run as long as the user wishes, they contain a lot of important state in memory. Furthermore, the Volatility Split was traditionally just forwarded into the user's mental model, making no guarantees about whether work would be saved in the event of a crash and recommending the user to save regularly. While many applications and programming systems did eventually implement "auto-save", they nevertheless form a clear case where delete-by-default fails and re-creating the system risks important data loss (or, at the very least, inconvenience.)
+
+## User vs. Implementation Levels
+For any piece of software, there are two levels:
+
+* The *user level* is where software is used for its intended purpose by its target audience. For example, the user level of Firefox involves browsing websites.
+* The *implementation level* is where the software is created and changed in ways unavailable at the user level. As a trivial example, by taking all of the source code of Firefox and replacing it with the code for Hello World, a programmer can change Firefox into a Hello World program.
+
+If the software is a programming system, then this can get confusing: both levels involve programming! Consider this example situation: someone is using Python to write a Hello World program, and the programming system (Python runtime plus editor) is written in C++. We can view this situation in three ways depending on the "user":
+
+1. We can focus on the user of the Hello World program. The user level is Hello World, while the implementation level involves Python.
+2. We can focus on the programmer as the user of Python. The user level involves Python *and* the Hello World program (for testing, debugging, etc.) while the implementation level involves C++.
+3. We can focus on a different programmer who works on the Python implementation. The user level involves C++ *and* Python (for testing, debugging, etc.) Even though there is an implementation level below, we short-cut the infinite regress here and leave it unspecified.
+
+In this dissertation, we are interested in *building* programming systems with the Three Properties. This means we occupy the third viewpoint, where we are detached from any particular end-user program that might get created. We see our situation as follows:
+
+* We are using some already-existing programming system (C++ in the example.) We did not create it and we do not expect to be able to change it. We call this the *platform*.
+* The programming system we create using the platform is called the *product system* (Python in the example.)
+
+If we seek to build a product system that is Self-Sustainable, then the picture becomes more complicated. The point of Self-Sustainability is to blur the distinction between the implementation and user levels. Not only can the system be used to create ordinary programs, but it can also be used to change itself. We use the term *in-system* to refer to changes made within the product system, by using it as a programming system at its user level.
+
+In the Platonic ideal self-sustainable system, there is no distinction between the two levels at all. In practice, the best we can do is attempt to *minimise* the implementation level to a tiny core:^[In the limit, we will leave the world of software only to hit the stubbornly non-malleable world of physical hardware. Still, search "FPGA" in \cite{COLAs} for its speculations on pushing this as far as it can go (Figure\ 3, Figure\ 14, page\ 23.)] everything else can be changed in-system. In this case, we call this tiny core the *substrate*. Our task as implementors is to use an established platform to write a minimal substrate that can then support a self-sustainable system.
 
 ## Key Components of Self-Sustainability
 In light of these points, we can discover some key criteria of self-sustainability by considering the Web browser as a programming system. What would it take to make the Web browser self-sustainable? In the first place, the browser is not even self-hosting. So our criteria will take us through to a self-hosting state first, then consider what additionally needs to be done for self-sustainability.  
@@ -257,23 +285,6 @@ We would rather have the ability to gradually *sculpt* a system into a self-sust
 
 We mention COLA because it was the most important influence on the work in this thesis. It gestures so tantalisingly at a way to escape the Small Scope of the Unix Paradigm, yet only while making puzzling concessions to it that seem to limit its ambition. We will refer to COLA repeatedly for comparison and offer some analysis of it on our own terms.
 
-# The Missing Synthesis
-Each of our Three Properties brings advantages to a programming system:
-
-* Self-sustainability permits innovation feedback.
-* Notational Freedom makes it easier to use the Right Tool For The Job.
-* Explicit Structure avoids various pitfalls of text, both in terms of correctness and convenience.
-
-No doubt, they also have drawbacks. Yet the advantages mean that they at least deserve *further exploration* in programming. Unfortunately, these properties are rarely exhibited. Even where they do exist, they are isolated from one another and not combined in the same system.
-
-The Three Properties are entangled with each other from a research perspective. Self-sustainability makes it easier to add *new* notations to a system with Notational Freedom. It also makes it easier to add Notational Freedom *itself* to a system that lacks it, and lets the benefits flow into all aspects of the system's development. Yet self-sustainability is currently best understood as a vague analogy to self-hosting compilers, with even the COLA work not making it clear how such a property can be achieved in interactive, graphical systems. Notational Freedom is impossible to achieve in a world of parsed strings and text editors (that's merely *syntactic* freedom) so it needs Explicit Structure as a necessary foundation. Finally, as we remarked in Section\ \ref{we-study-the-spherical-cow}, Explicit Structure lets us study the other two properties more purely, without getting confused by the accidental complexities of parsing and escaping.
-
-We can roughly topological-sort these dependencies as follows. Our primary goal is to explore Notational Freedom in interactive, graphical programming systems. To support this, we should achieve Self-Sustainability. To do both of these with minimal distraction, we should make sure to build on a foundation of Explicit Structure.
-
-In this thesis, we do not follow this order strictly, but it shows a sort of logic as to how each property fits into the bigger picture. We see that the only way discover how to achieve these goals is by *doing,* so we work to build a prototype programming system called *BootstrapLab* that makes progress on the Three Properties simultaneously.
-
-This system itself is only a secondary contribution; primarily, we contribute the necessary steps and principles that its construction led us to *discover.* We believe that it should be possible to build these three properties atop a wide variety of programming systems, and our hope is to document enough of a generalisable technique to make this feasible for the average programmer.
-
-Instead of seeking to master the ins-and-outs of Smalltalk, Unix or indeed BootstrapLab, what is needed is to steal the best ideas and synthesise them into something fresh---to have our cake and eat it too. It is as if we have developed the study of sorting by coming up with a prototype sorting algorithm---the new clarity is the important part, while the concrete program was just the vehicle that got us there.
+# Conclusion
 
 However, before we embark on this journey, we must first go into a little more detail on programming systems in general and establish how we will evaluate according to the Three Properties. This is the topic of the next chapter.

@@ -591,19 +591,30 @@ In this section we will evaluate BootstrapLab according to the relevant three Te
 It might seem appropriate to also perform an evaluation via the Cognitive Dimensions of Notation. However, this would not actually tell us anything interesting, because the novel contribution of this system is not its notation. The current interface of BootstrapLab is minimal and unpolished for reasons of expediency. The point is *not* that we have come up with a brilliant new notation or UI that will improve programming; the notation is something that each user should fit to him or herself according to subjective preference. The important point is that the system *supports* the usage of different notations for different contexts. Notations in BootstrapLab should be a free parameter, so it does not make sense to apply Cognitive Dimensions to BootstrapLab *itself*, and it does not provide any value to analyse the placeholder interface in this way.
 
 ## Notational Freedom
-\criterion{Are there multiple syntaxes for textual notation? No.}
+\criterion{Are there multiple syntaxes for textual notation? No.} Only JavaScript syntax is available in the special `js` instruction. However, the system is built on explicit structure, so syntax does not make much of an appearance at all.
+
 \criterion{Does the system make use of GUI elements? Yes.}
+BootstrapLab's graphics window is a zoomable/draggable view containing a crude tree editor. Next to it is a rendering of the state tree in ordinary web HTML elements.
+
 \criterion{Is it possible to view and edit data as tree structures? Yes.}
-\criterion{Does the system allow freeform arrangement and sizing of data items? Maybe.}
+Tree-structured data can be viewed in the HTML-rendered tree view and the in-system tree editor. It can be edited only in the latter.
+
+\criterion{Does the system allow freeform arrangement and sizing of data items? No.}
+We did not have enough time to support the moving and resizing of items in the graphics window.
+
+\criterion{Is there support for custom user-supplied notations? Potentially.}
+The code for rendering the tree editor and accepting user input currently lives in the substrate. However, we gave a proof-of-concept in\ Section\ref{provide-for-domain-specific-notations} for how this could be moved in-system. Because of this, there is no inherent barrier to custom notations.
+
+\criterion{Is there support for custom user-supplied grammars? Potentially.} Ditto.
 
 ## Implicit Structure
-\criterion{Is structure recovery necessary for non-behavioural "data"?}
+\criterion{Is structure recovery necessary for non-behavioural "data"? No.}
 
-\criterion{Is structure recovery necessary for behavioural "code"?}
+\criterion{Is structure recovery necessary for behavioural "code"? No. }
 
-\criterion{Can syntax errors be saved and discovered later?}
+\criterion{Can syntax errors be saved and discovered later? No.}
 
-\criterion{Can extra-syntactic errors be saved and discovered later?}
+\criterion{Can extra-syntactic errors be saved and discovered later? No.}
 
 ## Self-Sustainability
 \criterion{Can you add new items to system namespaces without a restart? Yes.}
@@ -622,7 +633,16 @@ As BootstrapLab currently stands, we have still not paid off the "substrate debt
 The present graphical state of the system *does* entirely live in a special part of the system state: the `scene` tree. Therefore, at any given moment, it is possible to change what the graphics window will display. However, there are two limitations:
 
 1. The range of these changes is constrained to the range of graphical primitives currently understood by the substrate which it passes on to THREE.js. Currently these are limited to axis-aligned flat-coloured rectangles and basic text of a uniform size, style, colour, etc.
-2. The behaviour that affects the graphics currently lives in JavaScript. This means that, for example, the logic according to which the tree editor renders map entries is inaccessible to in-system code. 
+2. The behaviour that affects the graphics currently lives in JavaScript. This means that, for example, the logic according to which the tree editor renders map entries is inaccessible to in-system code.
+
+\criterion{Is there a language mismatch?}
+
+\criterion{Is there a scale mismatch?}
+
+\criterion{Is there an interpreter/compiler mismatch?}
+
+## Situation, Task, User, Importance
+BootstrapLab is made to help the author (User) discover how to interactively achieve self-sustainability and explore its effects (Task) for research (Situation.) The claim to Importance is that such a system did not previously exist (Problem Not Previously Solved.)
 
 # Future Work
 \tomas{Possibly draw a diagram of what are all the things that have to match? Like code-data in substrate, substrate-highLevelLanguage etc.}

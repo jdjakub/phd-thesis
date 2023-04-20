@@ -421,7 +421,7 @@ Finally, in \cite{Crit-semprola}, there is a warning against "obsession with com
 
 # Evaluation
 
-In this section we will evaluate \OROM{}/SVG according to the relevant three Technical Dimensions as well as Olsen's criteria for User Interface Systems.
+In this section we will evaluate \OROM{}/SVG according to the relevant three Technical Dimensions as well as Olsen's criteria for User Interface Systems \cite{EvUISR}.
 
 It might seem appropriate to also perform an evaluation via the Cognitive Dimensions of Notation. However, this would not actually tell us anything interesting, because the novel contribution of this system is not its notation. The interface is minimal and unpolished for reasons of expediency. The point is *not* that we have come up with a brilliant new notation or UI that will improve programming; the notation is something that each user should fit to him or herself according to subjective preference. The important point is that the system *supports* the usage of different notations for different contexts. Notations in BootstrapLab should be a free parameter, so it does not make sense to apply Cognitive Dimensions to BootstrapLab *itself*, and it does not provide any value to analyse the placeholder interface in this way.
 
@@ -459,13 +459,16 @@ The system allows boxes and arrows to be created only in valid places. (If not, 
 
 ## Self-Sustainability
 \criterion{Can you add new items to system namespaces without a restart? Yes.}
+There are two namespaces: the platform's JavaScript object graph, and the box tree. User code can add to both of these.
 
 \criterion{Can programs generate programs and execute them? Yes.}
 JavaScript code in text boxes can be run with a key combination. This code can call functions defined in the source file, and browser APIs, to create new boxes and obj-dicts. These can contain text boxes which can then be filled with JavaScript code strings.
 
 \criterion{Are changes persistent enough to encourage indefinite evolution? Maybe.}
+On the one hand, persistence is possible through the manual procedure described in Section\ \ref{persistence}. We built up various aspects of the system's current state this way, especially the box positioning and layout.
 
 \criterion{Can you reprogram low-level infrastructure within the running system? Maybe.}
+The system was used to implement the basic Id object model, in which low-level details like the definitions of `send()` and `bind()` are present as user-modifiable functions. However, it could be argued that this does not count as it is the *program* implemented via the programming system we are evaluating. In this case, we must consider the low-level infrastructure of \OROM{}/SVG. 
 
 \criterion{Can the user interface be arbitrarily changed from within the system? No.}
 It might be thought that this is possible because JS boxes can use browser APIs to change the DOM styling. While this is true, there is still inaccessible code in functions defined in the source file. Some of these functions create boxes, and the style they use is confined to the source file and is not a runtime-accessible variable.
@@ -481,6 +484,9 @@ Code in JS boxes can only be executed, changing the runtime environment; it does
 \criterion{Is there significant regeneration delay? No.}
 
 \criterion{Is there significant loss of state when replacing the system? Yes.}
+
+## Situation, Task, User, Importance
+\OROM{}/SVG helps this author (User) visually explore the Id object model (Task) for research (Situation). The design as presented in \cite{OROM} showed promise, but was hard to understand and simulate on paper (Importance.) The value lies in the *Expressive Match:* the static diagrams in the source work have been turned into the dynamic medium in which the object model is built. However, these diagrams were structural and included code as text strings, which was replicated in the dynamic versions.
 
 # Conclusions and Future Work
 ## What Did It Take, and Why?
