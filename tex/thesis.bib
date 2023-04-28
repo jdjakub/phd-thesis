@@ -284,13 +284,7 @@ author = "Alan F. Blackwell",
   title = "The Nile Programming Language",
   author = "Dan Amelang",
   subtitle = "Declarative Stream Processing for Media Applications",
-  year = "2014",
-}
-@online{Gezira,
-  url = "https://github.com/damelang/gezira",
-  title = "Gezira",
-  author = "Dan Amelang",
-  year = "2014",
+  year = "2012",
 }
 @phdthesis{Infra,
   title = "A New Human-Readability Infrastructure for Computing",
@@ -459,23 +453,6 @@ year = {2016},
   series = "Convivial Computing Salon 2020",
   location = "Porto, Portugal",
 }
-@inproceedings{SnS,
-author = {Hempel, Brian and Lubin, Justin and Chugh, Ravi},
-title = {Sketch-n-Sketch: Output-Directed Programming for {SVG}},
-year = {2019},
-isbn = {9781450368162},
-publisher = {Association for Computing Machinery},
-address = {New York, NY, USA},
-url = {https://doi.org/10.1145/3332165.3347925},
-doi = {10.1145/3332165.3347925},
-abstract = {For creative tasks, programmers face a choice: Use a GUI and sacrifice flexibility, or write code and sacrifice ergonomics?To obtain both flexibility and ease of use, a number of systems have explored a workflow that we call output-directed programming. In this paradigm, direct manipulation of the program's graphical output corresponds to writing code in a general-purpose programming language, and edits not possible with the mouse can still be enacted through ordinary text edits to the program. Such capabilities provide hope for integrating graphical user interfaces into what are currently text-centric programming environments.To further advance this vision, we present a variety of new output-directed techniques that extend the expressive power of Sketch-n-Sketch, an output-directed programming system for creating programs that generate vector graphics. To enable output-directed interaction at more stages of program construction, we expose intermediate execution products for manipulation and we present a mechanism for contextual drawing. Looking forward to output-directed programming beyond vector graphics, we also offer generic refactorings through the GUI, and our techniques employ a domain-agnostic provenance tracing scheme.To demonstrate the improved expressiveness, we implement a dozen new parametric designs in Sketch-n-Sketch without text-based edits. Among these is the first demonstration of building a recursive function in an output-directed programming setting.},
-booktitle = {Proceedings of the 32nd Annual ACM Symposium on User Interface Software and Technology},
-pages = {281–292},
-numpages = {12},
-keywords = {svg, sketch-n-sketch, output-directed programming},
-location = {New Orleans, LA, USA},
-series = {UIST '19}
-}
 @inproceedings{Webstrates,
 author = {Klokmose, Clemens N. and Eagan, James R. and Baader, Siemen and Mackay, Wendy and Beaudouin-Lafon, Michel},
 title = {Webstrates: Shareable Dynamic Media},
@@ -608,12 +585,6 @@ series = {<Programming> '20}
 @online{Gezira,
   title = "Gezira",
   url = {https://github.com/damelang/gezira},
-  author = "Dan Amelang",
-  year = "2012",
-}
-@online{Nile,
-  title = "Nile",
-  url = {https://github.com/damelang/nile},
   author = "Dan Amelang",
   year = "2012",
 }
@@ -822,7 +793,7 @@ title = {Learnable Programming},
 glide
 @inproceedings{SnS,
 author = {Hempel, Brian and Lubin, Justin and Chugh, Ravi},
-title = {{Sketch-n-Sketch}: Output-Directed Programming for SVG},
+title = {{Sketch-n-Sketch}: Output-Directed Programming for {SVG}},
 year = {2019},
 isbn = {9781450368162},
 publisher = {Association for Computing Machinery},
@@ -864,23 +835,6 @@ publisher = {MIT}
   booktitle={History and Philosophy of Computing},
   year={2021}
 }
-@inproceedings{PLrev,
-author = {Gabriel, Richard P.},
-title = {The Structure of a Programming Language Revolution},
-year = {2012},
-isbn = {9781450315623},
-publisher = {Association for Computing Machinery},
-address = {New York, NY, USA},
-url = {https://doi.org/10.1145/2384592.2384611},
-doi = {10.1145/2384592.2384611},
-abstract = {Engineering often precedes science. Incommensurability is real.},
-booktitle = {Proceedings of the ACM International Symposium on New Ideas, New Paradigms, and Reflections on Programming and Software},
-pages = {195–214},
-numpages = {20},
-keywords = {science, incommensurability, engineering, paradigms},
-location = {Tucson, Arizona, USA},
-series = {Onward! 2012}
-}
 @phdthesis{TcherDiss,
     title={Designing and Programming Malleable Software},
     author={Tchernavskij, Philip},
@@ -889,7 +843,7 @@ series = {Onward! 2012}
     type={PhD thesis}
 }
 coda
-@InProceedings{Hazel,
+@InProceedings{Hazel17,
   author =	{Cyrus Omar and Ian Voysey and Michael Hilton and Joshua Sunshine and Claire Le Goues and Jonathan Aldrich and Matthew A. Hammer},
   title =	{{Toward Semantic Foundations for Program Editors}},
   booktitle =	{2nd Summit on Advances in Programming Languages (SNAPL 2017)},
@@ -1379,23 +1333,6 @@ doi={10.1109/MC.1983.1654471}
   year={1980},
   publisher={IEEE}
 }
-@inproceedings{Varv,
-author = {Borowski, Marcel and Murray, Luke and Bagge, Rolf and Kristensen, Janus Bager and Satyanarayan, Arvind and Klokmose, Clemens Nylandsted},
-title = {Varv: Reprogrammable Interactive Software as a Declarative Data Structure},
-year = {2022},
-isbn = {9781450391573},
-publisher = {Association for Computing Machinery},
-address = {New York, NY, USA},
-url = {https://doi.org/10.1145/3491102.3502064},
-doi = {10.1145/3491102.3502064},
-abstract = {Most modern applications are immutable and turn-key despite the acknowledged benefits of empowering users to modify their software. Writing extensible software remains challenging, even for expert programmers. Reprogramming or extending existing software is often laborious or wholly blocked, requiring sophisticated knowledge of application architecture or setting up a development environment. We present Varv, a programming model representing reprogrammable interactive software as a declarative data structure. Varv defines interactive applications as a set of concepts that consist of a schema and actions. Applications in Varv support incremental modification, allowing users to reprogram through addition and selectively suppress, modify, or add behavior. Users can define high-level concepts, creating an abstraction layer and effectively a domain-specific language for their application domain, emphasizing reuse and modification. We demonstrate the reprogramming and collaboration capabilities of Varv in two case studies and illustrate how the event engine allows for extensive tooling support. },
-booktitle = {CHI Conference on Human Factors in Computing Systems},
-articleno = {492},
-numpages = {20},
-keywords = {real-time collaboration, liveness, reprogramming, declarative programming, interactive software},
-location = {New Orleans, LA, USA},
-series = {CHI '22}
-}
 @online{DarkErrors,
   author = {Ellen Chisa},
   title = {Introduction: Error Rail and Match with \texttt{DB::get}},
@@ -1583,4 +1520,50 @@ address = {USA}
   year = {2021},
   publisher = {The MIT Press},
   address = {USA}
+}
+@inproceedings{10.1145/38765.38821,
+author = {Maes, Pattie},
+title = {Concepts and Experiments in Computational Reflection},
+year = {1987},
+isbn = {0897912470},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/38765.38821},
+doi = {10.1145/38765.38821},
+abstract = {This paper brings some perspective to various concepts in computational reflection. A definition of computational reflection is presented, the importance of computational reflection is discussed and the architecture of languages that support reflection is studied. Further, this paper presents a survey of some experiments in reflection which have been performed. Examples of existing procedural, logic-based and rule-based languages with an architecture for reflection are briefly presented. The main part of the paper describes an original experiment to introduce a reflective architecture in an object-oriented language. It stresses the contributions of this language to the field of object-oriented programming and illustrates the new programming style made possible. The examples show that a lot of programming problems that were previously handled on an ad hoc basis, can in a reflective architecture be solved more elegantly.},
+booktitle = {Conference Proceedings on Object-Oriented Programming Systems, Languages and Applications},
+pages = {147–155},
+numpages = {9},
+location = {Orlando, Florida, USA},
+series = {OOPSLA '87}
+}
+@article{CompRefl,
+author = {Maes, Pattie},
+title = {Concepts and Experiments in Computational Reflection},
+year = {1987},
+issue_date = {Dec. 1987},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+volume = {22},
+number = {12},
+issn = {0362-1340},
+url = {https://doi.org/10.1145/38807.38821},
+doi = {10.1145/38807.38821},
+abstract = {This paper brings some perspective to various concepts in computational reflection. A definition of computational reflection is presented, the importance of computational reflection is discussed and the architecture of languages that support reflection is studied. Further, this paper presents a survey of some experiments in reflection which have been performed. Examples of existing procedural, logic-based and rule-based languages with an architecture for reflection are briefly presented. The main part of the paper describes an original experiment to introduce a reflective architecture in an object-oriented language. It stresses the contributions of this language to the field of object-oriented programming and illustrates the new programming style made possible. The examples show that a lot of programming problems that were previously handled on an ad hoc basis, can in a reflective architecture be solved more elegantly.},
+journal = {SIGPLAN Not.},
+month = {dec},
+pages = {147–155},
+numpages = {9}
+}
+@online{Polyglot,
+  url = {http://memeagora.blogspot.com/2006/12/polyglot-programming.html},
+  title = {Polyglot Programming},
+  year = {2006},
+  author = {Neal Ford}
+}
+@online{Metac,
+  url = {https://wiki.c2.com/?MetaCircularEvaluator},
+  title = {Meta-circular Evaluator},
+  year = {2012},
+  author = {C2 Contributors}
 }

@@ -1,4 +1,4 @@
-\chapter{The ``State-First'' Approach to BootstrapLab}
+\chapter{The ``Notation-First'' Approach}
 
 The first attempt to build BootstrapLab was anchored in the COLA design for a self-sustainable system; specifically, the Id object model covering the "state" or "structural" half. I could have sought to merely build Id using the sample C code, but instead I took the opportunity to explore notational freedom. This proceeded from the following heuristic:
 

@@ -1,4 +1,4 @@
-\chapter{The ``Code-First'' Approach to BootstrapLab}
+\chapter{BootstrapLab: Notational Freedom via Self-Sustainability}
 
 \theoremstyle{definition}
 \newtheorem{force}{Force}
@@ -576,6 +576,50 @@ We think ahead with a view towards making the fancy graphics programming more pl
 The broad approach would be similar to our previous taster example. We would have to start, again, at the code that renders state into graphics. Add a condition that checks for a `math` key, which we would use as a tag to hint at this display preference. Enter code to translate operator names to Unicode symbols, place them at infix positions, place parentheses appropriately, and render the whole thing to a single line in the tree view (ideally keeping the tree structure of the expressions in the graphics state). Then, modify the input handling and tree navigation code to appropriately work on this *inline* tree structure. And so on.
 
 The above points are, of course, a high-level sketch, but it is *programming* all the same and is plausible to achieve with a high-level language. Techniques from the literature would be helpful, such as Hazel's calculus for editing structures with holes\ \cite{Hazel}, or bi-directional synchronisation between the rendered graphics and the state's ground truth\ \cite{SnS}.
+
+## Real Example: Colour Preview
+While the above speculation has value, it is only fair that we show a real example. We only had time to implement a very modest proof-of-concept: instead of a hex string for colours, let's see a rectangle with that colour instead.
+
+Some Masp code (Figure\ \ref{lst:rendermapentry}) lives under the global register `render_map_entry`. It is invoked from the JavaScript function for rendering map entries in the tree editor. It checks if a map entry is named "color", and if so, returns an appropriately coloured box with a grey border. Figure\ \ref{fig:hex-vs-boxes} shows the difference.
+
+These results so far could have been achieved without going to the trouble of implementing the hook in Masp. JavaScript would have sufficed. However, having this code in Masp lets us do something not possible with the equivalent JavaScript. The system has access to the explicitly structured Masp code and can choose how to display it. As this Masp code is evaluated on its own source tree, it encounters the hex constant `0xaaaaaa` representing the grey border and displays this with the very notation it implements. See Figure\ \ref{fig:grey-box} for the difference. This is a minimal demonstration of Innovation Feedback: there is no artificial barrier to innovations (in this case, displaying colour previews) applying to their implementation code.
+
+\begin{figure}
+\begin{lstlisting}
+to: key_name  apply:
+  _: { apply: quote  to: unhandled }
+  color:
+    apply: block
+    1:
+      apply: local  name: box  is:
+        width: 0.45  height: 0.2
+        center: { right: 0.875  up: -0.1  forward: -0.9 }
+        children:
+          1:
+            width: 0.5  height: 0.25
+            center: { right: 0  up: 0  forward: -1 }
+            color: 0xaaaaaa
+    2: { apply: set  map: box  key: color  to: value }
+    3: box
+\end{lstlisting}
+\caption{This Masp code checks if a map entry is named ``color''. If so, it returns an appropriately coloured box with a grey border. Otherwise, it returns the string `unhandled`.}
+\label{lst:rendermapentry}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=8cm]{hex-strings-vs-coloured-boxes.png}
+\caption{Before (left) and after (right) activating the Masp rendering hook.}
+\label{fig:hex-vs-boxes}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=12cm]{grey-box.png}
+\caption{The grey colour constant displays as the hex string \texttt{0xaaaaaa} in the right-hand HTML tree view. However, in the left-hand tree editor, this code runs on its own source representation, turning the colour constant into a grey box instead. This is a minimal example of Innovation Feedback.}
+\label{fig:grey-box}
+\end{figure}
+
 
 ## The Key Takeaway
 In the non-self-sustainable world, a projectional editor is implemented in some traditional programming language and interface; say, Java. The domain-specific notations can benefit a wide variety of programs created using the editor. Yet, this range of beneficiaries nevertheless forms a "light cone" emanating out from the editor, never including the editor itself. For example, any vector formulae used to render the interface of the editor will remain as verbose Java expressions, along with any code for new additions to the editor. The tragedy of non-self-sustainable programming is that it can never benefit from its own innovations.
