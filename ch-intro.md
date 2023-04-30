@@ -20,6 +20,10 @@ Capabilities:
 4. systems allow better thinking! here is more specifically what I'm working on
 }
 
+\joel{
+These concerns point to an unexplored opportunity which constitutes the contribution of this thesis. We discuss how the Three Properties feed into each other and hence why we study them together. We close with a summary of what the thesis contribution is.
+}
+
 When we have an idea for some computer software, and try and make this idea a reality, we are forced to confront two types of complexity: the *essential* and the *accidental*. We realise there's no such thing as a free lunch, so we're able to accept the burden of whatever complexity is actually intrinsic to our idea. If we have a simple idea, we are prepared to do a little work; if it is more ambitious, we will accept having to do more work. Yet this *essential* complexity is often swamped by unwelcome incursions of tedious busy-work. Concepts that appear simple to us must be spelled out in great detail for a computer. This is the *accidental complexity* that is widespread in programming.
 
 This is particularly egregious when the "idea" is merely to change or fix some small issue. Suppose we're using an app, but the text is too small for us to read. Worse, the designers have not included a feature for increasing the text size (perhaps it is a special message in a separate part of the app which is unaffected by the normal controls.) As programmers, we know that there is some API being called to render the text, and this API will be told the font size via some number in the app's memory. If we could just find this single number and change it, we might at least be able to read the text (even if the app is not prepared to lay out the larger text correctly in response to such a "surgical" intervention.)
