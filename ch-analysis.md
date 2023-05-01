@@ -196,21 +196,21 @@ When put this way, it sounds obvious: "of course computer software is used to im
 From our presentation, it may appear that self-sustainability is a peculiar special case that is naturally hard to achieve. Yet the world of software as a whole is self-sustainable, as is an individual Unix system (large-scope programming.) We conjecture that self-sustainability is a natural *default*, one that was *prevented* by the historical contingency of Unix enforcing its peculiar model on small-scope programming. Of course, we must still accept the Unix Paradigm as a given, and accomplish the tasks of this dissertation on that basis.
 
 ## Notational Freedom
-In Section\ \ref{precursors-of-notational-freedom} we mentioned the maxim "Use The Right Tool For The Job". This is a noble aspiration, but one that is not widely fulfilled. At the "large scope" of the Unix paradigm, there is indeed a dizzying array of programming languages specialised for different jobs. Yet we saw some barriers to Polyglot Programming, such as the need for inter-process communication (IPC.) As we scale down to *within* a single process and forego IPC, data sharing between languages gets thornier.
+In Section\ \ref{precursors-of-notational-freedom} we mentioned the maxim "Use The Right Tool For The Job". This is a noble aspiration, but one that is not currently fulfilled. At the "large scope" of the Unix paradigm, there is indeed a dizzying array of programming languages specialised for different jobs. Yet we saw some barriers to Polyglot Programming, such as the need for inter-process communication (IPC.) As we scale down to *within* a single process and forego IPC, data sharing between languages gets thornier.
 
-The ideal is where a component at any scale can be expressed in a *notation* that is particularly suited to it.
-
-\todo{more}
+The ideal is where a component at any scale can be expressed in a *notation* that is particularly suited to it. Here, we will go through the intermediate stages of *syntactic* and *linguistic* freedom before arriving at full notational freedom.
 
 ### Syntactic Freedom
-We noted in Section\ \ref{precursors-of-notational-freedom} that, within a single file, combinations of different languages are occasionally possible. Yet these are fixed sets, pre-approved by language designers and set in stone for all contexts and users. We could call this property *syntactic^[Programming languages differ by semantics as well, but for Notational Freedom we are only interested in the surface notational aspects. Infrastructure for supporting this would already be close to supporting freedom of semantics, as shown by COLA's mood-specific languages.] diversity*, where a language named A additionally permits syntaxes B, C, and D in certain situations. This goes a small way towards "Use The Right Tool For The Job", but what is conspicuously missing is the ability for the *programmer* to decide which syntaxes to use and where based on their local context. This would be syntactic *freedom* beyond pre-approved diversity.
+We noted in Section\ \ref{precursors-of-notational-freedom} that, within a single file, combinations of different languages are occasionally possible. Yet these are fixed sets, pre-approved by language designers and set in stone for all contexts and users. We could call this property *syntactic^[Programming languages differ by semantics as well, but for Notational Freedom we are only interested in the surface notational aspects. Infrastructure for supporting this would already be close to supporting freedom of semantics, as shown by COLA's mood-specific languages.] diversity*, where a language named A additionally permits syntaxes B, C, and D in certain situations. This goes a small way towards "Use The Right Tool For The Job", but what is conspicuously missing is the ability for the *programmer* to decide which syntaxes to use, and where, based on their local context.
 
-It is not unreasonable to expect that a single function, or perhaps even a single line of code, might be best expressed in a different language to the rest of the code, in a way that the language designer cannot predict. For example, a common occurrence in scientific or graphics-heavy programming is a few lines of mathematical operations; it would be convenient to bring these closer to familiar mathematical notation instead of a butchered ASCII approximation.
+This would be syntactic *freedom* beyond pre-approved diversity. It is not unreasonable to expect that a single function, or perhaps even a single line of code, might be best expressed in a different language to the rest of the code, in a way that the language designer cannot predict.
 
-We will use this as a running example as we build up through the lesser stages to full Notational Freedom. Suppose we start with the following unfortunate notation for a formula:
+We will use a running example as we build up through the stages to full Notational Freedom. A common occurrence in scientific or graphics programming is a few lines of mathematical operations; it would be convenient to bring these closer to familiar mathematical notation instead of a butchered ASCII approximation. Suppose we start with the following unfortunate notation for a formula: 
 
 ```
-vec_a.mul(cos(ang_b/2)).add(vec_b.mul(cos(ang_a/2))).add(vec_a.cross(vec_b))
+vec_a.mul(cos(ang_b/2))
+     .add(vec_b.mul(cos(ang_a/2)))
+     .add(vec_a.cross(vec_b))
 ```
 
 Syntactic freedom would mean being able to see this situation and specify a local syntax that lets us rewrite it as:
@@ -221,50 +221,64 @@ cos(ang_b/2) vec_a + cos(ang_a/2) vec_b + vec_a × vec_b
 
 It could be objected that using `+` instead of `.add()` is already supported in some languages, such as C++ with its operator overloading. We would then point to the `×` Unicode character and ask for a language that permits this infix operator. Perhaps Haskell, famous for its arbitrary user-defined infix operators, supports Unicode characters in them. In this case we would point at the juxtaposition of the two parts of the first term to denote multiplication. Are there any languages that permit overloading of whitespace as an infix operator? Even if there were, there would be other cases for other problem domains where piecemeal allowances in what can be overloaded is not enough.
 
-We are aware of syntactic freedom in two places: COLA's "mood-specific languages" (MSLs) and Lisp's Reader Macros. This is a significant step in the right direction, but the syntax of strings as defined by formal grammars has limitations. It can only see two directions (left and right) and has no notion of display variations like typefaces, weights, sizes, colours and so on.
-
-\todo{fix}
-As another example, it is common to embed SQL commands somehow in the source code of another programming language. In C#, these are forced into the syntax of the host language as "embedded queries", yet a programmer may prefer to use SQL directly as part of the source. The traditional alternative to both of these was to have SQL code inside program strings, which created significant security risks; however, this is by no means intrinsic to having SQL source be what the programmer *types* or *sees* (see Section\ \ref{explicit-structure} below.)
-
-If we go on to lift these restrictions, we arrive at *linguistic* freedom.
+We are aware of syntactic freedom in two places: COLA's "mood-specific languages" (MSLs) and Lisp's Reader Macros. This is a significant step in the right direction, but the syntax of strings as defined by formal grammars has limitations. It can only see two directions (left and right) and has no notion of display variations like typefaces, weights, sizes, colours and so on. This encourages us to edit expressions as lists of characters without support for nested boxes or other interfaces that can be useful. In other words, it keeps us in the text editor interface with its Implicit Structure and associated problems (see Section\ \ref{explicit-structure} below.) If we go on to lift these restrictions, we arrive at *linguistic* freedom.
 
 ### Linguistic Freedom
 By this, we mean freedom to represent expressions as arbitrary written *language* rather than restricted *syntax.* In the physical world, written language takes many forms which are hard to digitise in their full detail---we don't expect our personal handwriting to be adopted as an internationally-recognised font. Yet even in computing, written language takes a variety of forms and supports a variety of display characteristics. In programming, these are stripped away and we generally only have formatless *syntax* to work with.^[Technically, syntax highlighters make keywords bold and add various colours, but these are fixed rules applying to display only. The point is that it is not possible to create a "bold variable" or a "red function".]
 
 In our running mathematical example, there is a very good illustration of the step up to linguistic freedom in the form of publishing-standard mathematical notation (and conveniently for this thesis, a core capability of \LaTeX):
 
-$$\cos(\frac{b}{2})\mathbf{a} + \cos(\frac{a}{2})\mathbf{b} + \mathbf{a} \times \mathbf{b}$$
+$$\cos\left(\frac{b}{2}\right)\mathbf{a} + \cos\left(\frac{a}{2}\right)\mathbf{b} + \mathbf{a} \times \mathbf{b}$$
 
 This exhibits the following improvements that do not fit into the "syntax" technologies:
+
 * Vertical layout of fractions
-* Replacing the `vec_a` and `ang_a` with $mathbf{a}$ and $a$, distinguished by weight
+* Replacing the `vec_a` and `ang_a` with $\mathbf{a}$ and $a$, distinguished by weight
 * No restriction to fixed-width characters or spaces
 
-This is very plausibly the Right Tool For The Job in this example. However, in general we must still regard "language" as too narrow of a constraint. By this, we simply mean notations that consist of repeated glyph shapes laid out in a (mostly) linear manner. This is different to other uses of the term: "visual language" may not include text at all, but uses the "language" term for the arrangement of elements. Under this latter meaning, the "mood-specific language" idea has all the generality it deserves. Nevertheless, in programming, we think the term "language" runs the risk of mentally excluding graphical or interactive possibilities. To ensure they remain, our use of the word "language" will stick to denoting mostly-linear renderings of glyphs and we shall use words like "notation" or "interface" for the fully general extension.
+Beyond these display characteristics, it also leaves open the possibility of an editing interface not restricted to character-by-character string operations. For \LaTeX{} mathematics, we must often write verbose textual source in the manner of Section\ \ref{syntactic-freedom}'s example and render it into the better notation. Yet there do exist interfaces for editing \LaTeX{} mathematics more directly, such as those in Mathcha^[\url{https://www.mathcha.io/}] and Desmos^[\url{https://www.desmos.com/}]. Linguistic freedom permits such "structured" or "projectional" editing as an option. This brings to mind JetBrains' MPS \cite{MPS} as the only system of which we are aware that offers Linguistic Freedom.
+
+For our running example, we have plausibly reached the Right Tool For The Job at this point. In general, however, we still regard "language" as too narrow of a constraint. By this, we simply mean notations that consist of repeated glyph shapes laid out in a (mostly) linear manner. This is different to other uses of the term: "visual language" may not include text at all, but uses the "language" term for the arbitrary arrangement of elements. Under this latter meaning, the "mood-specific language" idea has all the generality it deserves. Nevertheless, in programming, we think the term "language" runs the risk of mentally excluding graphical or interactive possibilities. To ensure they remain, our use of the word "language" will stick to denoting mostly-linear renderings of glyphs and we shall use words like "notation" or "interface" for the fully general extension.
 
 ### Full Notational Freedom
-Here, we wish to have unrestricted support for graphics and interaction. In our mathematical example, full notational freedom would support an interactive 3D visualisation of the vectors involved if that was what the programmer desired. Language is not everything---diagrams and pictures are sometimes the form in which a problem or solution is delivered, and programmers ought not to be forced to describe pictures using words.
+Here, we wish to have unrestricted support for graphics and interaction. In our mathematical example, full notational freedom would support an interactive 3D visualisation of the vectors involved if that was what the programmer desired. Language isn't everything---diagrams and pictures are sometimes the form in which a problem or solution is delivered, and programmers ought not to be forced to describe pictures using words.
 
-
-We should also clarify that we are using the terms "notation" and "interface" interchangeably; we're not just talking about static pictures but dynamic entities on a screen. The "text editor" interface is one such example. One could use a text editor to work on the hex code `0xff00ff` representing the colour magenta. Alternatively, and perhaps more appropriately, one could work via a colour picker interface instead.
+We should emphasise that we are using the terms "notation" and "interface" interchangeably; we are not just talking about static pictures but dynamic entities on a screen. The "text editor" interface is one such example. One could use a text editor to work on the hex code `0xff00ff` representing the colour magenta. Alternatively, one could use a colour picker interface.
 
 The key thing is that this property is called Notational *Freedom*, rather than something like "Optimal Notation". We recognise that different notations suit different purposes and respect the art of developing them as a separate area of expertise, which we do not claim for ourselves. The idea is to support the *subjective* productivity of the programmer, who we assume is best equipped to judge the appropriateness of notations for herself. This property is about *supporting* the usage of different notations for different contexts.
 
-### What is "Support", Exactly?
-It is true that there is no such thing as a free lunch; we do not go so far as to suggest that the system should turn a natural language description into a working interface (recent advances in AI notwithstanding.) So long as the programmer is willing to do the necessary work to program a new notation, this should suffice to use it in harmony with all the others. However, the Unix paradigm and text editors impose an *additional* "tax" in terms of effort beyond this reasonable standard. In the best case, it might have some plugin architecture, while at worst it may require forking the editor's source code. Notational Freedom means the system was designed without the assumption that there will only be one notation and lacks these taxes to the extent possible.
+### What Do We Mean By "Support"?
+It is true that there is no such thing as a free lunch; we do not go so far as to suggest that the system should turn a natural language description into a working interface (recent advances in AI notwithstanding.) So long as the programmer is willing to do the necessary work to program a new notation, this should suffice to use it in harmony with all the others.
+
+However, the Unix Paradigm and text editors impose an *additional* "tax" in terms of effort beyond this reasonable standard. In the best case, it might have some plugin architecture, while at worst it may require forking the editor's source code. The actual work involved in creating the notation might be very small, but it will be dwarfed by the task of getting the editor to accept it.
+
+Notational Freedom means the system was designed *without* the assumption that there will only be one notation and lacks these taxes to the extent possible. In short, by "support" we mainly mean the removal of artificial *barriers* that have been put in the way of mood-specific notations.
 
 ## Explicit Structure
-The problem with "plain text" is that it fuses together two independent concepts: what we could call *presentation* (how one reads and modifies the data) and *representation* (how the data is stored in memory or on disk). For example, the AST of a program *could* be stored in its tree form and *presented* as indented text. But what we do instead is serialise the text, store that, and parse it back before we are able to work with it.
+As we remarked at in Section\ \ref{precursors-of-explicit-structure}, Explicit Structure refers to the sense of working with data *directly* rather than through some other medium. To go into more detail, it will be useful to split the life-cycle of a data structure into two halves:
 
-This thesis approaches the default text-centrism of programming with skepticism. We direct the reader to the fuller arguments from the authors of Subtext \cite{Subtext} and Infra \cite{Infra}, but we will summarise the most important points here and offer some of our own. 
+* On the *producer side*, the data structure is created or edited using some interface.
+* On the *consumer side*, a programmer is writing code that uses the data structure.
 
-### Language can be stored differently to a character list
+Explicit Structure is hard to define positively because it is the default state of affairs across much of computing, with programming being the notable exception. On the producer side, explicit structure is illustrated by a vector graphics editor like Inkscape: one simply draws a diagram with shapes and saves it as an SVG file. On the consumer side, Explicit Structure looks like a programmer navigating through named parts of the structure:
+
+```
+svg.root_nodes[1].children[2].children[0].fill_color = '#ff00ff';
+```
+
+Explicit Structure is perhaps easier to define negatively, as a *lack* of Implicit Structure. Implicit Structure is present when we use *plain text* as a communication or storage medium: the structure can only be navigated after parsing the string. The problem with plain text is that it fuses together two independent concepts: what we could call *presentation* (how one reads and modifies the data) and *representation* (how the data is stored in memory or on disk). For example, the AST of a program *could* be stored in its tree form and *presented* as indented text. But what we do instead is serialise the text, store that, and parse it back before we are able to work with it.
+
+This thesis approaches the default Implicit Structure of programming with skepticism. We direct the reader to the fuller arguments from the authors of Subtext \cite{Subtext} and Infra \cite{Infra}, but we will summarise the most important points here and offer some of our own. 
+
+### Language Can Be Stored Differently to a Character List
 Language always contains *structure*: English paragraphs contain sentences, containing clauses, containing words. Natural language, like English, is typically entered into a digital medium only to be poured out again at some other end, like photo uploads; normally, the computer does not need to dive into the structure at all. On the other hand, for programming languages, the AST is the entire point.
 
 Despite this, programming language source code is universally stored as a sequential recording of keystrokes, rather than as the tree or graph that it represents. This has the downside that every program that consumes or transforms the code must recover (parse) this structure out, discovering any mistakes only at this point of consumption (since these were just recorded with the other characters.) This is like storing vector graphics diagrams as arrays of pixels and using Computer Vision to haphazardly recognise shapes and lines: unnecessary work to recover information that was thrown away at creation time. \todo{Stefan: bad analogy}
 
 \todo{Stefan: this is naive}
 More unfortunate work results from having to "escape" characters that have been reserved to denote structure instead of their literal selves. In the worst case, the storage of language as character lists is largely responsible for the class of attacks known as SQL injection. This would not be possible with SQL commands represented as trees containing holes to be filled with user-submitted strings.
+
+Consider the common practice of embedding SQL commands in the source code of various languages. In C#, these are forced into the syntax of the host language as "embedded queries", yet a programmer may prefer to use SQL syntax directly as part of the source. The traditional path-of-least-resistance to achieving the latter was to have SQL code inside program strings, which created significant security risks. This is by no means intrinsic to having SQL source be what the programmer *types* or *sees* (see Section\ \ref{explicit-structure} below.)
 
 ### Digital "plain text" is not inherently human-readable
 This argument is made best by Hall\ \cite{Infra}, p.\ 14:
@@ -274,6 +288,8 @@ This argument is made best by Hall\ \cite{Infra}, p.\ 14:
 > electrons $\rightarrow$ bits $\rightarrow$ charactercodes $\rightarrow$ glyphs $\rightarrow$ pixels $\rightarrow$ photons
 
 > “Human readability” just colloquially implies that it is a standard encoding understood by most text editors. The sense of inherent readability merely comes from the ready availability of tools that render ASCII and Unicode. One can assume that a text editor or some text rendering infrastructure exists in the target system. Therefore, any encoding could technically achieve the same ‘human readable’ status as ASCII if it and its editors were general-purpose enough to warrant an equally ubiquitous install base. Thus, there is an opportunity to expand or upgrade the realm of what can be considered human readable.
+
+It can be tempting to defend text files as human-readable in contrast to binary files which are not. However, as Hall's argument shows, this is mere *status quo* bias: all of the "human-readability" of a text file is due to the wide availability of text editors. By the same criteria, binary PDF files are human-readable owing to the ubiquity of PDF readers. In other words, the difference between plain text and "binary" data is not so much an essential difference of two kinds but simply a difference in tool availability.
 
 ### We Study the Spherical Cow
 Text usually functions as a *medium* or rendering of something that is not inherently text. In the first place, text was invented to record speech made by human beings. In programming, text is used as a *proxy* for a nested tree-like structure, but is *not the structure itself.* Therefore, to study a programming idea like self-sustainability, it is unfortunate to have the contingencies of text representation "getting in the way" of studying the idea itself. Therefore, even though a real-world programming system may use text, we wish to avoid this obscuring layer for much the same reason as a physicist studies a frictionless sphere in a vacuum instead of, say, a cow in a field. We want to not be distracted with air resistance and complex shapes, so as to focus on the property we are interested in; future work can then add the practical complexities back in again for a more realistic model.
