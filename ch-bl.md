@@ -1,4 +1,5 @@
-\chapter{BootstrapLab: Notational Freedom via Self-Sustainability}
+\hypertarget{bl}{%
+\chapter{BootstrapLab: Notational Freedom via Self-Sustainability}\label{bl}}
 
 \theoremstyle{definition}
 \newtheorem{force}{Force}

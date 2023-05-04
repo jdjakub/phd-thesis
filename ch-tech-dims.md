@@ -1,4 +1,5 @@
-\chapter{Technical Dimensions of Programming Systems}
+\hypertarget{tech-dims}{%
+\chapter{Technical Dimensions of Programming Systems}\label{tech-dims}}
 
 \setlength{\epigraphwidth}{0.7\linewidth}
 \epigraph{A systematic presentation removes ideas from the ground that made them grow and arranges them in an artificial pattern.}{\textit{The Tyranny of Science} \\ \textsc{Paul Feyerabend}}
@@ -81,16 +82,27 @@ In short, while there is a theory for programming languages, programming *system
 \todo{this section}
 
 ## Self-Sustainability
-In light of the points in Section\ \ref{self-sustainability}, we can discover some key criteria of self-sustainability by considering the Web browser as a programming system. What would it take to make the Web browser self-sustainable? In the first place, the browser is not even self-hosting. So our criteria will take us through to a self-hosting state first, then consider what additionally needs to be done for self-sustainability.  
+In light of the points in Section\ \ref{self-sustainability}, we can discover some key criteria of self-sustainability by considering the Web browser as a programming system. Using the terminology from Section\ \ref{user-vs-implementation-levels}, let us consider the browser as the *product system* and C++ as the *platform.* What would it take to make this self-sustainable? 
 
-1. In order to be self-hosting, the web browser would need to be able to generate a slightly different web browser binary, from slightly different JavaScript source code.
-2. However, the browser is a program compiled from C++, not JavaScript. (*Language mismatch*)
-3. *Even if* we translate all the C++ to JavaScript, the browser's JS console environment is not built to support such a large, interconnected codebase. (*Scale mismatch*)
-4. *Even if* we make it support a large codebase, the JavaScript source will build up data structures in memory instead of outputting machine code to an external file. (*Interpreter/compiler mismatch*)
-5. Suppose we modify the source to consist of JavaScript that will *generate* a new browser program (instead of just *embodying* one). Now the system is self-hosting. *Even so,* simply fixing a typo in a menu will require an hour-long build followed by a loss of the current browser session, tabs, etc. (*Regeneration delay*, *loss of state*)
-6. If we are able to modify the source code in-system, "commit" the changes to take effect, and immediately see the effects of the changes without loss of state, we finally have self-sustainability.
+### Minimise The Substrate
+Most of the named entities in the C++ code are stuck at the implementation level, inaccessible at the user level of JavaScript, so we must move the former into the latter.
 
-We see a number of hurdles to achieving a self-hosting state: there must be no language, scale or interpreter/compiler mismatch. This is followed by one or two hurdles for self-sustainability: evolving the system must not incur a disproportionate regeneration delay or a loss of important state. We will use these criteria in Chapter\ \ref{tech-dims} as "penalties" for measuring self-sustainability.
+We can begin with the graphical surface of the product system. For each graphical element, we inquire into the causes of its display; this will include graphical rendering code, but also the data that is being rendered and the code that generated it. By tracing backwards in this way we discover the web of causes that produced the shape on the screen. This will often go through the user level (JavaScript), but if we keep tracing back, we will hit the implementation level. Each time this happens, we port the code from the implementation level to the user level.
+
+We continue this until it is no longer feasible; for example, there will ultimately have to be some native machine-code interpreter for JavaScript in the running system. In practice, there would need to be the usual investments in JIT compilation and optimisation technology as seen in VMs for Smalltalk and other languages.
+
+These ideas suggests a quantitative criterion of *substrate size* as a *penalty* for self-sustainability. \joel{ref bl}
+
+### Fix "Delete By Default"
+As we discussed from Section\ \ref{assumptions-and-consequences-in-batch-mode} onward, the activities of a running process under Unix are considered disposable. In order for a system to be self-sustainable, it has to be able to preserve developments of its state through process termination. The standard VM solution is to have most of the system state saved in an "image" file and concentrate the substrate in a runnable binary that need not be changed. However this is accomplished, *persistence* of run-time changes is necessary to encourage indefinite evolution of the system. This applies to the whole browser, but could also be a concern for individual tabs or web pages that can be closed or refreshed.
+
+This suggests a qualitative criterion of *persistence effort*. 
+
+### Support Editing of the Code
+The browser's JS console makes it technically possible to make arbitrary changes expressible as JS commands, and the source code can be viewed but not edited. We would need to make a small change so that the source code viewer could also be used to edit code in a persistent manner.
+
+### Support the Manipulation of Code as Data
+Once can type text inside the system, we will be able to write code. However, this code will be inert unless the system can interpret data structures as programs and actually execute them. This is the case whether these data structures were created manually or by a program. If this is not possible, re-programming the system beyond selecting from a predefined list of behaviours will not be possible. The browser does already satisfy this criterion since JS has an `eval()` function that can execute a string of JS code.
 
 1. *Can you add new items to system namespaces without a restart?* The canonical example of this is in JavaScript, where "built-in" classes like `Array` or `Object` can be augmented at will (and destructively modified, but that would be a separate point). Concretely, if a user wishes to make a new `sum` operation available to all Arrays, they are not *prevented* from straightforwardly adding the method to the Array prototype as if it were just an ordinary object (which it is). Having to re-compile or even restart the system would mean that this cannot be meaningfully achieved from within the system. Conversely, being able to do this means that even "built-in" namespaces are modifiable by ordinary programs, which indicates less of a implementation level vs. user level divide and seems important for self-sustainability.
 2. *Can programs generate programs and execute them?* This property, related to "code as data" or the presence of an `eval()` function, is a key requirement of self-sustainability. Otherwise, re-programming the system, beyond selecting from a predefined list of behaviors, will require editing an external representation and restarting it. If users can type text inside the system then they will be able to write code---yet this code will be inert unless the system can interpret internal data structures as programs and actually execute them.
