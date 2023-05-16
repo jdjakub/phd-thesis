@@ -1,16 +1,22 @@
 \hypertarget{year1}{%
-\chapter{The ``Notation-First'' Approach}\label{year1}}
+\chapter{\OROM{}/SVG: Self-Sustainability via Custom Notation}\label{year1}}
 
-Our first prototype programming system was an attempt to build the COLA design, specifically the Id object model covering the "state" or "structural" half. We could have sought to merely build Id using the sample C code, but instead we took the opportunity to explore notational freedom. This proceeded from the following heuristic:
+In Section\ \ref{the-three-properties} we mentioned our desire to have Explicit Structure as a base, in which case our priorities can either be (a) using Notational Freedom to pursue Self-Sustainability, or (b) using Self-Sustainability to pursue Notational Freedom. In this chapter^[Adapted from our 2020 Convivial Computing Salon paper entitled "What Does It Take To Create With Domain-Appropriate Tools?" \cite{Jdj20}.] we report on the first approach. We follow the process of implementing part of the Self-Sustainable COLA architecture, namely the Id object model covering the "state" or "structural" half \cite{OROM}. We do this using a notation better suited to it than that provided by our default programming tools. This comes from applying the following heuristic:
 
 \begin{heuristic}[Ideal Expression]
 \label{ideal-expr}
 Always be asking the question: ``how would I ideally prefer to express the (sub-)program I am creating or problem I am solving?''
 \end{heuristic}
 
-An important aspect is that Heuristic\ \ref{ideal-expr} is about what is best for a *local context* rather than in general. Also important is that it is *subjective* based on the preferences of the programmer. This lets us sidestep unproductive debates about which notations are simply "better" or "worse", even for local contexts. The worthy goal is not that anyone should be forced to use a wonderful notation that we have come up with (we have done no such thing) but simply that, *if* a programmer would *prefer* to express their problem in a certain notation, they should not be *prevented* from doing so.
+An important aspect is that Heuristic\ \ref{ideal-expr} is about what is best for a *local context* rather than in general. Also important is that it is *subjective* based on the preferences of the programmer, as we mentioned in Section\ \ref{full-notational-freedom}. This lets us sidestep unproductive debates about which notations are simply "better" or "worse", even for local contexts. The worthy goal is not that anyone should be forced to use a wonderful notation that we have come up with; we have done no such thing. Instead it is simply that, *if* a programmer would *prefer* to express their problem in a certain notation, they should not be *prevented* from doing so (Section \ \ref{what-do-we-mean-by-support}).
 
-What follows in this chapter^[Adapted from our 2020 Convivial Computing Salon paper entitled "What Does It Take To Create With Domain-Appropriate Tools?" \cite{CCS}.] is an account of how we applied Heuristic\ \ref{ideal-expr} to implement Id atop a simple "box" substrate. Section\ \ref{the-id-system} gives an overview of Id and explains how we applied Heuristic\ \ref{ideal-expr} to it. Section\ \ref{typical-requirements-of-common-software} discusses the work involved in obtaining said domain-appropriate substrate, and Section\ \ref{patterns-and-polyfilling} continues with an interpretation of the labour costs of doing it this way. In Section\ \ref{the-id-system-as-a-part-of-the-solution}, we return to the Id system and its role in supporting flexible software. It concludes with an evaluation of \OROM/SVG in terms of the Technical Dimensions with attention to key desiderata that BootstrapLab should meet. At the risk of spoiling the story, this "state-first" approach was aborted for falling short of these desiderata, and the complementary *code-first* approach, presented in Chapter\ \ref{the-code-first-approach-to-bootstraplab}, proved more successful.
+Section\ \ref{the-object-model} gives an overview of Id and explains how we applied Heuristic\ \ref{ideal-expr} to it. We implement our notation on top of our chosen platform of the Web browser. This can be seen as "assuming" Notational Freedom or acting *as if* we had it in our platform, so as to discover the accidental complexity involved in brute-forcing a custom notation there. Section\ \ref{typical-requirements-of-common-software} reports these accidental complexities, and Section\ \ref{patterns-and-polyfilling} proposes the necessary infrastructure for dealing with them. In Section\ \ref{the-id-system-as-a-part-of-the-solution}, we return to the Id system and its role in supporting flexible software. It concludes with an evaluation of \OROM/SVG in terms of the dimensions we defined in Section\ \ref{the-three-properties-as-dimensions}. We conclude by summarising this "notation-first" approach and what lessons we can take from it.
+
+The contributions of this chapter are as follows:
+
+* A concrete application of Heuristic\ \ref{ideal-expr} which is enabled by Notational Freedom.
+* A list of essential infrastructure that one should expect to need when implementing a custom notation to address the accidental complexities that will emerge.
+* A prototype of the Id object model as a dynamic version of the diagrams in its source paper\ \cite{OROM}.
 
 # The \OROM{} Object Model
 
@@ -25,14 +31,18 @@ An \OROM{} *object* is a block of state which can change as a result of messages
 
 ## Ideal Expression for Id
 
+joel{
 \vspace{-0.1em}
 \joel{ ^ Without this command, LaTeX absent-mindedly inserts a giant vertical gap at this point.
        This gives it a prod, focusing its attention and making it realise its mistake.
-       (As usual, LaTeX defies comprehension in non-anthromorphic terms.) }
+       (As usual, LaTeX defies comprehension in non-anthromorphic terms.) }}
+       
+*Note: this section is written in the first person as this best fits with the subjectivity of Heuristic\ \ref{ideal-expr}. It provides the motivation for the notation we use to implement \OROM{}.*
 
 In-keeping with its aims of minimality and self-sustainability, Id as a whole is "bootstrapped" into existence by its initialisation code. Each step of this code makes use of any parts of the system set up by the previous steps. The paper itself consists of mostly prose, several code listings, and full C sources for a sample implementation at the end. It also provides several diagrams. But to understand it, I repeatedly found myself drawing *extra* diagrams.
 
-For example, the first acts of the running system boil down to initialising the three or so objects. This consists of allocating memory, interpreting it as a C struct and then filling in fields in a mundane manner. I had great difficulty following the specifics in my head, but when I drew tables in the style of their diagrams I readily saw what what going on. I personally would have preferred these to have been in the paper in the first place, but I am not necessarily representative of those who read it.^[Besides that, the \OSFA{} approach is perhaps unavoidable for static print media.]
+For example, the first acts of the running system boil down to initialising the three or so objects. This consists of allocating memory, interpreting it as a C struct and then filling in fields in a mundane manner. I had great difficulty following the specifics in my head, but when I drew tables in the style of their diagrams I readily saw what what going on. I personally would have preferred these to have been in the paper in the first place, but I am not necessarily representative of those who read it.
+
 \joel{Other areas like messaging semantics could still be quite confusing. After all, should we expect to be able to predict the entire future evolution of a dynamical system from a static description of its initial state, such as source code? Is this not why debuggers exist?}
 
 At any rate, in order to solidify my understanding, there was no better way than to run the thing and explore it. And yet, having already "de-compiled" English text and C source code into object diagrams, it is a shame to have to compile it all back to struct member assignments. Worse, the reference system does not even have text I/O when it is run, let alone some sort of GUI.^[That is, the (un)intended user interface for Id ends up being a C debugger!] Faced with the necessity of adding *some* UI, it seemed a waste of effort to end up with a system that must be continually polled for its current state at a terminal prompt.
@@ -55,7 +65,7 @@ b) I have in mind a natural way to represent it as it's being built.
            each other through numerical IDs. \label{fig:orom-html}}
 \end{figure}
 
-To emphasise the tendency of \OROM{} objects to be visualised as key-value mappings, we refer to them as *obj-dicts*. Figure\ \ref{fig:orom-html} shows the \OROM{}/HTML^[This is read ``Id over HTML'', to emphasise the specific substrate on which it sits.] implementation \cite{OROM-HTML}, in which they take the form of HTML tables.
+To emphasise the tendency of \OROM{} objects to be visualised as key-value mappings, we refer to them as *obj-dicts*. Figure\ \ref{fig:orom-html} shows the \OROM{}/HTML^[This is read "Id over HTML", to emphasise the specific substrate on which it sits.] implementation \cite{Orom-html}, in which they take the form of HTML tables.
 
 Here, we were grateful for the browser's management of graphical layout, resizable text fields, and keeping the DOM tree synchronised with what one sees. This last property enabled us to make the decision to *directly* encode much of the system state in the DOM, achieving basic liveness ("The thing on the screen is the actual thing") for the keys and values of obj-dicts.
 
@@ -63,7 +73,7 @@ We used a two-column `<table>` within a `<div>` for each obj-dict, matching the 
 
 This choice of ordinary HTML as a substrate, however, proved rather two-edged. The browser requires many features to do its job of rendering complex web pages. And sadly, as its client, we could only make use of those capabilities which the W3C had decided, at the time of authorship, were worth the effort exposing in JavaScript. For anything else, the browser is a black box, and this was very frustrating in the following case.
 
-### The Radical Concept of Arrows that Stay on the Shapes
+### Trouble Achieving Arrows that Stay on the Shapes
 
 A key aspect of the \OROM{} system is that there is an object *graph*. That is, obj-dicts can have entries pointing to other obj-dicts, without restriction to a tree structure. Drawing arrows to denote this is the obvious notation, and easy on paper, so we wanted it in our substrate for \OROM{}.
 
@@ -133,8 +143,8 @@ One thing that all usable software must do, for example, is avoid crushing many 
 We feel the need to point this out because by default the computer does not know even the most obvious things about how space works, so we must laboriously program this intuitive concept. This is not only true in the case of 2-dimensional visual domains, but even in the 1-dimensional case of memory allocation. The physics of 1-dimensional memory are something like this:
 
 * This number range `0000`--`FFFF` is a discrete space, where addresses are the points.
-* Every point has at most one owner block (there is no overlap.)
-* These blocks are contiguous, finite ranges (1-dimensional boxes.)
+* Every point has at most one owner block (there is no overlap).
+* These blocks are contiguous, finite ranges (1-dimensional boxes).
 
 \joel{Hence the boilerplate involved to realise this in any domain with something resembling space.} Far from being a niche topic in games and graphics, spatial partitioning algorithms and data structures have surprising relevance to more ordinary software. Both memory allocation and graphical layout are essential to today's; shame that only one of those has been recognised as such---and made part of the standard libraries of programming languages.
 
@@ -150,7 +160,7 @@ The model of state-mutation present in most imperative languages is what we call
 
 As opposed to what? In every software system there are certain rules, or "invariants" of *internal consistency*, such as "translational rigidity" above. Often, changes to any part of the system are permissible, but only if connected or dependent parts of the state change in response.
 
-The job of keeping track of who depends on whom can fall either on the programmer or the computer. If the programmer has to do this, they can only go so far managing and simulating in their head. As systems grow more complex, it is only natural to try and make the computer more intelligent to do this work. What this means is that whenever we are tempted to consider constraints, "reactive" programming, or the "Observer" pattern as things we only wheel out *on special occasions*, we only deceive ourselves into doing the *same work* less explicitly. It seems that such "live state" should be the expected common case for software development.
+The job of keeping track of who depends on whom can fall either on the programmer or the computer. If the programmer has to do this, they can only go so far managing and simulating in their head. As systems grow more complex, it is only natural to try and make the computer more intelligent to do this work. What this means is that whenever we are tempted to consider constraints, "reactive" programming, or the "Observer" pattern as things we only wheel out *on special occasions*, we only deceive ourselves into doing the *same work* less explicitly. It seems that such "live state" should be the expected common case for software development. A full treatment of this theme appears in \cite{PolyConstraints}.
 
 If a platform does not provide a means to causally link and unlink bits of live state, then this must form part of the standard boilerplate. Such was the case in \OROM{}/SVG: the polyfilled "Observable" class is the most widely used. It wraps a current value and a list of subscribers, notifying them when it changes.
 
@@ -203,12 +213,12 @@ Array.prototype.map = function() { ... }
 
 One can do this to all objects, even those of Web APIs. For example, we use it to connect SVG nodes to the \OROM{} system: when a \svgel{rect} is created, it is "annotated" with a `userData` pointer to the box that it is part of. Then, when clicked, the box can be found immediately.
 
-This could be described as the box "wrapping" the \svgel{rect}, but risks implying that the \svgel{rect} merely needs to *live inside*, or *be referenced by*, the box. In this case, the *reverse* association is also needed (i.e. mutual pointers.) Clicks can only enter the system *through* SVG in the first place. What is significant here is that JavaScript lets us add such a link to an entity that *we did not design*.
+This could be described as the box "wrapping" the \svgel{rect}, but risks implying that the \svgel{rect} merely needs to *live inside*, or *be referenced by*, the box. In this case, the *reverse* association is also needed (i.e. mutual pointers). Clicks can only enter the system *through* SVG in the first place. What is significant here is that JavaScript lets us add such a link to an entity that *we did not design*.
 
 This term, "user data", often crops up in libraries with the same idea: to associate arbitrary data with an API object. But in languages that do not permit such unanticipated "annotation", this has to be explicitly *designed in* ahead of time. If it was not, then it has to be done in a roundabout way---for example, a separate `userData` lookup table, indexed by the memory address of the API object.
 
 ## Positioning and Sizing
-The simple desire to move and resize boxes with the mouse motivated a lot of the concepts in Sections \ref{basic-assumptions-about-physical-objects} and \ref{maintaining-relationships-over-time}. This problem could be considered a smaller instance of Heuristic\ \ref{ideal-notation}: what is a natural way we *conceive* of this behaviour, and could we implement it that way?
+The simple desire to move and resize boxes with the mouse motivated a lot of the concepts in Sections \ref{basic-assumptions-about-physical-objects} and \ref{maintaining-relationships-over-time}. This problem could be considered a smaller instance of Heuristic\ \ref{ideal-expr}: what is a natural way we *conceive* of this behaviour, and could we implement it that way?
 
 \joel{
 > The above point (moving motivated live state and physics ideas) would be a lot more obvious
@@ -251,9 +261,9 @@ Rigidity in a flat world of sibling shapes is somewhat straightforward. However,
 
 First of all, SVG shapes (e.g. \svgel{rect}) are strictly *leaf* nodes of the DOM. So if we wish to nest boxes within boxes, the visible box \svgel{rect} must be a mere *accessory* to the nestable element, in my case a \svgel{g} (group). This means that instead of resizing the `x`, `y`, `width`, `height` attributes of the \svgel{rect}, only its `width` and `height` change, along with the `transform` attribute of its *parent* \svgel{g}. This was not too bad; just subscribe this attribute, instead of the \svgel{rect} position, to the top-left Point handle.
 
-All child elements of a node transform with it, so already SVG has baked in a basic facility for translational rigidity. This is only available as a tree hierarchy,^[This highlights the mismatch between the tree-based DOM and any system that is graph-structured.] but it is still useful. However, it conflicts with our early decision to have Point objects all share the global co-ordinate system (this was to ensure that simple relations, such as a point following the mouse pointer, are not infuriating to express.) Still, it was necessary in the case of certain elements---especially those which must transcend the tree structure altogether, like arrows between boxes---to bite this bullet, one way or another.
+All child elements of a node transform with it, so already SVG has baked in a basic facility for translational rigidity. This is only available as a tree hierarchy,^[This highlights the mismatch between the tree-based DOM and any system that is graph-structured.] but it is still useful. However, it conflicts with our early decision to have Point objects all share the global co-ordinate system (this was to ensure that simple relations, such as a point following the mouse pointer, are not infuriating to express). Still, it was necessary in the case of certain elements---especially those which must transcend the tree structure altogether, like arrows between boxes---to bite this bullet, one way or another.
 
-Again, we return to how we tend to work things out in the freedom of paper. Co-ordinate systems, here merely positionally displaced, have their origins here and there and have vectors between them. The rods thus far let us visually express relations between global Points; now was a question of expressing one global Point as a displacement from another (the \svgel{g} transform.) New rod Observables `p2_from_p1` and `p1_from_p2` do the vector subtraction, which can then be propagated as local co-ordinates to children. It is nice to express the relation (as well as see it!) this way (Figure\ \ref{fig:rods}).
+Again, we return to how we tend to work things out in the freedom of paper. Co-ordinate systems, here merely positionally displaced, have their origins here and there and have vectors between them. The rods thus far let us visually express relations between global Points; now was a question of expressing one global Point as a displacement from another (the \svgel{g} transform). New rod Observables `p2_from_p1` and `p1_from_p2` do the vector subtraction, which can then be propagated as local co-ordinates to children. It is nice to express the relation (as well as see it!) this way (Figure\ \ref{fig:rods}).
 
 ## Context-Appropriate Ontologies
 Each API has its own conventions, including a way of naming and structuring expressions: an *ontology* \cite{Crit-semprola}. The \OSFA{} approach is exemplified in such interfaces.
@@ -272,9 +282,9 @@ Another example is to be found in the DOM's event listener model. Conceptually, 
 
 To start with, the situation is modelled not as the *changing* of some time-varying property, but instead as a sort of Cartesian product of subroutines. Rather than, say, a piece of live-state for the left mouse button (LMB), we get `onmousedown` and `onmouseup`. Thankfully we do not have `onAdown`/`onAup`, `onBdown/onBup`, ... all the way to `onZdown`/`onZup`, but only `onkeydown`/`onkeyup`. Yet this is just one of the many possible ways to slice this 3-dimensional^[Device (mouse, keyboard), sub-device (button, key), state (up, down)] space.
 
-In \OROM{}/SVG we did not quite want to re-map keys, but we did often want to have things follow the mouse when dragged. In order to do this, we reified the mouse pointer and its position, letting me write `subscribe(point.position, pointer.position)`. The Point has an `is-considering-me?` Observable wrapping `onmouseover` and `onmouseout`, while a `LMB_is_down` Observable reifies the LMB state. The aforementioned subscription is set up whenever `is-considering-me?` and `LMB_is_down` become true, and torn down otherwise. We tended to think of this in the form "subscribe to pointer *only when* pointer is-considering-me *and* LMB is down", but we could live with this notation as a future polyfill in JavaScript.
+In \OROM{}/SVG we did not quite want to re-map keys, but we did often want to have things follow the mouse when dragged. In order to do this, we reified the mouse pointer and its position, letting me write `subscribe(point.position, pointer.position)`. The Point has an `is_considering_me` Observable wrapping `onmouseover` and `onmouseout`, while a `LMB_is_down` Observable reifies the LMB state. The aforementioned subscription is set up whenever `is_considering_me` and `LMB_is_down` become true, and torn down otherwise. We tended to think of this in the form "subscribe to pointer *only when* pointer is-considering-me *and* LMB is down", but we could live with this notation as a future polyfill in JavaScript.
 
-The way these things are connected to the browser's event listeners could be called "device drivers"---an approach described in \cite{Prog21-bbox}. It amounts to translating information from the Web's ontology into that of our substrate, as early as possible (Listing\ \ref{lst:drvs}).
+The way these things are connected to the browser's event listeners could be called "device drivers"---an approach described in \cite{Dadgum66}. It amounts to translating information from the Web's ontology into that of our substrate, as early as possible (Listing\ \ref{lst:drvs}).
 
 \begin{lstlisting}[
   label={lst:drvs},float,captionpos=b,
@@ -335,7 +345,7 @@ Extensional functions are perhaps the most basic form of Knowledge Representatio
 \mathrm{root} (\mathrm{bicycle}) (\mathrm{wheels}) (\mathrm{spokes}) (\mathrm{colour}) = \mathrm{root} (\mathrm{silver})
 \end{equation*}
 
-That is, whatever object is the output of `silver` in the top-level `root` function, the output of `colour` (in the function on the left) points to the same object. The ability to partition a system in this way enables what \cite{Externalise} calls a "natural co-ordinate system" for a piece of software, crucial for understanding and adaptability by others.
+That is, whatever object is the output of `silver` in the top-level `root` function, the output of `colour` (in the function on the left) points to the same object. The ability to partition a system in this way enables what \cite{Externalize} calls a "natural co-ordinate system" for a piece of software, crucial for understanding and adaptability by others.
 
 It seems that this way of expressing the "parts" of a system is an inevitable requirement of any programming substrate. Some languages, such as C, do have static, *compile-time* associative arrays (`struct`s). In our experience this is usually not enough, and it's necessary to bring in a library or clutter the code with a home-grown approximation to dynamic ones. Some parts of the \OROM{} authors' C code were confusing until we realised they were just the guts of a basic associative-array implementation; when we switched to JavaScript, these lines vanished.
 
@@ -348,7 +358,7 @@ a = {
 };
 \end{lstlisting}
 
-is more ``What You See Is What You Get'' than the imperative-style
+is more "What You See Is What You Get" than the imperative-style
 
 \begin{lstlisting}
 a = new Map();
@@ -391,7 +401,7 @@ The allure of meta-circularity here is not merely its novelty, but that it paves
 We emphasise that this is the *allure* of \OROM{}. However, there are some significant practical issues that must be overcome or clarified first.
 
 ## Minimal Descriptions
-The \OROM{} paper was part of the STEPS project of Alan Kay's VPRI.^[Viewpoints Research Institute] This project argued that the immense level of "accidental complexity" present in software implementation could be reduced, and Kay himself dreams of an end result analogous to a "Maxwell's Equations" of software. That is: the behaviour of electromagnetic fields can be represented in four short equations that fit "on a T-shirt".
+The \OROM{} paper was part of the STEPS project of Alan Kay's VPRI.^[Viewpoints Research Institute] This project argued that the immense level of "accidental complexity" present in software implementation could be reduced, and Kay dreams of an end result analogous to a "Maxwell's Equations" of software. That is: the behaviour of electromagnetic fields can be represented in four short equations that fit "on a T-shirt".
 
 A meta-circular Lisp interpreter fits on a page. Could we aim at a similar "fundamental description of software" that fits on something less than millions of lines of code?
 
@@ -415,11 +425,34 @@ Finally, in \cite{Crit-semprola}, there is a warning against "obsession with com
 
 # Evaluation
 
-In this section we will evaluate \OROM{}/SVG according to the relevant three Technical Dimensions as well as Olsen's criteria for User Interface Systems \cite{EvUISR}.
+In this section we will evaluate \OROM{}/SVG according to the Technical Dimensions from Section\ \ref{the-three-properties-as-dimensions} as well as Olsen's criteria for User Interface Systems. It might seem appropriate to also perform an evaluation via the Cognitive Dimensions of Notation. However, this would not actually tell us anything interesting, because the novel contribution of this prototype is not its notation *per se.* Rather, we take it as a given that the notation is designed in a certain way that suits our purposes. The unknowns were: (a) the work involved in achieving this notation, which we have detailed, and (b) what sort of system we could build on top. It is the latter that we seek to evaluate here.
 
-It might seem appropriate to also perform an evaluation via the Cognitive Dimensions of Notation. However, this would not actually tell us anything interesting, because the novel contribution of this system is not its notation. The interface is minimal and unpolished for reasons of expediency. The point is *not* that we have come up with a brilliant new notation or UI that will improve programming; the notation is something that each user should fit to him or herself according to subjective preference. The important point is that the system *supports* the usage of different notations for different contexts. Notations in BootstrapLab should be a free parameter, so it does not make sense to apply Cognitive Dimensions to BootstrapLab *itself*, and it does not provide any value to analyse the placeholder interface in this way.
+## Self-Sustainability
+\criterion{Substrate Size: 1354 LoC.}
+The system was used to implement the basic Id object model, in which low-level details like the definitions of `send()` and `bind()` are present as user-modifiable functions. However, it could be argued that this does not count as the substrate, since it is the *program* implemented via the programming system we are evaluating. Instead, we must consider the JavaScript source code files as the substrate proper.
+
+There are two namespaces: the platform's JavaScript object graph, and the box tree. User code can add to both of these. Any global functions in the source code can be replaced by new definitions at runtime, while any local functions will be invisible to anything at the user level (even the JS console).
+
+Can the user interface be arbitrarily changed from within the system? It might be thought that this is possible because JS boxes can use browser APIs to change the DOM styling. While this is true, there is still inaccessible code in functions defined in the source file. Some of these functions create boxes, and the style they use is confined to the source file and is not a runtime-accessible variable. Thus important aspects of the user interface remain as part of the substrate.
+
+It seems like a fair first approximation to use the line count of the source files as a proxy for the substrate size. This is 1354 lines of code. It is likely that functionality could be moved in-system from here, reducing this figure, though the lower limit is hard to estimate. 
+
+\criterion{Persistence Effort: High}
+On the one hand, persistence is possible through the manual procedure described in Section\ \ref{persistence}. We built up various aspects of the system's current state this way, especially the box positioning and layout. On the other, this is a tedious, manual operation requiring attention to which parts of the DOM constitute the system state.
+
+\criterion{Code Editing: Present.} Code in JS boxes can be edited via plain text operations.
+
+\criterion{Data Execution: Present.}
+JavaScript code in text boxes can be run with a key combination. This code can call functions defined in the source file, and browser APIs, to create new boxes and obj-dicts. These can contain text boxes which can then be filled with JavaScript code strings.
 
 ## Notational Freedom
+\criterion{Custom syntax effort: moderate.} If we had implemented the "code" half of the COLA, instead of only the object model, we could take advantage of the Mood-Specific Language facilities. In the absence of these, however, the effort required to slot in an existing syntax definition at the user-level is moderate. It would require writing the relevant parsing and interpretation code in a JS box. In addition, the meaning of Ctrl+Enter as "execute" is embedded in the substrate and may not be possible to change in-system, necessitating a workaround for executing custom code. However, this would not take much work to move in-system.
+ 
+\criterion{Custom language effort: high.} Where the previous dimension concerned operations compatible with text boxes and JS string processing, this one requires additional graphical freedoms. Access to the DOM APIs in JS boxes could allow one to add new interfaces and interactions, but these would not necessarily integrate well with our box substrate. As with the previous dimension, there may well be parts of the substrate that would have to be moved in-system in order to support custom languages at the user level.
+
+\criterion{Custom notation effort: high.} This follows the same reasoning as the previous dimension.
+
+\joel{
 \criterion{Are there multiple syntaxes for textual notation? No.}
 Only JavaScript syntax is available.
 
@@ -437,50 +470,25 @@ The system only implements the "structural" half of a COLA, so it lacks support 
 
 \criterion{Is there support for custom user-supplied notations? No.}
 Ditto.
+}
 
-## Implicit Structure
-\criterion{Is structure recovery necessary for non-behavioural "data"? No.}
-There are user-level JavaScript functions for locating a box based on its path and accessing sub-structures inside it. It is interesting to note that internally, these functions do need to analyse the "shape" of SVG trees and recognise the patterns that identify boxes, arrows, and so on. This is recovery of higher-level structures implicit in a tree, rather than tree structures implicit in a sequence. Regardless, because this takes place at the implementation level rather than the user level, the answer here is a "no".
+## Explicit Structure
+\criterion{Format errors: moderate.}
+On the one hand, as regards "data", the system allows boxes and arrows to be created only in valid places. (If not, this is a bug rather than the intended behaviour of the system.)
 
-\criterion{Is structure recovery necessary for behavioural "code"? Yes.}
+On the other, the JavaScript code is edited in HTML text boxes. No syntax checks are performed by the substrate; errors are only discovered when calling the platform's `eval()` function to try and run the code. Therefore, all syntax/format errors related to JavaScript can be passed on to consumers of code.
+
+In total, the measure of Format Errors may be strictly less than if both code and data was specified in JavaScript, but remains fairly moderate.
+
+\criterion{String wrangling effort: moderate.}
 Code only exists in the system as JavaScript strings. Therefore, if user-level code ever wants to process or generate code, it needs to convert to/from these strings.
 
-\criterion{Can syntax errors be saved and discovered later? Yes.}
-The JavaScript code is edited in HTML text boxes. No syntax checks are performed by the substrate; errors are only discovered when calling the platform's `eval()` function to try and run the code.
+For data, there are user-level JavaScript functions for locating a box based on its path and accessing sub-structures inside it. It is interesting to note that internally, these functions do need to analyse the "shape" of SVG trees and recognise the patterns that identify boxes, arrows, and so on. This is recovery of higher-level structures implicit in a tree, rather than tree structures implicit in a sequence. Regardless, this takes place at the implementation level and the user level need not be aware of it.
 
-\criterion{Can extra-syntactic errors be saved and discovered later? No.}
-The system allows boxes and arrows to be created only in valid places. (If not, this is a bug rather than the intended behaviour of the system.)
-
-## Self-Sustainability
-\criterion{Can you add new items to system namespaces without a restart? Yes.}
-There are two namespaces: the platform's JavaScript object graph, and the box tree. User code can add to both of these.
-
-\criterion{Can programs generate programs and execute them? Yes.}
-JavaScript code in text boxes can be run with a key combination. This code can call functions defined in the source file, and browser APIs, to create new boxes and obj-dicts. These can contain text boxes which can then be filled with JavaScript code strings.
-
-\criterion{Are changes persistent enough to encourage indefinite evolution? Maybe.}
-On the one hand, persistence is possible through the manual procedure described in Section\ \ref{persistence}. We built up various aspects of the system's current state this way, especially the box positioning and layout.
-
-\criterion{Can you reprogram low-level infrastructure within the running system? Maybe.}
-The system was used to implement the basic Id object model, in which low-level details like the definitions of `send()` and `bind()` are present as user-modifiable functions. However, it could be argued that this does not count as it is the *program* implemented via the programming system we are evaluating. In this case, we must consider the low-level infrastructure of \OROM{}/SVG. 
-
-\criterion{Can the user interface be arbitrarily changed from within the system? No.}
-It might be thought that this is possible because JS boxes can use browser APIs to change the DOM styling. While this is true, there is still inaccessible code in functions defined in the source file. Some of these functions create boxes, and the style they use is confined to the source file and is not a runtime-accessible variable.
-
-\criterion{Is there a language mismatch? Maybe.}
-The system state is stored in the DOM, which is serialised to HTML, while the code lives in JavaScript. It supports JS boxes as part of a graph structure, so this slight mismatch would need overcoming to generate a replacement system.
-
-\criterion{Is there a scale mismatch?}
-
-\criterion{Is there an interpreter/compiler mismatch? Yes.}
-Code in JS boxes can only be executed, changing the runtime environment; it does not have the effect of constructing an external artefact with the same code and data.
-
-\criterion{Is there significant regeneration delay? No.}
-
-\criterion{Is there significant loss of state when replacing the system? Yes.}
+By weighting code-processing and data-processing scenarios equally, we see no penalty from the latter and some penalty from the former. Thus we say the system's usage requires moderate string-wrangling effort.
 
 ## Situation, Task, User, Importance
-\OROM{}/SVG helps this author (User) visually explore the Id object model (Task) for research (Situation). The design as presented in \cite{OROM} showed promise, but was hard to understand and simulate on paper (Importance.) The value lies in the *Expressive Match:* the static diagrams in the source work have been turned into the dynamic medium in which the object model is built. However, these diagrams were structural and included code as text strings, which was replicated in the dynamic versions.
+\OROM{}/SVG helps this author (User) visually explore the Id object model (Task) for research (Situation). The design as presented in \cite{OROM} showed promise, but was hard to understand and simulate on paper (Importance). The value lies in the *Expressive Match:* the static diagrams in the source work have been turned into the dynamic medium in which the object model is built. However, these diagrams were structural and included code as text strings, which was replicated in the dynamic versions.
 
 # Conclusions and Future Work
 ## What Did It Take, and Why?
@@ -501,13 +509,17 @@ Perhaps in an ideal world, someone could realise their vision in software by foc
 
 If the core Web platform (particularly JavaScript) is meant *for* supporting "web apps", and this is indeed how it is used, then it seems it has not yet fully absorbed the functionality common to this usage. At present, this is simply a surprise, or a puzzle, and it might simply be a matter of time before it catches up.
 
-Nevertheless, I wanted to explicitly highlight the obstacles one is likely to meet when starting from this platform. They include not only those specific to the Web, but also issues that occur far more widely (e.g. monopoly ontologies). I showed how, in the short-term, we can overcome these with solutions intended to be domain-appropriate to their use (within the syntactic limits of JavaScript).
+Nevertheless, we wished to explicitly highlight the obstacles one is likely to meet when starting from this platform. They include not only those specific to the Web, but also issues that occur far more widely (e.g. monopoly ontologies). We showed how, in the short-term, we can overcome these with solutions intended to be domain-appropriate to their use (within the syntactic limits of JavaScript).
 
 ## What Next?
-\OROM{}/SVG more or less realises my desired substrate for implementing \OROM{}. However, there is one major area I failed to make domain-appropriate. Despite representing the "data" parts of the system as I wanted, the *computational* parts of \OROM{} were just transplanted into the text boxes as source code. I will reiterate that this is *sometimes* suitable, but not always, and it would be worth exploring alternative ways to express some of it in the substrate I have. Having JavaScript code that the user can modify also seems to mess up the browser's debugger when stepping through it.
+\OROM{}/SVG more or less realises our desired notation for implementing \OROM{}. However, there is one major area we failed to make domain-appropriate. Despite representing the "data" parts of the system as we wanted, the *computational* parts of \OROM{} were just transplanted into the text boxes as source code. This is not full Explicit Structure, and having user-modifiable JavaScript code also makes it hard to step through it in the browser's debugger. It could be worth exploring alternative ways to express the code in the box notation we have (as well as ways to make it gradually less tedious).
 
+However, we will now leave the "notation-first" approach here and move on to putting self-sustainability first, making sure to have explicitly structured code as well as data. We will not seek to build the COLA design *per se* but will still draw inspiration from its approach. This is the topic of the next chapter.
+
+\joel{
 Still, in this mostly-suitable substrate for \OROM{}, I can continue with my project of seeing whether the *allure* of \cite{COLAs} can be saved from the text-based "hidden world" limitation that pervades it. The obvious next step is attempting "self-implementation". This is desirable is because I still have not escaped my text editor. Any changes to my \OROM{}/SVG substrate (of nested box drawing) require going back to the script files; I still cannot take advantage of the system I have developed, to ease its own development. In the words of \cite{COLAs}, I wish to make it so that the original JavaScript files can be "jettisoned without remorse".
 
 In Section\ \ref{retained-mode-vector-graphics}, I touched on how everyone with a browser has access to a powerful vector graphics editor (SVG) locked behind a completely inappropriate UI (the JS Console). It is similar for 3D graphics (WebGL), and sound and music (Web Audio). Similar observations are made about "native" OS apps in \cite{Prog21-dyn}. Unfortunately for that domain, the interface that unlocks your operating system's range of functionalities---batch-mode compilation---is quite far from the affordances of the (interactive) JS Console.
 
 I intend to use \OROM{}/SVG to "tame" SVG and other JavaScript APIs, with some minimal on-demand visualisation in the large portion of the screen next to the JS console. This is an attempt to generalise the "rect controls", which allow the obvious geometric properties of a \svgel{rect} to be directly manipulated (Section\ \ref{context-appropriate-ontologies}). Giving \OROM{} access to Web technologies in this way is essential for evolving it into a *fully-featured* self-changeable software environment, which could allow as much domain-specifc representation as its user wishes.
+}

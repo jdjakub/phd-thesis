@@ -13,7 +13,7 @@ The results of this process were as follows, along with a brief rationale for ea
 \newcommand{\y}{\ding{52}}
 \newcommand{\n}{}
 
-## Self-sustainability
+## Self-sustainability questions
 
 Questions:
 
@@ -37,7 +37,7 @@ Question & \rot{Haskell}      & \rot{Jupyter} & \rot{HyperCard} & \rot{Subtext}
 Total & 0 & 0 & 1 & 0 & 1 & 1 & 2 & 4 & 4 & 4 & 5 \\
 \end{tabular}
 
-## Notational diversity
+## Notational diversity questions
 
 Questions:
 
