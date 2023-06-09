@@ -1,26 +1,26 @@
 \hypertarget{background}{%
 \chapter{Background}\label{background}}
 
-We will now set out the relevant background knowledge for the dissertation. This chapter is mostly concerned with existing concepts and work; this will let us introduce novel concepts and interpretations in the next chapter. This chapter is structured as follows:
-
-* In Section\ \ref{programming-systems-vs-languages}, we define *programming systems* in contrast to programming languages and discuss why this is necessary.
-* In Section\ \ref{examples-of-programming-systems}, we illustrate this with landmark examples of programming systems from the past.
-* In Section\ \ref{precursors-of-the-three-properties}, we survey the existing patterns in programming that take us part of the way to the Three Properties.
+We will now set out the relevant background, mostly being concerned with existing concepts and work; this will let us introduce novel concepts and interpretations in the next chapter. In Section\ \ref{programming-systems-vs-languages}, we define *programming systems* in contrast to programming languages and discuss why this is necessary. Subsequently, in Section\ \ref{examples-of-programming-systems}, we illustrate this with landmark examples of programming systems from the past. Finally, in Section\ \ref{precursors-of-the-three-properties}, we survey the existing patterns in programming that take us part of the way to the Three Properties.
 
 # Programming Systems vs Languages
 Many forms of software have been developed to enable programming. The classic form consists of a *programming language*, a text editor to enter source code, and a compiler to turn it into an executable program. Instances of this form are differentiated by the syntax and semantics of the language, along with the implementation techniques in the compiler or runtime environment. Since the advent of graphical user interfaces (GUIs), programming languages can be found embedded within graphical environments that increasingly define how programmers work with the language---for instance, by directly supporting debugging or refactoring. Beyond this, the rise of GUIs also permits diverse visual forms of programming, including visual languages and GUI-based end-user programming tools.
 
-The classic essay by Gabriel\ \cite{PLrev} distinguishes the *languages* and *systems* paradigms in programming research. The topic of this thesis, and many of the examples we will use to illustrate concepts, rely on understanding this distinction and only make sense within the systems paradigm.
+The classic essay by Gabriel\ \cite{PLrev} distinguishes the *languages* and *systems* paradigms in programming research. *Languages* are formal mathematical models of syntax and semantics; researchers might ask what an expression *means* and include code samples in papers. *Systems,* in contrast, are running pieces of software whose current state changes according to the effects of program code. Researchers studying systems might be more concerned with what code *does* to a running system in a specific state instead of the more abstract language properties.
+
+The topic of this thesis, and many of the examples we will use to illustrate concepts, rely on understanding this distinction and only make sense within the systems paradigm.
 Therefore we shift our attention from *programming languages* to the more general notion of "software that enables programming"---in other words, *programming systems*.
 
 \begin{defn}[Programming System]
 A \emph{programming system} is an integrated and complete set of tools sufficient for creating, modifying, and executing programs. These will include notations for structuring programs and data, facilities for running and debugging programs, and interfaces for performing all of these tasks. Facilities for testing, analysis, packaging, or version control may also be present. Notations include programming languages and interfaces include text editors, but are not limited to these.
 \end{defn}
 
-This notion covers classic programming languages together with their editors, debuggers, compilers, and other tools. Yet it is intentionally broad enough to accommodate image-based programming environments like Smalltalk, operating systems like Unix, and hypermedia authoring systems like Hypercard, in addition to various other examples we will mention next.
+A word about terminology: if we view languages in the sense of Gabriel's "languages paradigm", then it is a "type error" to include languages in the above definition. Abstract mathematical models of syntax and semantics are not the same as software. However, language *implementations* are software. We will use the term "language" to abbreviate "language implementation" since we have no use for the other meaning in this dissertation.
+
+With that said, our above notion of programming system covers classic programming languages together with their editors, debuggers, compilers, and other tools. Yet it is intentionally broad enough to accommodate image-based programming environments like Smalltalk, operating systems like Unix, and hypermedia authoring systems like Hypercard, in addition to various other examples we will mention next.
 
 # Examples of Programming Systems
-We illustrate the notion of a programming system through a number of example systems. We draw these from three broad reference classes:
+We illustrate the notion of a programming system through a number of example systems. We are not trying to exhaustively cover all possible systems, but simply give an impression based on major examples. Therefore, we draw them from three broad reference classes:
 
 * Software ecosystems built around a text-based programming *language*. They consist of a set of tools such as compilers, debuggers, and profilers. These tools may exist as separate command-line programs, or within an Integrated Development Environment (IDE).
 * Those that resemble an *operating system* (OS) in that they structure the execution environment and encompass the resources of an entire machine (physical or virtual). They provide a common interface for communication, both between the user and the computer, and between programs themselves.
@@ -83,15 +83,15 @@ This ability for a programmer to express arbitrarily small parts of an applicati
 The previously discussed programming systems were either universal, not focusing on any particular kind of application, or targeted at broad fields, such as Artificial Intelligence and symbolic data manipulation in Lisp's case. In contrast, the following examples focus on more narrow kinds of applications that need to be built. Many support programming based on rich interactions with specialised visual and textual notations.
 
 \paragraph{Spreadsheets.}
-The first spreadsheets became available in 1979 in VisiCalc\ \cite{VisiCalc, VisiCalc2} and helped analysts perform budget calculations. As programming systems, spreadsheets are notable for their two-dimensional grid substrate and their model of automatic re-evaluation. The programmability of spreadsheets developed over time, acquiring features that made them into powerful programming systems in a way VisiCalc was not. The final step was the 1993 inclusion of *macros* in Excel, later further extended with *Visual Basic for Applications*.
-
-\paragraph{Graphical languages.}
-Efforts to support programming without relying on textual code are "languages" in a more metaphorical sense. In these programming systems, programs are made out of graphical structures as in LabView\ \cite{LabView} or Programming-By-Example\ \cite{PBE}.
+The first spreadsheets became available in 1979 in VisiCalc\ \cite{VisiCalc, VisiCalc2} and helped analysts perform budget calculations. As programming systems, spreadsheets are notable for their two-dimensional grid substrate and their model of automatic re-evaluation. The programmability of spreadsheets developed over time, acquiring features that made them into powerful programming systems in a way VisiCalc was not. A major step was the 1993 inclusion of *macros* in Excel, later further extended with *Visual Basic for Applications* and more recently with *lambda functions.*
 
 \paragraph{HyperCard.}
 While spreadsheets were designed to solve problems in a specific application area, HyperCard\ \cite{HyperCard} was designed around a particular application format. Programs are "stacks of cards" containing multimedia components and controls such as buttons. These controls can be programmed with pre-defined operations like "navigate to another card", or via the HyperTalk scripting language for anything more sophisticated.
 
 As a programming system, HyperCard is interesting for a couple of reasons. It effectively combines visual and textual notation. Programs appear the same way during editing as they do during execution. Most notably, HyperCard supports gradual progression from the "user" role to "developer": a user may first use stacks, then go on to edit the visual aspects or choose pre-defined logic until, eventually, they learn to program in HyperTalk.
+
+\paragraph{Graphical languages.}
+Efforts to support programming without relying on textual code are "languages" in a more metaphorical sense. In these programming systems, programs are made out of graphical structures as in LabView\ \cite{LabView} or Programming-By-Example\ \cite{YWIMC}.
 
 # Precursors of the Three Properties
 In the next chapter, we will go on to develop the Three Properties in detail. However, they do not leap out of a vacuum, but are rather developments of concepts that already exist in programming. Here, we will give a glossary of these existing concepts. In short:
@@ -143,7 +143,7 @@ We do not expect to inhabit such ideal conditions. Even so, being aware of them 
 
 \paragraph{Syntax.} In programming, this refers to the "look and feel" of a language's textual source code. Formally, syntax is the set of rules defining legal and illegal symbol sequences. This idea can be metaphorically extended to non-sequential structures. For example, we can think of C `struct` definitions as setting out the valid "shape" of the parts of a data structure. The same applies to binary file formats.
 
-\paragraph{Quantitative Syntax.} This is a term introduced by \cite{Infra} (page\ 13) for the pattern of prefixing a block with its length and using numerical pointers to link structures. A simple example is the Pascal String which begins with a length byte and continues for that many characters.
+\paragraph{Quantitative Syntax.} This is a term introduced by \cite[p.\ 13]{Infra} for the pattern of prefixing a block with its length and using numerical pointers to link structures. A simple example is the Pascal String which begins with a length byte and continues for that many characters.
 
 \paragraph{Qualitative Syntax.} This, in contrast to Quantitative Syntax, relies on special delimiters. For example, the C String begins right away with its characters, relying on a null byte to show up at some point and signal the end.
 
@@ -159,4 +159,4 @@ We do not expect to inhabit such ideal conditions. Even so, being aware of them 
 
 \paragraph{Text Editors.} These are a type of editor for plain text files. However, they are widely used to write code in programming languages, which have extra syntax rules beyond the plain text format. Unlike most editors, text editors *can* save files that are invalid from the perspective of their consumers under realistic use-cases. These syntax errors are then discovered at the point of consumption.
 
-\paragraph{Conclusion.} The basic intuition behind Explicit Structure is the *directness* experienced in creation and programming. Almost every data structure in computing has an editor with which one can manipulate the structure directly, and when programming we can act as if data structures have named parts that we can simply reference. This directness is interrupted by the standalone exception of text editors (on the creation side) and strings with machine-readable^[We have nothing to say about strings that contain natural language simply to be echoed out to the user (e.g. error messages.) However, our ideas about Explicit Structure may be applicable to cases where software must parse and interpret natural language too.] implicit content (on the programming side.)
+\paragraph{Conclusion.} The basic intuition behind Explicit Structure is the *directness* experienced in creation and programming. Almost every data structure in computing has an editor with which one can manipulate the structure directly, and when programming we can act as if data structures have named parts that we can simply reference. This directness is interrupted by the standalone exception of text editors (on the creation side) and strings with machine-readable^[We are unconcerned with strings that contain natural language simply to be echoed out to the user (e.g. error messages). However, our ideas about Explicit Structure may be applicable to cases where software must parse and interpret natural language too.] implicit content (on the programming side).
