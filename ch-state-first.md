@@ -1,7 +1,7 @@
 \hypertarget{year1}{%
 \chapter{\OROM{}/SVG: Self-Sustainability via Custom Notation}\label{year1}}
 
-In Section\ \ref{the-three-properties} we mentioned our desire to have Explicit Structure as a base, in which case our priorities can either be (a) using Notational Freedom to pursue Self-Sustainability, or (b) using Self-Sustainability to pursue Notational Freedom. In this chapter^[Adapted from our 2020 Convivial Computing Salon paper entitled "What Does It Take To Create With Domain-Appropriate Tools?" \cite{Jdj20}.] we report on the first approach. We follow the process of implementing part of the Self-Sustainable COLA architecture, namely the Id object model covering the "state" or "structural" half \cite{OROM}. We do this using a notation better suited to it than that provided by our default programming tools. This comes from applying the following heuristic:
+In Section\ \ref{the-three-properties} we mentioned our desire to have Explicit Structure as a base, in which case our priorities can either be (a) using Notational Freedom to pursue Self-Sustainability, or (b) using Self-Sustainability to pursue Notational Freedom. In this chapter^[Adapted from our 2020 Convivial Computing Salon paper entitled "What Does It Take To Create With Domain-Appropriate Tools?" \cite{CCS20}.] we report on the first approach. We follow the process of implementing part of the Self-Sustainable COLA architecture, namely the Id object model covering the "state" or "structural" half \cite{OROM}. We do this using a notation better suited to it than that provided by our default programming tools. This comes from applying the following heuristic:
 
 \begin{heuristic}[Ideal Expression]
 \label{ideal-expr}
