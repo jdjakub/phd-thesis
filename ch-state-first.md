@@ -427,7 +427,7 @@ Finally, in \cite{Crit-semprola}, there is a warning against "obsession with com
 
 In this section we will evaluate \OROM{}/SVG according to the Technical Dimensions from Section\ \ref{the-three-properties-as-dimensions} as well as Olsen's criteria for User Interface Systems. It might seem appropriate to also perform an evaluation via the Cognitive Dimensions of Notation. However, this would not actually tell us anything interesting, because the novel contribution of this prototype is not its notation *per se.* Rather, we take it as a given that the notation is designed in a certain way that suits our purposes. The unknowns were: (a) the work involved in achieving this notation, which we have detailed, and (b) what sort of system we could build on top. It is the latter that we seek to evaluate here.
 
-## Self-Sustainability
+## Measures of Self-Sustainability
 \criterion{Substrate Size: 1354 LoC.}
 The system was used to implement the basic Id object model, in which low-level details like the definitions of `send()` and `bind()` are present as user-modifiable functions. However, it could be argued that this does not count as the substrate, since it is the *program* implemented via the programming system we are evaluating. Instead, we must consider the JavaScript source code files as the substrate proper.
 
@@ -445,7 +445,7 @@ On the one hand, persistence is possible through the manual procedure described 
 \criterion{Data Execution: Present.}
 JavaScript code in text boxes can be run with a key combination. This code can call functions defined in the source file, and browser APIs, to create new boxes and obj-dicts. These can contain text boxes which can then be filled with JavaScript code strings.
 
-## Notational Freedom
+## Measures of Notational Freedom
 \criterion{Custom syntax effort: moderate.} If we had implemented the "code" half of the COLA, instead of only the object model, we could take advantage of the Mood-Specific Language facilities. In the absence of these, however, the effort required to slot in an existing syntax definition at the user-level is moderate. It would require writing the relevant parsing and interpretation code in a JS box. In addition, the meaning of Ctrl+Enter as "execute" is embedded in the substrate and may not be possible to change in-system, necessitating a workaround for executing custom code. However, this would not take much work to move in-system.
  
 \criterion{Custom language effort: high.} Where the previous dimension concerned operations compatible with text boxes and JS string processing, this one requires additional graphical freedoms. Access to the DOM APIs in JS boxes could allow one to add new interfaces and interactions, but these would not necessarily integrate well with our box substrate. As with the previous dimension, there may well be parts of the substrate that would have to be moved in-system in order to support custom languages at the user level.
@@ -472,7 +472,7 @@ The system only implements the "structural" half of a COLA, so it lacks support 
 Ditto.
 }
 
-## Explicit Structure
+## Measures of Explicit Structure
 \criterion{Format errors: moderate.}
 On the one hand, as regards "data", the system allows boxes and arrows to be created only in valid places. (If not, this is a bug rather than the intended behaviour of the system.)
 

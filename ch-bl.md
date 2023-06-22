@@ -647,7 +647,7 @@ In this section we will evaluate BootstrapLab according to the relevant three Te
 
 It might seem appropriate to also perform an evaluation via the Cognitive Dimensions of Notation. However, this would not actually tell us anything interesting, because the novel contribution of this system is not its notation. The interface is minimal and unpolished for reasons of expediency. The point is *not* that we have come up with a brilliant new notation or UI that will improve programming; the notation is something that each user should fit to him or herself according to subjective preference. The important point is that the system *supports* the usage of different notations for different contexts. Notations in BootstrapLab should be a free parameter, so it does not make sense to apply Cognitive Dimensions to BootstrapLab *itself*, and it does not provide any value to analyse the placeholder interface in this way.
 
-## Self-Sustainability
+## Measures of Self-Sustainability
 \criterion{Substrate Size: 1550 LoC.}
 There is deliberately only one system namespace: the state graph rooted at the top-level registers. Some of these names have special functions in the low-level ASM, but otherwise this namespace is free for user additions. These can be added manually in the in-system editor or in code by the primitive `store` instruction.
 
@@ -666,7 +666,7 @@ As in Chapter\ \ref{year1}'s Evaluation, we give the line count as a reasonable 
 
 \criterion{Data Execution: Present.} Because of Alignment (Force\ \ref{alignment}), low-level instructions that change state are represented as ordinary maps with certain format constraints. The instruction set is sufficient for constructing arbitrary graph structures in the state, including programs composed of instructions. The `next_instruction` register can be pointed at such a list and execution can be started using `run_and_render()` in the JS console. The analogous properties hold for high-level Masp code which is also represented as maps.
 
-## Notational Freedom
+## Measures of Notational Freedom
 \criterion{Custom syntax effort: moderate.} Because of substrate debt, it may not be possible to make changes at the user level such that a string can be "executed" according to custom syntax and semantics via a click or key combination. However, it is possible to use the `js` "escape hatch" instruction to embed arbitrary JS code to do the appropriate processing. In the absence of substrate debt, it would be possible to edit the relevant parts of the system to support custom syntaxes---both textual, as strings, but also "structural" with different map structures to what Masp expects. This direct editing of the system could still be costly, and adopting the techniques in the Lisp half of COLA \cite{OECM} or OMeta \cite{OMeta} could bring custom syntaxes closer to being "slotted in" without difficulty.
 
 \criterion{Custom language effort: moderate.} This follows similar considerations, except the substrate debt related to graphical capabilities and the lack of exposure of certain platform graphical primitives is also relevant here. However, implementing language-like notations may be aided by the existing layout capabilities of the tree editor.
@@ -691,7 +691,7 @@ The code for rendering the tree editor and accepting user input currently lives 
 \criterion{Is there support for custom user-supplied grammars? Potentially.} Ditto.
 }
 
-## Explicit Structure
+## Measures of Explicit Structure
 \criterion{Format errors: few.} The structure editing interface of the tree editor eliminates the existence of syntax errors for data, Masp code, and instructions. Within these structures, certain format errors are possible (e.g. failing to supply required arguments to an instruction).
 
 \criterion{String wrangling effort: low.} Because all data, including instructions and Masp code, is embedded in map data structures edited structurally, there is little need for the user to write parsing or serialising code. The exceptions are with hex colour codes, where the initial `#` character may need stripping, and rendered map entries, where the colon `:` needs attaching and stripping.

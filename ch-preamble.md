@@ -8,4 +8,12 @@ I dedicate.
 I declare.
 
 \chapter*{Acknowledgements}
-I wish to thank.
+I wish to thank
+
+Tomas Petricek
+Stefan Marr
+Jonathan Edwards
+Stephen Kell
+Antranig Basman
+Hamish Todd
+Daria

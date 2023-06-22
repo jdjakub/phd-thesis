@@ -1,4 +1,4 @@
-\documentclass[12pt]{report}
+\documentclass[11pt,a4paper,twoside,openany]{book}
 \usepackage[utf8]{inputenc}
 \usepackage{graphicx}
 \usepackage{tabularx}
@@ -58,6 +58,13 @@
   basicstyle=\ttfamily,
 }
 
+\usepackage{fancyhdr}
+\pagestyle{empty}
+\newenvironment{abstract}%
+{\cleardoublepage\null\vfill\begin{center}%
+\bfseries\abstractname\end{center}}%
+{\vfill\null}
+
 \title{
   {Achieving Self-Sustainability in Interactive Graphical Programming Systems}\\
   {\large University of Kent}
@@ -98,7 +105,7 @@
 \input{ch-background.tex}
 \input{ch-analysis.tex}
 \input{ch-tech-dims.tex}
-\input{ch-state-first.tex}
+%\input{ch-state-first.tex}
 \input{ch-bl.tex}
 \joel{
 \input{ch-related-work.tex}

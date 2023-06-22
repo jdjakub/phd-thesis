@@ -34,7 +34,7 @@ Alternatively, we could hope that the app is open-source, download the code, set
 
 In the worst case, both of these approaches could be blocked; run-time tampering could be prevented by security policy (especially on a mobile device) and re-building from source cannot work without access *to* the source. Suffice to say, none of this is suitable for an average user. Even a seasoned programmer would consider it not worth the bother. Our task of changing a number, while technically possible, has a severely *disproportionate* accidental complexity cost.
 
-In specific situations, software authors do have good reasons to restrict access to internals. For example, in a game it is important to enforce the rules, but access to internals would enable arbitrary cheating. However, this consideration is not representative of most types of software. Despite this, we are unable to simply *choose* to build such "open" software. Even if *we* wrote the app and desire to support adaptation beyond what we anticipated, we face the fact that our tools can only create software that is "closed". The task of "supporting unanticipated modification" is itself a *feature* that we must somehow figure out and implement on top, and it is unclear how to achieve such a feature. Nevertheless, it is worth striving for a world where this accidental complexity is as reduced as possible. We might expect this to involve a mix of "demolition" work---that of removing barriers that have been placed in the way---and "construction" work of building tools that help us work more effectively.
+In specific situations, software authors do have good reasons to restrict access to internals. For example, in a game it is important to enforce the rules and access to internals would enable arbitrary cheating. However, this consideration is not representative of most types of software. Despite this, we are unable to simply *choose* to build such "open" software. Even if *we* wrote the app and desire to support adaptation beyond what we anticipated, we face the fact that our tools can only create software that is "closed". The task of "supporting unanticipated modification" is itself a *feature* that we must somehow figure out and implement on top, and it is unclear how to achieve such a feature. Nevertheless, it is worth striving for a world where this accidental complexity is as reduced as possible. We might expect this to involve a mix of "demolition" work---that of removing barriers that have been placed in the way---and "construction" work of building tools that help us work more effectively.
 
 # How Should Things Work?
 
@@ -159,7 +159,7 @@ Furthermore, it is worth exploring the Three Properties in *combination* because
 
 Due to this last point, we see Explicit Structure as a necessary foundation for the work to follow. Thus, out of the six possible ways we could prioritise the Three Properties, we are left with two: explore self-sustainability with the aid of notational freedom, or vice versa. Our work in Chapter\ \ref{year1} will take the former path and Chapter\ \ref{bl} will fit the latter.
 
-# Thesis Statement
+# Thesis Statement and Contributions
 The statement of our thesis is as follows:
 
 > It is possible to add Notational Freedom to the web browser programming system by embedding a Self-Sustainable system built on Explicit Structure.
@@ -169,9 +169,9 @@ We prove this by constructing such a system which we call *BootstrapLab.* It is 
 \joel{
 We can roughly topological-sort these dependencies as follows. Our primary goal is to explore Notational Freedom in interactive, graphical programming systems. To support this, we should achieve Self-Sustainability. To do both of these with minimal distraction, we should make sure to build on a foundation of Explicit Structure.
 
-In this dissertation, we do not follow this order strictly, but it shows a sort of logic as to how each property fits into the bigger picture.} We see that the only way discover how to achieve these goals is by *doing,* so we work to build a prototype programming system called *BootstrapLab* that makes progress on the Three Properties simultaneously.
+In this dissertation, we do not follow this order strictly, but it shows a sort of logic as to how each property fits into the bigger picture. We see that the only way discover how to achieve these goals is by *doing,* so we work to build a prototype programming system called *BootstrapLab* that makes progress on the Three Properties simultaneously.}
 
-This system itself is only a secondary contribution; primarily, we contribute the necessary steps and principles that its construction led us to *discover.* We believe that it should be possible to build these Three Properties atop a wide variety of programming systems, and our hope is to document enough of a generalisable technique to make this feasible for the average programmer.
+BootstrapLab itself is a contribution, but we also contribute the necessary steps and principles that its construction led us to *discover.* We believe that it should be possible to build these Three Properties atop a wide variety of programming systems; our hope is that in Chapter\ \ref{bl} we have documented enough of a generalisable technique to make this feasible for the average programmer.
 
 Instead of seeking to master the ins-and-outs of Smalltalk, Unix or indeed BootstrapLab, what is needed is to steal the best ideas and synthesise them into something fresh---to have our cake and eat it too. It is as if we have developed the study of sorting by coming up with a prototype sorting algorithm---the new clarity is the important part, while the concrete program was just the vehicle that got us there.
 
