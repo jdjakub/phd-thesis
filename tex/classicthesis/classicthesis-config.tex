@@ -92,8 +92,6 @@
 \newenvironment{longtable}[2]{\begin{tabular}}{\end{tabular}}
 \newenvironment{head}{}{}
 %\newcommand{\hypertarget}[1]{}
-\newtheorem{heuristic}{Heuristic}
-\newtheorem{defn}{Definition}
 % ****************************************************************************************************
 
 
@@ -125,11 +123,16 @@
 
 \PassOptionsToPackage{fleqn}{amsmath}       % math environments and more by the AMS
   \usepackage{amsmath}
+\usepackage{amsthm}
+
+\newtheorem{heuristic}{Heuristic}
+\newtheorem{defn}{Definition}
 
 % ********************************************************************
 % General useful packages
 % ********************************************************************
 \usepackage{graphicx} %
+\graphicspath{{../../img/}}
 \usepackage{scrhack} % fix warnings when using KOMA with listings package
 \usepackage{xspace} % to get the spacing after macros right
 \PassOptionsToPackage{printonlyused,smaller}{acronym}
@@ -199,6 +202,23 @@
   %frame=single,
   belowcaptionskip=.75\baselineskip
   %frame=L
+}
+\lstset{breaklines=true, columns=fullflexible, breakatwhitespace=true, basicstyle=\ttfamily\footnotesize}
+\lstdefinelanguage{JavaScript}{
+  keywords={break, case, catch, continue, debugger, default, delete, do, else,
+  finally, for, function, if, in, instanceof, new, return, switch, this, throw,
+  try, typeof, var, void, while, with, let, false, true},
+  morecomment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  morestring=[b]',
+  morestring=[b]",
+  sensitive=true
+}
+\lstset{
+  language=JavaScript,
+  numbers=none,
+  columns=fullflexible,
+  basicstyle=\ttfamily,
 }
 % ****************************************************************************************************
 

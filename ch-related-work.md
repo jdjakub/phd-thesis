@@ -1,5 +1,40 @@
 \chapter{Related Work}
 
+SS:
+Smalltalk
+Squeak
+Pharo
+Fizzygum
+Lively Kernel
+Cook Clay
+COLA (OROM, OECM)
+Game Engines
+
+NF:
+MPS
+Eco
+OMeta
+
+Notations:
+Gezira / Nile
+Sketch n Sketch
+WWID / YWIMC
+Boxer
+Sketchpad
+[Briar](https://graphics.cs.wisc.edu/Papers/1994/Gle94/constraints.pdf)
+Palimpsest
+DDV
+[Apparatus](http://aprt.us/)
+VPcodex
+VPsurvey
+GalleryUIs
+Forms3
+Hopscotch
+
+ES:
+Subtext
+Infra
+
 \cite{Liveness}
 \cite{KellComm}
 \cite{STdesign}

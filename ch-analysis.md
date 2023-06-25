@@ -88,7 +88,7 @@ In Batch Mode, the programmer writes code in a high-level language and passes th
 
 \begin{figure}
 \centering
-\input{../fig/change-by-re-creation.tex}
+\input{../../fig/change-by-re-creation.tex}
 \caption{Change By Re-Creation: source code $S$ is compiled into a program $P$ which is run on some inputs to produce a result $R$ signifying the observable ``behaviour'' of a program in the Batch-Mode paradigm. To change this behaviour under the same inputs, we must trace up the arrows to the source code and edit it into $S'$. From this, a new program $P'$ is compiled, which is run to produce a new result $R'$, and so on.}
 \label{fig:change-by-re-creation}
 \end{figure}
@@ -142,7 +142,7 @@ And the consequences:
 
 This paradigm is embodied in Lisp and Smalltalk, both for different reasons. Lisp originated before Unix as a language for mathematical and logical symbol manipulation in AI research; it makes sense that such a tool had little need to import batch-mode, industrial-scale computation as its primary concept. Smalltalk, on the other hand, deliberately rejected this convention to serve its goal of shifting computing out of the industrial mode and into the personal. In neither do we find a mandatory separation between volatile and non-volatile storage, nor between "large objects" (files and processes) and "small objects" (variables and code). Instead we find a graph of data structures, called "expressions" in Lisp and "objects" in Smalltalk.
 
-## Batch Mode Anachronisms
+## Batch-Mode Anachronisms
 The relaxed assumptions make sense in the modern computing environment with plentiful compute and storage. However, the Unix Paradigm preserves the assumptions and consequences of Batch Mode. From this perspective, the three Batch Mode legacies feel obsolete.
 
 ### Volatility Split
@@ -203,7 +203,9 @@ If the software is a programming system, then this can get confusing: both level
 
 \begin{figure}
 \centering
-\input{../fig/user-impl.tex}
+\scalebox{0.85}{
+  \input{../../fig/user-impl.tex}
+}
 \caption{Relativity of user versus implementation level depending on one's role.}
 \label{fig:user-impl-examples}
 \end{figure}
@@ -230,7 +232,7 @@ To summarise the picture in the self-sustainable case (Figure\ \ref{fig:plaf-sub
 
 \begin{figure}
 \centering
-\input{../fig/plaf-substr-prod.tex}
+\input{../../fig/plaf-substr-prod.tex}
 \caption{Example platform (C) supporting a substrate (Smalltalk VM) for a self-sustainable product system (Smalltalk). Because the product is self-sustainable, the user and implementation levels are no longer disjoint, so the platform/substrate/product distinction is a more helpful alternative.}
 \label{fig:plaf-substr-prod}
 \end{figure}
@@ -336,7 +338,7 @@ More unfortunate work results from having to "escape" characters that have been 
 Consider the common practice of embedding SQL commands in the source code of various languages. In C#, these are forced into the syntax of the host language as "embedded queries", yet a programmer may prefer to use SQL syntax directly as part of the source. The traditional path-of-least-resistance to achieving the latter was to have SQL code inside program strings, which created significant security risks. This is by no means intrinsic to having SQL source be what the programmer *types* or *sees* (see Section\ \ref{explicit-structure} below.)
 
 ### Digital "plain text" is not inherently human-readable
-This argument is made best by Hall\ \parencite{Infra}, p.\ 14:
+This argument is made best by Hall\ \parencite[p.\ 14]{Infra}:
 
 > The critical observation is that software infrastructure is heavily involved in supporting the human-readability of text. It is not the case that the bit sequences of UTF8 or any other text encodings are somehow intrinsically understandable to a human. An application interprets the bytes as character codes as per a known standard, which are mapped to glyphs in a font, and rendered to a grid of pixels. This chain of interpretation and transformation starts with clusters of electrons and ends with clusters of photons before the human nervous system takes over. The point being that there is still a necessary software layer performing a transformation in the middle.
 

@@ -20,10 +20,6 @@ Capabilities:
 4. systems allow better thinking! here is more specifically what I'm working on
 }
 
-\joel{
-These concerns point to an unexplored opportunity which constitutes the contribution of this thesis. We discuss how the Three Properties feed into each other and hence why we study them together. We close with a summary of what the thesis contribution is.
-}
-
 When we have an idea for some computer software, and try and make this idea a reality, we are forced to confront two types of complexity: the *essential* and the *accidental*. We know there is "no such thing as a free lunch", so we are able to accept the burden of whatever complexity is actually intrinsic to our idea. If we have a simple idea, we are prepared to do a little work; if it is more ambitious, we will accept having to do more work. This *essential* complexity is often swamped by unwelcome incursions of tedious busy-work. Concepts that appear simple must be spelled out in great detail for a computer. This is the *accidental complexity* that is widespread in programming \parencite{MMM}.
 
 This is particularly egregious when the "idea" is merely to change or fix some small issue. Suppose we are using an app, but the text is too small for us to read. The designers have not included a feature for increasing the text size (perhaps it is a special message in a separate part of the app which is unaffected by the normal controls). A programmer would know that there is some API being called to render the text, and this API will be told the font size via some number in the app's memory. If we could just find this single number and change it, we might at least be able to read the text (even if the app is not prepared to lay out the larger text correctly in response to such a "surgical" intervention).
@@ -86,7 +82,7 @@ The opposite of ``\URTFJ''. This refers to using a single tool to do a wide rang
 This is a small or large part of a software system which provides its own custom interface for change.
 \end{defn}
 
-In standard practice, a program is generated from *source code* and put into a running state. To change the program, one must change the source code, destroy the program and re-create it anew. These steps are accomplished with separate tools, meaning that changes tend not to be self-supplied (Definition\ \ref{def:self-supplied}). There is a limited notion of "\URTFJ" in that there are different programming languages. However, languages enforce their syntax and semantics without permitting *smaller-scale* adaptation, and variation in these respects is restricted to textual notations. Furthermore, some situations may call for more general *notations* or graphical interfaces that do not work like a language, but fact that programming is optimised for languages makes using such notations more difficult.
+In standard practice, a program is generated from *source code* and put into a running state. To change the program, one must change the source code, destroy the program and re-create it anew. These steps are accomplished with separate tools, meaning that changes tend not to be self-supplied (Definition\ \ref{def:self-supplied}). There is a limited notion of "\URTFJ" in that there are different programming languages. However, languages enforce their syntax and semantics without permitting *smaller-scale* adaptation, and variation in these respects is restricted to textual notations. Furthermore, some situations may call for more general *notations* or graphical interfaces that do not work like a language, but the fact that programming is optimised for languages makes using such notations more difficult.
 
 Instead of the above, computer software should act as "Personal Dynamic Media" \parencite{PersonalDynMedia}. In this vision, a software system is *designed* to be adapted and modified by its users. By performing an explicit action (\eg{} switching to "edit mode") the user can inspect the visible surface of the application to find the causes of its appearance in the form of code and data. They can also inspect a map of the non-visible implementation of the software's functionality and navigate to the relevant parts. There may be a common programming notation as a default, but where possible, parts of the implementation are presented in local notations or interfaces that are more easily understood. These interfaces can also be traced to *their* implementations and modified if desired. The user can then change any aspect of the software while it is running, without having to edit an external specification and destroy the running instance.
 
@@ -136,10 +132,6 @@ If we see programming as coding, then we unwittingly limit the scope of innovati
 
 This last point is the crux of the matter: we need a more general programming *systems* approach instead. In Chapters\ \ref{analysis} and\ \ref{tech-dims} we will discuss this and propose a systematic framework by which to analyse programming systems. This framework will include three properties that are central to the dissertation and develop them in detail. We will now proceed to familiarise the reader with the basic outline of these three properties.
 
-\joel{
-I will then present my contribution towards the vision of open, malleable software: a prototype programming system called BootstrapLab. It constitutes a fusion of the three desirable properties above, and as far as I am aware is the first attempt to do this.
-}
-
 # The Three Properties
 The goal at the end of Section\ \ref{how-should-things-work} is much too ambitious a scope to achieve in this dissertation. However, from Definitions\ \ref{def:naive-pokeability}--\ref{def:dsa} and the above discussion, we distill three properties that underlie a good proportion of the issues we identified. They are:
 
@@ -157,7 +149,7 @@ These properties are exhibited occasionally in different systems, as we will men
 
 Furthermore, it is worth exploring the Three Properties in *combination* because they complement each other in the following ways. Suppose a system already has Notational Freedom; Self-Sustainability makes it easier to add new notations to it. In the converse case of a system lacking Notational Freedom, Self-Sustainability makes it easier to add Notational Freedom *itself* and lets the benefits flow into all aspects of the system's development (this is what we called *innovation feedback*). Despite this, both Notational Freedom and Self-Sustainability suffer without Explicit Structure. Notational Freedom is impossible to achieve in a world of parsed strings and text editors (this being merely what we term *syntactic* freedom in Section\ \ref{notational-freedom}) so it needs Explicit Structure as a necessary foundation. Self-Sustainability is currently best understood as a vague analogy to self-hosting compilers, as we will see in Section\ \ref{precursors-of-self-sustainability}. The COLA work follows this view, being unclear how such a property can be achieved in interactive, graphical systems. Explicit Structure lets us study these other two properties more purely, without getting confused by the accidental complexities of parsing and escaping.
 
-Due to this last point, we see Explicit Structure as a necessary foundation for the work to follow. Thus, out of the six possible ways we could prioritise the Three Properties, we are left with two: explore self-sustainability with the aid of notational freedom, or vice versa. Our work in Chapter\ \ref{year1} will take the former path and Chapter\ \ref{bl} will fit the latter.
+We can prioritise the Three Properties based on the above inter-dependencies. Our primary goal is to explore Notational Freedom in interactive, graphical programming systems. To support this, we should achieve Self-Sustainability. To do both of these with minimal distraction, we should make sure to build on a foundation of Explicit Structure. We will not follow this order strictly, but it shows a sort of logic as to how each property fits into the bigger picture. We see that the only way discover how to achieve these goals is by *doing,* so we work to build a prototype programming system called *BootstrapLab* that makes progress on the Three Properties simultaneously.
 
 # Thesis Statement and Contributions
 The statement of our thesis is as follows:
@@ -165,11 +157,6 @@ The statement of our thesis is as follows:
 > It is possible to add Notational Freedom to the web browser programming system by embedding a Self-Sustainable system built on Explicit Structure.
 
 We prove this by constructing such a system which we call *BootstrapLab.* It is evaluated according to *technical dimensions* that we derive from the Three Properties. These dimensions fit within the methodological framework that we propose for studying programming systems in Chapter\ \ref{tech-dims}.
-
-\joel{
-We can roughly topological-sort these dependencies as follows. Our primary goal is to explore Notational Freedom in interactive, graphical programming systems. To support this, we should achieve Self-Sustainability. To do both of these with minimal distraction, we should make sure to build on a foundation of Explicit Structure.
-
-In this dissertation, we do not follow this order strictly, but it shows a sort of logic as to how each property fits into the bigger picture. We see that the only way discover how to achieve these goals is by *doing,* so we work to build a prototype programming system called *BootstrapLab* that makes progress on the Three Properties simultaneously.}
 
 BootstrapLab itself is a contribution, but we also contribute the necessary steps and principles that its construction led us to *discover.* We believe that it should be possible to build these Three Properties atop a wide variety of programming systems; our hope is that in Chapter\ \ref{bl} we have documented enough of a generalisable technique to make this feasible for the average programmer.
 
@@ -181,10 +168,6 @@ The following publications form chapters in this thesis:
 \fullcite{TechDims}
 
 This won the journal's Editors' Choice Award and was adapted into Chapter\ \ref{tech-dims}.
-
-\fullcite{CCS20}
-
-This forms Chapter\ \ref{year1}.
 
 \fullcite{Onward22}
 

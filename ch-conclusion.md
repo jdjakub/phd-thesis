@@ -1,6 +1,8 @@
-\chapter{Limitations and Future Work}
+\chapter{Review and Conclusion}
 
-TDs:
+# Limitations and Future Work
+
+## Improving the Technical Dimensions
 
 * Aggregation functions
 * Aggregation weights
@@ -9,7 +11,7 @@ TDs:
 * Actually measuring the quantities / obtaining consensus
 * Circumscription problem of systems
 
-BL:
+## Improving BootstrapLab
 
 * Bootstrap on other plafs
 * Substrate capabilities
@@ -17,4 +19,4 @@ BL:
 * Brittle / fragile / versioning
 * Bring insights from COLA / MPS / Eco to reduce NF efforts
 
-\chapter{Conclusions}
+# Conclusion

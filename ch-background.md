@@ -166,7 +166,7 @@ Even though these are ideal conditions that we do not inhabit, being aware of th
 
 \begin{figure}
 \centering
-\input{../fig/format-errors.tex}
+\input{../../fig/format-errors.tex}
 \caption{Format errors include syntax errors, type errors and some ``semantic'' errors as long as they are decideable.}
 \label{fig:format-errors}
 \end{figure}
