@@ -1,7 +1,7 @@
 \hypertarget{tech-dims}{%
 \chapter{Technical Dimensions of Programming Systems}\label{tech-dims}}
 
-We introduced the concept of a *programming system* in Section\ \ref{programming-systems-vs-languages}. Not only is such a concept necessary for framing the work in this dissertation, there is also a growing interest in programming systems in both research and industry. Yet while programming *languages* are a well-established concept, analysed and compared with a common vocabulary, no similar foundation exists for the wider range of programming *systems.* In this chapter,^[Adapted from our paper for Programming 2023\ \parencite{TechDims} which won the Editors' Choice Award for the journal.] we will examine this problem and propose a framework of "Technical Dimensions" to kickstart systematic research on programming systems. We will then make our Three Properties (Section\ \ref{the-three-properties}) more precise as sets of dimensions under this framework.
+We introduced the concept of a *programming system* in Section\ \ref{programming-systems-vs-languages}. Not only is such a concept necessary for framing our work in Chapter\ \ref{bl}, there is also a growing interest in programming systems in both research and industry. Yet while programming *languages* are a well-established concept, analysed and compared with a common vocabulary, no similar foundation exists for the wider range of programming *systems.* In this chapter,^[Adapted from our paper for Programming 2023\ \parencite{TechDims} which won the Editors' Choice Award for the journal.] we will examine this problem and propose a framework of "Technical Dimensions" to kickstart systematic research on programming systems. We will then make our Three Properties (Section\ \ref{the-three-properties}) more precise as sets of dimensions under this framework. We will then use these dimensions to assess how BootstrapLab fulfils the Three Properties and evaluate it on that basis. 
 
 # Barriers to Programming Systems Research
 Researchers are studying topics such as *programming experience*\ \parencite{PX} and *live programming*\ \parencite{LIVE} that require considering not just the *language*, but further aspects of a given system. At the same time, companies are building new programming environments like Replit\ \parencite{ReplitWeb} or "low-code" tools like Dark\ \parencite{DarkWeb} and Glide\ \parencite{GlideWeb}.
@@ -190,22 +190,68 @@ It appears that there are two realms in which explicit structure may be sought, 
 \todo{Unix Files, spreadsheet, database}
 }
 
+# Evaluation
+In this section we will evaluate BootstrapLab according to the relevant three Technical Dimensions as well as Olsen's criteria for User Interface Systems \parencite{EvUISR}.
+
+It might seem appropriate to also perform an evaluation via the Cognitive Dimensions of Notation. However, this would not actually tell us anything interesting, because the novel contribution of this system is not its notation. The interface is minimal and unpolished for reasons of expediency. The point is *not* that we have come up with a brilliant new notation or UI that will improve programming; the notation is something that each user should fit to him or herself according to subjective preference. The important point is that the system *supports* the usage of different notations for different contexts. Notations in BootstrapLab should be a free parameter, so it does not make sense to apply Cognitive Dimensions to BootstrapLab *itself*, and it does not provide any value to analyse the placeholder interface in this way.
+
+## Measures of Self-Sustainability
+\criterion{Substrate Size: 1550 LoC.}
+There is deliberately only one system namespace: the state graph rooted at the top-level registers. Some of these names have special functions in the low-level ASM, but otherwise this namespace is free for user additions. These can be added manually in the in-system editor or in code by the primitive `store` instruction.
+
+The present graphical state of the system lives entirely in a special part of the system state: the `scene` tree. Therefore, at any given moment, it is possible to change what the graphics window will display. However, there are two limitations:
+
+1. The range of these changes is constrained to the range of graphical primitives currently understood by the substrate which it passes on to THREE.js. Currently these are limited to axis-aligned flat-coloured rectangles and basic text of a uniform size, style, colour, etc.
+2. The behaviour that affects the graphics currently lives in JavaScript. This means that, for example, the logic according to which the tree editor renders map entries is inaccessible to in-system code.
+
+Indeed, there are about 1550 lines of JavaScript off-limits to the actions of the system. At least 33% of this, however, constitutes our substrate debt (Section\ \ref{substrate-debt-in-bootstraplab}): the Masp interpreter and tree editor. In a further-developed version, these could be moved out. Even so, in such a further-developed version, the substrate may be larger anyway by exposing more types of graphical primitives. This suggests that capabilities of the platform provide a lower bound on the substrate size: if the platform provides a way to draw a circle, but the substrate does not expose this to the system, then we have reason to interpret this as an incomplete programming system. On the other hand, the substrate may expose a more general set of graphics operations that allow the system to draw circles itself, say to a pixel surface.
+
+As in Chapter\ \ref{year1}'s Evaluation, we give the line count as a reasonable proxy for substrate size here.
+
+\criterion{Persistence Effort: Moderate.} Part or all of the state graph can be manually persisted via the `export_state()` JavaScript function in the browser console. This means that in-system progress can be saved, even though it would be better for the user experience to have this done automatically. It is clear that indefinite evolution is *permitted* but perhaps not quite *encouraged*.
+
+\criterion{Code Editing: Crude, but present.} Code editing is minimally feasible via the in-system tree editor for most use cases. In rare cases, the JS console must be used.
+
+\criterion{Data Execution: Present.} Because of Alignment (Force\ \ref{alignment}), low-level instructions that change state are represented as ordinary maps with certain format constraints. The instruction set is sufficient for constructing arbitrary graph structures in the state, including programs composed of instructions. The `next_instruction` register can be pointed at such a list and execution can be started using `run_and_render()` in the JS console. The analogous properties hold for high-level Masp code which is also represented as maps.
+
+## Measures of Notational Freedom
+\criterion{Custom syntax effort: moderate.} Because of substrate debt, it may not be possible to make changes at the user level such that a string can be "executed" according to custom syntax and semantics via a click or key combination. However, it is possible to use the `js` "escape hatch" instruction to embed arbitrary JS code to do the appropriate processing. In the absence of substrate debt, it would be possible to edit the relevant parts of the system to support custom syntaxes---both textual, as strings, but also "structural" with different map structures to what Masp expects. This direct editing of the system could still be costly, and adopting the techniques in the Lisp half of COLA \parencite{OECM} or OMeta \parencite{OMeta} could bring custom syntaxes closer to being "slotted in" without difficulty.
+
+\criterion{Custom language effort: moderate.} This follows similar considerations, except the substrate debt related to graphical capabilities and the lack of exposure of certain platform graphical primitives is also relevant here. However, implementing language-like notations may be aided by the existing layout capabilities of the tree editor.
+
+\criterion{Custom notation effort: moderate.} Again the reasoning is similar, but in this case the tree editor layout capabilities may not be directly helpful. Here, the lack of exposure of platform graphics primitives limits what can be achieved. Still, as shown in Section\ \ref{real-example-colour-preview}, use of custom notations is *feasible* as long as the appropriate "hook point" is available, which we added to the substrate specifically for the proof-of-concept.
+
 \joel{
-# Exploring the Design Space
-Here, we use technical dimensions to identify a new unexplored point in the design space of programming systems and envision a new design that could emerge from the analysis.
+\criterion{Are there multiple syntaxes for textual notation? No.} Only JavaScript syntax is available in the special `js` instruction. However, the system is built on explicit structure, so syntax does not make much of an appearance at all.
 
-With a little work, technical dimensions can let us see patterns or gaps in the design space by plotting their values on a simple scatterplot. Here, we will look at two dimensions, *notational diversity*^[This is simply the dimension we named as *uniformity of notations* (\ref{dimension-uniformity-of-notations}), but flipped in the opposite direction.] and *self-sustainability*, for the following programming systems: Haskell, Jupyter notebooks, Boxer, HyperCard, the Web, spreadsheets, Lisp, Smalltalk, UNIX, and COLAs.
+\criterion{Does the system make use of GUI elements? Yes.}
+BootstrapLab's graphics window is a zoomable/draggable view containing a crude tree editor. Next to it is a rendering of the state tree in ordinary web HTML elements.
 
-While our choice to describe dimensions as qualitative concepts was necessary for coming up with them, *some* way of generating numbers is clearly necessary for visualizing their relationships like this. For simplicity,^[There are undoubtedly many ways to turn our descriptions into various measures, with strengths and weaknesses for different purposes, but this is beyond the scope of the present paper. Here, we merely wish to demonstrate that such a thing is possible and show what one can do with the results.] we adopt the following scheme. For each dimension, we distill the main idea into several yes/no questions (Appendix\ \ref{making-dimensions-quantitative}) that capture enough of the distinctions we observe between the systems we wish to plot. Then, for each system, we add up the number of "yes" answers and obtain a plausible score for the dimension.
+\criterion{Is it possible to view and edit data as tree structures? Yes.}
+Tree-structured data can be viewed in the HTML-rendered tree view and the in-system tree editor. It can be edited only in the latter.
 
-\begin{figure}
-  \centering
-  \includegraphics[width=0.6\linewidth]{plot-figure0.pdf}
-  \caption{Example programming systems (or system families) measured against \emph{self-sustainability} and \emph{notational diversity}, revealing an absence of systems with a high degree of both. \label{fig:design-space-plot}}
-\end{figure}
+\criterion{Does the system allow freeform arrangement and sizing of data items? No.}
+We did not have enough time to support the moving and resizing of items in the graphics window.
 
-Figure\ \ref{fig:design-space-plot} shows the results we obtained with our sets of questions. It shows that application-focused systems span a range of notational diversity, but only within fairly low self-sustainability. The "OS-likes" (Section \ref{os-like-programming-systems}) cluster in an "island" at the right, sharing identical notational diversity and near-identical self-sustainability. There is also a conspicuous blank space at the top-right, representing an unexplored combination of high values on both dimensions. With other pairs of dimensions, we might take this as evidence of an oppositional relationship, such that more of one inherently means less of the other (perhaps looking for a single new dimension that describes this better.) In this case, though, there is no obvious conflict between having many notations and being able to change a system from within. Therefore, we interpret the gap as a new opportunity to try out: combine the self-sustainability of COLAs with the notational diversity of Boxer and Web development. In fact, this is more or less the forthcoming dissertation of the primary author.
+\criterion{Is there support for custom user-supplied notations? Potentially.}
+The code for rendering the tree editor and accepting user input currently lives in the substrate. However, we gave a proof-of-concept in\ Section\ref{provide-for-domain-specific-notations} for how this could be moved in-system. Because of this, there is no inherent barrier to custom notations.
+
+\criterion{Is there support for custom user-supplied grammars? Potentially.} Ditto.
 }
+
+## Measures of Explicit Structure
+\criterion{Format errors: few.} The structure editing interface of the tree editor eliminates the existence of syntax errors for data, Masp code, and instructions. Within these structures, certain format errors are possible (\eg{} failing to supply required arguments to an instruction).
+
+\criterion{String wrangling effort: low.} Because all data, including instructions and Masp code, is embedded in map data structures edited structurally, there is little need for the user to write parsing or serialising code. The exceptions are with hex colour codes, where the initial `#` character may need stripping, and rendered map entries, where the colon `:` needs attaching and stripping.
+
+## Situation, Task, User, Importance
+It is worth separately applying this to (a) BootstrapLab itself, (b) the technique we have presented as a sequence of steps, and (c) the "ideal BootstrapLab" that we would develop with more time and resources.
+
+Firstly, BootstrapLab itself is made to help the author (User) discover how to interactively achieve self-sustainability and explore its effects (Task) for research (Situation). The claim to Importance is that such a system did not previously exist (Problem Not Previously Solved). 
+
+The technique was developed to help individual programmers (User) escape the limitations of their go-to programming environments for general programming tasks (Task) where they are able and willing to put in this investment (Situation). Such an investment of time and work may not be possible or appropriate in some situations. However, we see it as existing on the same continuum of programming investments, such as writing a utility function or library to ultimately pay itself off in productivity gains. This contribution falls under "Generality", applying to all sorts of programming systems taken as the platform. It also qualifies for "Empowering New Participants" in the sense that the benefits of the Three Properties (especially Self-Sustainability) need no longer be confined to specific programming systems like Smalltalk; one should be able to have them "bolted on" to one's own preferred platform.
+
+Finally, the "ideal BootstrapLab" would be an example of this process applied to our preferred platform, the Web browser (User, Situation). It would function as a Smalltalk-like "personal dynamic medium" for both exploring problem spaces and implementing solutions (Task), but one that neatly slots into our familiar programming practices (\eg{} does not require installing and learning Smalltalk). While it is necessarily lifted up by programmers, the availability of mood-specific notations could make it of use to non-programmers (Empowering New Participants). 
 
 # Conclusions
 There is a renewed interest in developing new programming systems. Such systems go beyond the simple model of code written in a programming language using a more or less sophisticated text editor. They combine textual and visual notations, create programs through rich graphical interactions, and challenge accepted assumptions about program editing, execution and debugging. Despite the growing number of novel programming systems, it remains difficult to evaluate the design of programming systems and see how they improve over work done in the past. To address the issue, we proposed a framework of “technical dimensions” that captures essential characteristics of programming systems in a qualitative but rigorous way.
