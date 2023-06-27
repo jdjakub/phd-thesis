@@ -156,7 +156,7 @@ The statement of our thesis is as follows:
 
 > It is possible to add Notational Freedom to the web browser programming system by embedding a Self-Sustainable system built on Explicit Structure.
 
-We prove this by constructing such a system which we call *BootstrapLab.* It is evaluated according to *technical dimensions* that we derive from the Three Properties. These dimensions fit within the methodological framework that we propose for studying programming systems in Chapter\ \ref{tech-dims}.
+We prove this by constructing such a system which we call *BootstrapLab.* It is evaluated according to *technical dimensions* that we derive from the Three Properties. These dimensions fit within the methodological framework that we propose for studying programming systems in Chapter\ \ref{tech-dims}, which is our secondary contribution.
 
 BootstrapLab itself is a contribution, but we also contribute the necessary steps and principles that its construction led us to *discover.* We believe that it should be possible to build these Three Properties atop a wide variety of programming systems; our hope is that in Chapter\ \ref{bl} we have documented enough of a generalisable technique to make this feasible for the average programmer.
 
