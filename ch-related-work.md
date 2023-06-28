@@ -6,8 +6,8 @@ The COLA system design\ \parencite{COLA}, from which we have drawn the most in t
 
 Two of our Three Properties, Self-Sustainability and Notational Freedom, recur as themes in the STEPS work. Explicit Structure, on the other hand, is absent, but this is to be expected owing to the niche status of Explicit Structure (see Section\ \ref{structured-editing-and-its-variations}). Self-Sustainability is exhibited in the COLA work. Mood-Specific Languages in COLA and those supported by OMeta demonstrate what we called *syntactic freedom* in Section\ \ref{syntactic-freedom}. The Gezira\ \parencite{Gezira} and Nile\ \parencite{Nile} projects amount to a custom mathematical syntax (taking advantage of Unicode characters) for expressing graphics code that is cumbersome in ordinary languages. While this does not amount to Syntactic Freedom, it is a good example of the sort of thing that Syntactic Freedom enables; we can expect more innovations like this only if it is not too difficult to deploy a custom syntax once one has been designed.
 
-# Self-Sustainability and Bootstrapping
-The only name we are aware of for the concept we called Self-Sustainability is "self-sustaining", seen in the two workshops on such systems \parencite{SSS08,SSS10} which featured the COLA work. We derived our term "Self-Sustainability" to be able to refer to a property that systems can have or lack. We have referred to Self-Sustain*able* systems rather than Self-Sustain*ing* systems for consistency with this.
+# Self-Sustainability and its Theory
+The only name we are aware of for the concept we called Self-Sustainability is "self-sustaining", seen in the two workshops on such systems \parencite{SSS08,SSS10} which featured the COLA work. We derived our term "Self-Sustainability" to be able to refer to a property that can be present or absent in programming systems. We have referred to Self-Sustain*able* systems rather than Self-Sustain*ing* systems for consistency with this.
 
 Self-Sustainability appears in related work as Smalltalk variants. Much of the STEPS work took place via the Squeak^[\url{https://squeak.org/}] variant, of which Pharo^[\url{https://pharo.org/}] is a descendant. Glamorous Toolkit^[\url{https://gtoolkit.com/}] is a "moldable development environment" built in Pharo. The Lively Kernel^[\url{https://lively-kernel.org/}] is a Web implementation of a Smalltalk-like environment; Fizzygum^[http://fizzygum.org/] is similar.
 
@@ -15,63 +15,35 @@ The problem with all of these, as regards our goals in this dissertation, is tha
 
 These facts made it clear to us that we would be best equipped to understand Self-Sustainability by trying to achieve it ourselves in a minimal context with minimal distractions. The related systems are self-sustainable in order to be useful for certain communities; BootstrapLab aims for Self-Sustainability to better understand it (along with the other two Properties).
 
-We are only aware of a few sources that aim at a similar goal of understanding. The "Meta-Helix" approach of\ \parencite{Meta-helix} is intended to reduce confusion when implementing meta-circular Meta-Object-Protocols. As we mentioned in Section\ \ref{precursors-of-self-sustainability}, meta-circularity is a specific manifestation of Self-Sustainability. The exhaustive development of Procedural Reflection for Lisp-like languages in \parencite{PRinPLs} is helpful for its philosophical rigour, \eg the use-mention distinction and careful precision of terminology. The process described in\ \parencite{Bootfrom0} is a parallel of what we did with BootstrapLab in the restricted context of batch-mode interpreters of text strings. Finally, for an informal and valiant attempt to articulate the subtleties of Self-Sustainability,
+We are only aware of a few sources that aim at a similar goal of understanding. The "Meta-Helix" approach of\ \parencite{Meta-helix} is intended to reduce confusion when implementing meta-circular Meta-Object-Protocols. As we mentioned in Section\ \ref{precursors-of-self-sustainability}, meta-circularity is a specific manifestation of Self-Sustainability. The exhaustive development of Procedural Reflection for Lisp-like languages in\ \parencite{PRinPLs} is helpful for its philosophical rigour, \eg the use-mention distinction and careful precision of terminology. The process described in\ \parencite{Bootfrom0} is a parallel of what we did with BootstrapLab in the restricted context of batch-mode interpreters of text strings. The introductory sections of\ \parencite{COLAs} and\ \parencite{OROM} constitute a good explanation of Self-Sustainability and why it is desirable, as does\ \parencite{CookClay}.
 
-https://www.cemetech.net/forum/viewtopic.php?p=270092#270092
+# Video Games
+Finally, video games and game engines are led in the *direction* of Self-Sustainability by their nature as highly dynamic, long-lived virtual environments. They are an example of the issues we covered in Section\ \ref{static-commitment}. The creative, fictional world-building nature of games means that requirements change more often than other types of software; development is partly a process of discovery of what the final product should be. Accordingly, it is important to rapidly prototype and iterate ideas, especially by artists or other specialists who may not be expert programmers. This incentivises ways to try out new ideas without the costly operation of restarting a large, resource intensive process or the even more costly operation of re-compiling the underlying program. It also incentivises editing tools (for game levels, internal scripting languages, or configuration) to be part of the game software itself. After development, these internal "developer tools" may either be stripped from the version shipped to customers or hidden (in which case, enterprising customers will discover them eventually).
 
+Since games also have strong requirements for real-time performance (responsiveness to input, rendering of complex scenes, simulating physics, synchronising a shared world across the internet, and managing worlds too large to fit into memory all at once) languages like C++ are a standard choice for implementation. However, the default data structuring mechanisms of these languages (such as C++ classes) must necessarily be avoided for directly modelling highly dynamic relationships between objects in the simulated world. A C++ class promises a *static commitment* to always contain its listed member variables of the specified types, member functions of the specified signatures, and to always remain in any inheritance relationships with other classes. This rules out a majority of the dynamic change that is inherent to the behaviour of a game and its development process. Therefore, standard game programming patterns\ \parencite{GPP} build infrastructure to work around this and support the modelling of objects whose relationships and contained properties may change during run time. "Entity Component Systems" \parencite{ECS} are a widely used architecture for this purpose. The general pattern of working around static commitment is summarised as "Greenspun's Tenth Rule" \parencite{Greenspun10}:
 
+> Any sufficiently complicated C or Fortran program contains an ad-hoc, informally-specified, bug ridden, slow implementation of half of CommonLisp.
 
-Game Engines
+# Novel Notations versus Notational Freedom
+"Visual Programming" contains many examples of custom notations for program code and data. Sketchpad\ \parencite{Sketchpad} is an early, influential example of using diagrammatic notation augmented with the dynamic capabilities of computation. The Apparatus editor^[\url{http://aprt.us/}] is a Web-based editor for dynamic graphics influenced by Sketchpad. Bret Victor's presentations\ \parencite{DDV} demonstrate programmatic graphics based on direct manipulation instead of textual code. Data is represented in Boxer\ \parencite{Boxer} and Forms/3\ \parencite{Forms3} as named, nested boxes; in Boxer, programs reside in textual code boxes. Programming By Example and Programming By Demonstration\ \parencite{WWID,YWIMC} involve custom notations designed for either representing program structures or for supplying example input-output pairs from which to infer general behaviour. Sketch-n-Sketch\ \parencite{SnS} uses a textual and graphical notation that are synchronised with each other.
 
+There are many more examples of custom programming\ notations and interfaces \parencite{VPcodex,VPsurvey,GalleryUIs}. Despite the number of earnest attempts at general-purpose or special-purpose notations, programming is still mostly performed via plain text. This is understandable given that much of the cited research is experimental and that programming infrastructure (editors, compilers, version control etc.) only support plain text. There is also a potential failure mode of imposing a single notation for all purposes, and the fact that different people have preferences about the tools they work with.
 
-NF:
-MPS
-Eco
-OMeta
+Thus, while we respect the effort invested in Visual Programming and custom notations and wish these efforts success, we avoid the conclusion that there is an optimal notation or set of notations (across users and situations) waiting to be found. Instead, we see an important gain in supporting and encouraging the ad-hoc use of custom notations on an opportunistic basis, wherever a user judges them to be most helpful. We observe much effort expended over the years on developing custom notations but comparatively little on enabling them to be used together *à la carte*, which is why we focus on Notational *Freedom.*
 
-Notations:
-Gezira / Nile
-Sketch n Sketch
-WWID / YWIMC
-Boxer
-Sketchpad
-[Briar](https://graphics.cs.wisc.edu/Papers/1994/Gle94/constraints.pdf)
-Palimpsest
-DDV
-[Apparatus](http://aprt.us/)
-VPcodex
-VPsurvey
-GalleryUIs
-Forms3
-Hopscotch
+We see efforts towards Notational Freedom in JetBrain's MPS\ \parencite{MPS}, the Eco editor\ \parencite{Eco}, and the Mood-Specific Languages of COLA\ \parencite{COLAs} and OMeta\ \parencite{OMeta}. Our issue with MPS is similar to what we said about Smalltalk-like systems in\ \ref{self-sustainability-and-its-theory}: it is impressive and useful as an industry tool in which to get things done, but its size and complexity makes it hard to learn the essential aspects of supporting Notational Freedom and spread ways to achieve it. Eco has the advantage of being a research project whose paper *does* cover its design and implementation, so its approach deserves a place in future work on BootstrapLab (see Section\ \ref{import-from-related-work}).
 
-ES:
-Subtext
-Infra
+# Structured Editing and Its Variations
+Explicit Structure has precedent in structure editors, projectional editors and block-based languages, but these approaches have met many difficulties in terms of widespread adoption. Text editing and plain text formats are still entrenched as the *de facto* standard in programming.
 
-\cite{Liveness}
-\cite{KellComm}
-\cite{STdesign}
-\cite{DesPats}
-\cite{CogDims}
-\cite{MemmodPLs}
+*Outside* of programming, we observe the opposite situation, which allows us to point there for intuition about why Explicit Structure is a sensible concept and could be beneficial. For example, photo editing and vector graphics programs exist and are optimised for the types of interactions involved in those domains. Photo and vector graphics files are not required to be readable in a text editor (\ie we are free to distribute graphics in forms other than ASCII art) and so these domains do not suffer from the accidental complexities of text formats. If we observe that the textual syntax of programs is really a *proxy* for tree and graph structures, then this invites the investigation of the costs and benefits of treating programming structures the same way we do other types of files.
 
-\cite{EvProgSys}
-\cite{UISTAuthor}
-\cite{EvUISR}
-\cite{ComplementaryBasic}
-\cite{Chang}
-\cite{Kuhn}
+Structure editing has its origins in Lisp.
 
-\cite{Jupyter}
-\cite{CodaWeb}
-\cite{DarkWeb}
-\cite{ReplitWeb}
+\parencite{Subtext}
+\parencite{Infra}
+\parencite{Hazel}
 
-[UIST](https://uist.acm.org/)^[ACM Symposium on User Interface Software and Technology]
-[VL/HCC](https://conferences.computer.org/VLHCC/)^[IEEE Symposium on Visual Languages and Human-Centric Computing]
-[LIVE](https://liveprog.org/)
-[PX](https://2021.programming-conference.org/home/px-2021)^[Programming eXperience].
 
 \cite{FPexplain}
 \cite{Boomerang}
@@ -79,7 +51,6 @@ Infra
 
 \cite{Domain-workbench}
 
-\cite{Hazel}
 \cite{Webstrates}
 
 \joel{
@@ -87,25 +58,6 @@ The two best-known self-sustainable programming systems are Lisp and Smalltalk. 
 
 Most literature discussing self-sustainability seems to focus on textual languages as the way to get there. We broaden the scope to programming systems, because this is necessary in order to talk about interaction and graphical capabilities. We desire to support graphical or structured ways of expressing programs that go beyond text\ \cite{Subtext,Infra,Varv}, and feel that this has been neglected in prior work.
 }
-
-# Structured Editing and Its Variations
-Explicit Structure has precedent in structure editors, projectional editors and block-based languages, but these approaches have met many difficulties in terms of widespread adoption.
-
-## Visual / End-User Programming
-Beyond supporting language-based notations not stored as text, there are situations (domains) where a graphical notation is best. It is important to support these to truly realise the goal of mood-specific notations.
-\cite{Boxer}
-\cite{Sketchpad}
-\cite{WWID}
-[Briar](https://graphics.cs.wisc.edu/Papers/1994/Gle94/constraints.pdf)
-\cite{Palimpsest}
-\cite{DDV}
-[Apparatus](http://aprt.us/)
-\cite{YWIMC}
-\cite{VPcodex}
-\cite{VPsurvey}
-\cite{GalleryUIs}
-\cite{Forms3}
-\cite{Hopscotch}
 
 # Against Conventional Wisdom
 A plausible hypothesis about *why* programming is the way it is---and hence why this thesis has a novel contribution to make---concerns a mismatch between programming's *military-industrial* history and its modern potential for *personal* computing. This is the logic behind the work of Kell and Basman.
