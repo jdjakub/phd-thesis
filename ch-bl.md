@@ -1,5 +1,5 @@
 \hypertarget{bl}{%
-\chapter{BootstrapLab: The Three Properties via the Web Platform}\label{bl}}
+\chapter{BootstrapLab: The Three Properties in the Web Browser}\label{bl}}
 
 \theoremstyle{definition}
 \newtheorem{force}{Force}
@@ -8,9 +8,9 @@
 \joel{
 Having tried the "notation-first" approach with diminishing returns in Chapter\ \ref{year1}, we now turn our efforts towards prioritising self-sustainability. Recall that we took the "\OROM{}" half of the COLA design as our starting point and made things happen with plain JavaScript. This left us at the mercy of text strings as a starting point for building the "code" half.}
 
-We now arrive at the main contribution of this work: the construction of a programming system with our Three Properties, which we call *BootstrapLab.* On its own, the existence of such a system acts as a constructive proof of our Thesis Statement (Section\ \ref{thesis-statement-and-contributions}). However, we are less interested in the fact that such a thing *is* possible than we are in *how* it was done and what we can learn from the process. We have discussed our Three Properties in previous chapters as best we could while remaining in the theoretical realm, but since they are meant to be properties of programming systems, it is essential that we give practical experience an opportunity to teach us something about them that we could not learn otherwise. We would expect to not only to learn how to *achieve* such properties, but also to gain clarity on what they are.
+We now arrive at the main contribution of this work: the construction of a programming system with our Three Properties, which we call *BootstrapLab.* On its own, the existence of such a system acts as a constructive proof of our Thesis Statement (Section\ \ref{thesis-statement-and-contributions}). However, we are less interested in the fact that such a thing *is* possible than we are in *how* it was done and what we can learn from the process. We have discussed our Three Properties in previous chapters as best we could while remaining in the theoretical realm, but since they are meant to be properties of programming systems, it is essential that we give practical experience an opportunity to teach us something about them that we could not learn otherwise. We would expect not only to learn how to *achieve* such properties, but also to gain clarity on their nature.
 
-Thus, in this chapter^[This chapter was adapted from our 2022 *Onward!* Essay entitled "Ascending the Ladder to Self-Sustainability"\ \parencite{Onward22}] we take the self-sustainable COLA as our inspiration and seek to build up to its Lisp-like "behavioural" half by means of code with Explicit Structure. We critically analyse its development process and identify ideas that may apply more generally. This will lay the foundations for creating new self-sustainable programming systems. The user of such a system should be able to use it for building new products and, along the way, gradually learn how to make increasingly complex improvements to the system itself using local notations as desired. We evaluate BootstrapLab at the end of the chapter according to the Technical Dimensions established in Chapter\ \ref{ch-tech-dims} and Olsen's criteria for user interface systems\ \parencite{EvUISR}.
+Thus, in this chapter^[This chapter was adapted from our 2022 *Onward!* Essay entitled "Ascending the Ladder to Self-Sustainability"\ \parencite{Onward22}] we take the self-sustainable COLA as our inspiration and seek to build up to its Lisp-like "behavioural" half by means of code with Explicit Structure. We critically analyse its development process and identify ideas that may apply more generally. This will lay the foundations for creating new self-sustainable programming systems. The user of such a system should be able to use it for building new products and, along the way, gradually learn how to make increasingly complex improvements to the system itself using local notations as desired. We will have to wait until Chapter\ \ref{tech-dims} to evaluate BootstrapLab in terms of our Three Properties, but we will summarise it in terms of Olsen's criteria for user interface systems\ \parencite{EvUISR} at the end of this chapter.
 
 What is presented here is not necessarily a chronologically accurate account, but a *rational reconstruction* of the steps involved. For each step, we describe the general task at hand, illustrate this with concrete decisions made in the implementation of BootstrapLab and, where appropriate, sketch possible alternative decisions and their likely consequences. In other words, it is a depth-first exploration of the process with some alternative branches suggested along the way. It can be understood at three different levels:
 
@@ -18,13 +18,11 @@ What is presented here is not necessarily a chronologically accurate account, bu
 2. It presents a rational reconstruction of the logical steps needed to bootstrap a *general* self-sustainable programming system (by taking BootstrapLab to be representative of the important parts of such a task).
 3. It highlights design *forces* and *heuristics* for resolving them which can be used by designers of future self-sustainable systems.
 
-We conclude by identifying which parts of our journey ought to be transferrable to other contexts, suggesting a *general technique* for interactively bootstrapping self-sustainable systems from any starting platform.
-
-# Design Objectives
+# Methodology
 
 We follow in the spirit of COLA, but we aim to bootstrap a graphical and interactive self-sustainable system instead of a textual one based on batch-mode transformations. The system should not have barriers in the way of using custom notations. We also want to work with an *interactive* system, meaning that the user should be able to modify the state of the running system through manual gestures and not just programmatically. 
 
-This approach can better exploit the graphical and interactive capabilities of modern computing, but it also sidesteps the tedious accidental complexities of parsing and serialising text. Similarly, making the system interactive will allow the user to better understand the consequences of individual small changes and will, in turn, support the virtuous cycle of self-improvement.
+This approach can better exploit the graphical and interactive capabilities of modern computing, but it also sidesteps the tedious accidental complexities of parsing and serialising text. Similarly, making the system interactive will allow the user to better understand the consequences of individual small changes and will, in turn, support a virtuous cycle of self-improvement.
 
 In contrast to COLA's approach, we do not write an initial object system in a language like C++. Instead, we choose as our starting point a *platform* equipped with an interactive REPL as a "blank slate". In the ideal case, we then gradually "sculpt" this into a self-sustainable state.
 
@@ -34,11 +32,11 @@ Our desire is to make an interactive, structured "port" of the COLA approach. Th
 
 \tomas{Alan Kay has the same vision for Smalltalk. Maybe note that, why we think his approach failed (smalltlak was too good?) and ours won't.}
 
-In order to support interactivity, structure, and graphics, a natural place to start is a non-self-sustainable implementation platform that already conveniently supports those features. This will make it possible to start with a suitable "blank slate" and, gradually, develop the system into a self-sustainable one. At each stage, we take stock of what changes can feasibly be achieved at the "user" level within the system, versus those that can only be achieved at the implementation level. We then ask ourselves: how can we imbue the user level with control over some of these aspects? 
+In order to support interactivity, structure, and graphics, a natural place to start is a non-self-sustainable implementation platform that already conveniently supports those features. This will make it possible to start with a suitable "blank slate" and gradually develop the system into a self-sustainable one. At each stage, we take stock of what changes can feasibly be achieved at the user level within the system, versus those that can only be achieved at the implementation level (recall Section\ \ref{user-vs-implementation-levels}). We then ask ourselves: how can we imbue the user level with control over some of these aspects? 
 
 The following sections propose key steps for evolving self-sustainability in this way, informed by our actual experience applying them in *BootstrapLab*. We will examine the forces and heuristics that motivated these steps, and reflect on their efficacy in light of actual practice.
 
-## Concepts and Terminology
+# Concepts and Terminology
 
 \tomas{It would be nice to include the diagram I sketched here (if we think it can be useful for explaining things...)}
 
@@ -284,7 +282,7 @@ An instruction is represented as a map with an `op` field for its name and other
 { op: 'store', register: 'source' }
 ```
 
-It is remarkable that these few operations really are sufficent even for conditional and unconditional jumps. A jump is achieved by overwriting `next_instruction`, and this can be conditionalised by `index`ing a map of code paths based on a selector. We made the decision that `index`, if accessing a key not present in the map, will try and retrieve the special key `_` instead. This supports a generic "else" or "otherwise" clause for conditionals.
+It is remarkable that these few operations really are sufficient even for conditional and unconditional jumps. A jump is achieved by overwriting `next_instruction`, and this can be conditionalised by `index`ing a map of code paths based on a selector. We made the decision that `index`, if accessing a key not present in the map, will try and retrieve the special key `_` instead. This supports a generic "else" or "otherwise" clause for conditionals.
 
 The minimal, microcode-like instruction set here was an experiment in extreme parsimony; see Appendix\ section\ \ref{the-minimal-random-access-instruction-set-and-its-perils} for the gory details. Although it was interesting, certain basic operations (such as jumps) are extremely verbose, taking many instructions. Although it was quick to implement these instructions in JavaScript, it was too tedious to work with them in-system. In retrospect, it looks like we went too far with Force\ \ref{escape-plaf} here and fell into its associated Turing Tarpit trap. We thus consider an *extreme* interpretation of Heuristic\ \ref{simple-asm} refuted for the purposes of working in-system sooner. We recommend achieving a better balance by including direct path arguments in instructions (\eg{} "copy `a.b.c` to `x.y.z`" as a single instruction), as well as separate (un)conditional jump instructions.
 
@@ -309,7 +307,7 @@ In BootstrapLab, this is a sub*tree* of the state under the top-level name `scen
 \begin{figure}
 \centering
 \includegraphics[width=8cm]{scene-tree-example.png}
-\caption{Example of how nested tree fields are represented (right) vs. the rendered output (left). The right-hand half is the temporary state view discussed in Section\ \ref{implement-temporary-infrastructure}.}
+\caption[BootstrapLab scene tree]{Example of how nested tree fields are represented (right) vs. the rendered output (left). The right-hand half is the temporary state view discussed in Section\ \ref{implement-temporary-infrastructure}.}
 \label{fig:scene-tree}
 \end{figure}
 
@@ -329,7 +327,7 @@ window.onkeydown = e => {
   restore_context();
 };
 \end{lstlisting}
-\caption{``Device driver'' triggering a generic event handler sequence in-system.}
+\caption[BootstrapLab ``device driver'' for DOM events]{``Device driver'' triggering a generic event handler sequence in-system.}
 \label{lst:devdrv}
 \end{figure}
 
@@ -349,7 +347,7 @@ In most cases, the base platform will provide some way of viewing and modifying 
 \begin{figure}
 \centering
 \includegraphics[width=8cm]{Altair-8800.jpg}
-\caption{The Altair 8800 microcomputer and its front panel of switches. \emph{Image credit: \parencite{Altair}.}}
+\caption[The Altair 8800 microcomputer]{The Altair 8800 microcomputer and its front panel of switches. \emph{Image credit: \parencite{Altair}.}}
 \label{fig:altair}
 \end{figure}
 
@@ -370,7 +368,7 @@ The JavaScript tree view is a complex set of functionality set to work and displ
 \begin{figure}
 \centering
 \includegraphics[width=\linewidth]{three-columns.png}
-\caption{The full BootstrapLab interface. From the left: graphics window, temporary HTML state viewer, and browser developer tools.}
+\caption[BootstrapLab interface]{The full BootstrapLab interface. From the left: graphics window, temporary HTML state viewer, and browser developer tools.}
 \label{fig:three-cols}
 \end{figure}
 
@@ -429,7 +427,7 @@ apply: define,  name: fac,  as:
             apply: decr,  1: n
 apply: fac,  n: 3
 \end{verbatim}
-\caption{Lisp, built around lists, vs. Masp, built around maps.}
+\caption[Lisp vs. Masp]{Lisp, built around lists, vs. Masp, built around maps.}
 \label{fig:lisp}
 \end{figure}
 
@@ -465,28 +463,28 @@ Lisp evaluation is done by walking over the expression tree. At any point, we ar
 \begin{figure}
 \centering
 \includegraphics{masp/1-apply-fac.png}
-\caption{The \texttt{expr} part of the Masp context contains the current expression being evaluated. This represents the initial state for applying the factorial function with parameter \texttt{n} bound to 1.}
+\caption[Masp Factorial evaluation step 1]{The \texttt{expr} part of the Masp context contains the current expression being evaluated. This represents the initial state for applying the factorial function with parameter \texttt{n} bound to 1.}
 \label{fig:masp-1}
 \end{figure}
 
 \begin{figure}
 \centering
 \includegraphics{masp/2-eval-fac-n.png}
-\caption{After some evaluation steps, both the original expression (the name \texttt{fac}) and its value (its function closure) are visible. Similarly, the literal expression \texttt{1} has evaluated to itself.}
+\caption[Masp Factorial evaluation step 2]{After some evaluation steps, both the original expression (the name \texttt{fac}) and its value (its function closure) are visible. Similarly, the literal expression \texttt{1} has evaluated to itself.}
 \label{fig:masp-2}
 \end{figure}
 
 \begin{figure}
 \centering
 \includegraphics{masp/3-expand-fac.png}
-\caption{The next step of evaluation, read as: ``To the value \texttt{1} (which came from the expression \texttt{n}), apply this function literal in an environment where \texttt{n} is bound to \texttt{1}''.}
+\caption[Masp Factorial evaluation step 3]{The next step of evaluation, read as: ``To the value \texttt{1} (which came from the expression \texttt{n}), apply this function literal in an environment where \texttt{n} is bound to \texttt{1}''.}
 \label{fig:masp-3}
 \end{figure}
 
 \begin{figure}
 \centering
 \includegraphics{masp/4-apply-mul.png}
-\caption{Some steps later, we have an application of a built-in multiplication function whose JS code is visible. The second operand is an as-yet unevaluated recursive application of \texttt{fac}.}
+\caption[Masp Factorial evaluation step 4]{Some steps later, we have an application of a built-in multiplication function whose JS code is visible. The second operand is an as-yet unevaluated recursive application of \texttt{fac}.}
 \label{fig:masp-n}
 \end{figure}
 
@@ -521,7 +519,7 @@ To edit state in JavaScript, we needed to either address its parent with a full 
 \begin{figure}
 \centering
 \includegraphics[width=8cm]{editor.png}
-\caption{Left: tree editor in graphics window. Right: temporary state viewer in the DOM.}
+\caption[In-system tree editor vs. HTML state viewer]{Left: tree editor in graphics window. Right: temporary state viewer in the DOM.}
 \label{fig:editor}
 \end{figure}
 
@@ -614,24 +612,23 @@ to: key_name  apply:
     2: { apply: set  map: box  key: color  to: value }
     3: box
 \end{lstlisting}
-\caption{This Masp code checks if a map entry is named ``color''. If so, it returns an appropriately coloured box with a grey border. Otherwise, it returns the string \texttt{unhandled}.}
+\caption[Masp code for local colour preview]{This Masp code checks if a map entry is named ``color''. If so, it returns an appropriately coloured box with a grey border. Otherwise, it returns the string \texttt{unhandled}.}
 \label{lst:rendermapentry}
 \end{figure}
 
 \begin{figure}
 \centering
 \includegraphics[width=8cm]{hex-strings-vs-coloured-boxes.png}
-\caption{Before (left) and after (right) activating the Masp rendering hook.}
+\caption[Local colour preview in BootstrapLab]{Before (left) and after (right) activating the Masp rendering hook.}
 \label{fig:hex-vs-boxes}
 \end{figure}
 
 \begin{figure}
 \centering
 \includegraphics[width=12cm]{grey-box.png}
-\caption{The grey colour constant displays as the hex string \texttt{0xaaaaaa} in the right-hand HTML tree view. However, in the left-hand tree editor, this code runs on its own source representation, turning the colour constant into a grey box instead. This is a minimal example of Innovation Feedback.}
+\caption[Innovation Feedback in BootstrapLab]{The grey colour constant displays as the hex string \texttt{0xaaaaaa} in the right-hand HTML tree view. However, in the left-hand tree editor, this code runs on its own source representation, turning the colour constant into a grey box instead. This is a minimal example of Innovation Feedback.}
 \label{fig:grey-box}
 \end{figure}
-
 
 ## The Key Takeaway
 In the non-self-sustainable world, a projectional editor is implemented in some traditional programming language and interface; say, Java. The domain-specific notations can benefit a wide variety of programs created using the editor. Yet, this range of beneficiaries nevertheless forms a "light cone" emanating out from the editor, never including the editor itself. For example, any vector formulae used to render the interface of the editor will remain as verbose Java expressions, along with any code for new additions to the editor. The tragedy of non-self-sustainable programming is that it can never benefit from its own innovations.
@@ -640,10 +637,11 @@ Conversely, in BootstrapLab, the benefits of the new notation spread across the 
 
 In COLA, notational variation appears to be limited to variation in concrete syntax. Our uncompromising insistence on *explicit, non-parsed structure* at the core of BootstrapLab, while costly in terms of interface implementation, was precisely in order to be free of such a restriction in the end. While one *could* implement a multiline text field with syntax highlighting in BootstrapLab, it is at least crystal-clear that a vast array of other interfaces are possible, unimpeded by any privileging of text strings.
 
-# Conclusions
+## Situation, Task, User, Importance
+It is worth separately applying this to (a) BootstrapLab itself, (b) the technique we have presented as a sequence of steps, and (c) the "ideal BootstrapLab" that we would develop with more time and resources.
 
-The process of developing a self-sustainable programming system that we followed in this chapter roughly mirrors the historical development of programming that shaped much of how we do things today. Technology like the assembler and the compiler was born from a truly impoverished platform of flat memory, numerical instructions, printed output and rows of switches. Self-sustainable programming systems like Unix were gradually raised out of this primordial world, yet it still has a tendency to show through and force human minds to wrangle with it.
+Firstly, BootstrapLab itself is made to help the author (User) discover how to interactively achieve self-sustainability and explore its effects (Task) for research (Situation). The claim to Importance is that such a system did not previously exist (Problem Not Previously Solved). 
 
-This chapter can be seen as a sketch of how we might build similar infrastructure on the back of modern computing environments with structured representation of data and graphical interfaces. In other words, we investigate what programming could look like if it were *re*-bootstrapped today, not on top of flat memory, but on a richer base platform such as that provided by web technologies.
+The technique was developed to help individual programmers (User) escape the limitations of their go-to programming environments for general programming tasks (Task) where they are able and willing to put in this investment (Situation). Such an investment of time and work may not be possible or appropriate in some situations. However, we see it as existing on the same continuum of programming investments, such as writing a utility function or library to ultimately pay itself off in productivity gains. This contribution falls under "Generality", applying to all sorts of programming systems taken as the platform. It also qualifies for "Empowering New Participants" in the sense that the benefits of the Three Properties (especially Self-Sustainability) need no longer be confined to specific programming systems like Smalltalk; one should be able to have them "bolted on" to one's own preferred platform.
 
-In his 1997 OOPSLA keynote "The Computer Revolution Hasn't Happened Yet"\ \parencite{CompRev}, Alan Kay hoped that future users of Squeak/Smalltalk would use it to start a virtuous cycle of innovation: "Think of how you can obsolete the damn thing by using its own mechanisms for getting the next version of itself." It appears that these hopes were not answered in the 25 years since his keynote. Our modest contribution is to broaden the scope. If we were unable to obsolete the *status quo* from Squeak, perhaps we can do it from any other platform---by following a handy sequence of steps.
+Finally, the "ideal BootstrapLab" would be an example of this process applied to our preferred platform, the Web browser (User, Situation). It would function as a Smalltalk-like "personal dynamic medium" for both exploring problem spaces and implementing solutions (Task), but one that neatly slots into our familiar programming practices (\eg{} does not require installing and learning Smalltalk). While it is necessarily lifted up by programmers, the availability of mood-specific notations could make it of use to non-programmers (Empowering New Participants). 

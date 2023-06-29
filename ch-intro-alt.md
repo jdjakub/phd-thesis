@@ -1,4 +1,5 @@
-\chapter{Introduction}
+\hypertarget{intro}{%
+\chapter{Introduction}\label{intro}}
 
 \joel{Stefan:
 - Situate, vision (high-level problems)
@@ -10,7 +11,7 @@
 - Include papers and how they map to chapters
 }
 
-When we have an idea for some computer software, and try and make this idea a reality, we are forced to confront two types of complexity: the *essential* and the *accidental*. We know there is "no such thing as a free lunch", so we are able to accept the burden of whatever complexity is actually intrinsic to our idea. If we have a simple idea, we are prepared to do a little work; if it is more ambitious, we will accept having to do more work. Yet this *essential* complexity is often swamped by unwelcome incursions of tedious busy-work. Concepts that appear simple to us must be spelled out in great detail for a computer or require much work to make them machine-readable. This is the *accidental complexity* that is widespread in programming \cite{MMM}.
+When we have an idea for some computer software and try and make this idea a reality, we are forced to confront two types of complexity: the *essential* and the *accidental*. We know there is "no such thing as a free lunch", so we are able to accept the burden of whatever complexity is actually intrinsic to our idea. If we have a simple idea, we are prepared to do a little work; if it is more ambitious, we will accept having to do more work. Yet this *essential* complexity is often swamped by unwelcome incursions of tedious busy-work. Concepts that appear simple to us must be spelled out in great detail for a computer or require much work to make them machine-readable. This is the *accidental complexity* that is widespread in programming \cite{MMM}.
 
 In our experience, the three most important sources of accidental complexity in programming are as follows:
 

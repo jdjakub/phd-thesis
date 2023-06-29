@@ -1,4 +1,5 @@
-\chapter{Introduction}
+\hypertarget{intro}{%
+\chapter{Introduction}\label{intro}}
 
 \note{in html/dom - you can open object browser and edit user interface, but this does not work for editing code in the same way - that is bulk JS with some substrings you would have to edit; what if everything was visible accessible (shareable) and editable, including structured code?
 
@@ -22,15 +23,15 @@ Capabilities:
 
 When we have an idea for some computer software, and try and make this idea a reality, we are forced to confront two types of complexity: the *essential* and the *accidental*. We know there is "no such thing as a free lunch", so we are able to accept the burden of whatever complexity is actually intrinsic to our idea. If we have a simple idea, we are prepared to do a little work; if it is more ambitious, we will accept having to do more work. This *essential* complexity is often swamped by unwelcome incursions of tedious busy-work. Concepts that appear simple must be spelled out in great detail for a computer. This is the *accidental complexity* that is widespread in programming \parencite{MMM}.
 
-This is particularly egregious when the "idea" is merely to change or fix some small issue. Suppose we are using an app where the text is hard to read owing to a similar background colour. The designers have not included a feature for changing the colour of UI elements. A programmer would know that there is some API being called to render the background, and this API will be told the colour via a few numbers in the app's memory. If we could just find these numbers and change them, we may then be able to read the text.
+This is particularly egregious when the "idea" is merely to change or fix some small issue. Suppose we are using an app where the text is hard to read owing to a similar background colour. The designers have not included a feature for changing the colour of UI elements. A programmer would know that there must be some API being called to render the background. This API will receive the colour from a few numbers in the app's memory. If only we could find these numbers and change them, we would be able to read the text.
 
-So, what does it take to find and change a colour? The app itself provides no way to proceed through its surface interface to such internal details. This means we must face at least the accidental complexity of working with some external tool that can open it up. We could attach an assembly-level debugger to the app process and stare at hex dumps for a long time, eventually figuring out which address holds the colour. Such an expert task would take an extremely long time even for someone with the relevant experience. It does let us make a change to the running app, but not permanently; we would have to do this every time we ran the app.
+What, therefore, does it take to find and change a colour? The app itself provides no way to proceed through its surface interface to its internal mechanisms. Thus, the accidental complexity we must face includes working with some external tool that can open it up. We could attach an assembly-level debugger to the app process and stare at hex dumps for a long time, eventually figuring out which address holds the colour. Such an expert task would take an extremely long time even for someone with the relevant experience. It would only let us make a change to the *running* app; we would have to repeat the procedure every time we ran the app.
 
 Alternatively, we could hope that the app is open-source, download the code, setup the build system, locate the relevant code, re-build the app, and re-install it. Each of these steps is also an expert task which would be incredibly lengthy on a novel codebase, even for experienced programmers. Furthermore, this approach entails destroying the running instance of the app and re-initialising it, possibly losing unsaved work.
 
-In the worst case, both of these approaches could be blocked; run-time tampering could be prevented by security policy (especially on a mobile device) and re-building from source cannot work without access *to* the source. Suffice to say, none of this is suitable for an average user. Even a seasoned programmer would consider it not worth the trouble. Our task of changing a colour, while technically possible, has a severely *disproportionate* accidental complexity cost.
+In the worst case, both of these approaches could be blocked; run-time tampering could be prevented by the security policies of mobile devices and re-building from source cannot work without access *to* the source. Suffice to say, none of this is suitable for an average user. Even a seasoned programmer would consider it not worth the trouble. Our task of changing a colour, while technically possible, has a severely *disproportionate* accidental complexity cost.
 
-In specific situations, software authors do have good reasons to restrict access to internals. In a game, it is important to enforce the rules; access to internals would enable arbitrary cheating. However, this is not representative of the common case of most types of software. Nevertheless, we are unable to simply *choose* to build software that is "open". Even if *we* wrote the app and desire to support adaptation beyond what we anticipated, we face the fact that our tools can only create software that is "closed". The task of "supporting unanticipated modification" is itself a *feature* that we must somehow figure out and implement on top, and it is unclear how to achieve such a feature. Nevertheless, it is worth striving for a world where this accidental complexity is as reduced as possible. We might expect this to involve a mix of "demolition" work---that of removing barriers that have been placed in the way---and "construction" work of building tools that help us work more effectively.
+In specific situations, software authors do have good reasons to restrict access to internals. In a game, it is important to enforce the rules; access to internals would enable arbitrary cheating. However, this is a *special case* not representative of most types of software. Despite this, we are unable to simply *choose* to build software that is "open". Even if *we* wrote the app and desire to support adaptation beyond what we anticipated, we face the fact that our tools can only create software that is "closed". The task of "supporting unanticipated modification" is itself a *feature* that we must somehow figure out and implement on top, and it is unclear how to achieve such a feature. Nevertheless, it is worth striving for a world where this accidental complexity is as reduced as possible. We might expect this to involve a mix of "demolition" work---that of removing barriers that have been placed in the way---and "construction" work of building tools that help us work more effectively.
 
 # How Should Things Work?
 
@@ -65,7 +66,7 @@ A change is \emph{self-supplied} by a piece of software if you can achieve the c
 A software system is \emph{self-sustainable} if arbitrary changes to it are self-supplied.
 \end{defn}
 
-The system functions like a workshop where new tools can be fashioned using existing tools as needed. They can be big or small, and this ensures that we can use the "right tool for the job", no matter the scale.
+The ideal system functions like a workshop where new tools can be fashioned using existing tools as needed. They can be big or small, and this ensures that we can use the "right tool for the job", no matter the scale.
 
 \begin{defn}[\RTFJ]
 \label{def:right-tool}
@@ -82,23 +83,32 @@ The opposite of ``\URTFJ''. This refers to using a single tool to do a wide rang
 This is a small or large part of a software system which provides its own custom interface for change.
 \end{defn}
 
-In standard practice, a program is generated from *source code* and put into a running state. To change the program, one must change the source code, destroy the program and re-create it anew. These steps are accomplished with separate tools, meaning that changes tend not to be self-supplied (Definition\ \ref{def:self-supplied}). There is a limited notion of "\URTFJ" in that there are different programming languages. However, languages enforce their syntax and semantics without permitting *smaller-scale* adaptation, and variation in these respects is restricted to textual notations. Furthermore, some situations may call for more general *notations* or graphical interfaces that do not work like a language, but the fact that programming is optimised for languages makes using such notations more difficult.
+In standard practice, a program is generated from *source code* and put into a running state. To change the program, one must change the source code, destroy the program and re-create it anew. These steps are accomplished with separate tools, meaning that changes tend not to be self-supplied (Definition\ \ref{def:self-supplied}).
+
+There is a limited notion of "\URTFJ" in that there are different programming languages. However, languages tend to enforce their syntax and semantics without permitting *smaller-scale* adaptation, and variation in these respects is normally restricted to textual notations. Furthermore, some situations may call for more general *notations* or graphical interfaces that do not work like a language, but the fact that programming is optimised for languages makes using such notations more difficult.
 
 Instead of the above, computer software should act as "Personal Dynamic Media" \parencite{PersonalDynMedia}. In this vision, a software system is *designed* to be adapted and modified by its users. By performing an explicit action (\eg{} switching to "edit mode") the user can inspect the visible surface of the application to find the causes of its appearance in the form of code and data. They can also inspect a map of the non-visible implementation of the software's functionality and navigate to the relevant parts. There may be a common programming notation as a default, but where possible, parts of the implementation are presented in local notations or interfaces that are more easily understood. These interfaces can also be traced to *their* implementations and modified if desired. The user can then change any aspect of the software while it is running, without having to edit an external specification and destroy the running instance.
 
 # A Fragmented Vision
-Several pieces of this vision do exist, but not in an integrated whole. We can see some of the different characteristics we desire in software by discussing the examples of the Web, HyperCard, and Smalltalk.
+Several pieces of this vision do exist, but not in an integrated whole. We can see some of the different characteristics we desire in software by examining the Web browser, HyperCard, and Smalltalk.
 
 ## Web pages, web apps, and browsers
-The *web browser* has a powerful set of *developer tools*. This includes the "element inspector" which can be used to edit the web page's underlying elements. For example, an ad can be removed by locating and deleting its element. Note that the "state" here is mostly visible, since it is directly responsible for visual elements appearing on the page. Some of the state may have no visual effects (\eg{} an element's ID attribute) and is thus hidden from an ordinary user. However, such state is visible from the inspector in the developer tools. This means that all of the "structural" state is *potentially* visible, not to mention editable, in the web browser.
+The *web browser* has a powerful set of *developer tools* (Figure\ \ref{fig:web-dev-tools}). This includes the "inspector" which can be used to edit the page's underlying elements in the \ac{DOM}. For example, an ad can be removed by locating and deleting its element. Some of this underlying "state" may have no visual effects (\eg{} an element's ID attribute) and is thus hidden from an ordinary user. However, such state *is* visible from the inspector in the developer tools. This means that all of the "structural" state of a page is *potentially* visible, not to mention editable, in the web browser.
 
-The above is worth contrasting with the case of the "behavioural" side of a web page centered around the JavaScript programming language. Alongside the "structural" state of the web page, there is also the hidden state of JavaScript objects. The JavaScript console accepts commands which may read or change this state, but there is nothing like the element inspector for it.^[This may be because the "DOM" is a tree structure while the JavaScript state is a general graph, and it's harder to build an editor for the latter.] What *is* visible in the dev tools is the *source code* of the scripts loaded by the page.
+\begin{figure}
+\centering
+\includegraphics[width=11cm]{web-dev-tools.png}
+\caption[Web Developer Tools]{The Developer Tools available for any Web page or app in a modern browser.}
+\label{fig:web-dev-tools}
+\end{figure}
 
-Many changes to the "behavioural" state can be accomplished at the console; for example, updating part of the state to a new object. However, this will not work if the source declares the variable as `const`, and more importantly, this does not work for fine-grained changes to code. The main unit of code organisation, the `function`, is an opaque object in the runtime environment; one cannot simply replace a particular line or expression within it. Instead, a complete new definition must be entered into the console to replace it wholesale. However, replacing a function can be prohibited by the source just like the redefinition of `const` variables. In these cases, there is no choice but to edit the source files somehow. If the browser does not provide for local edits to be made to these files, a separate text editor must be used. The changes made in this way do not take effect until the scripts are reloaded by refreshing the page.
+The above is worth contrasting with the case of the "behavioural" side of a web page oriented around the \ac{JS} programming language. Alongside the "structural" state of the web page, there is also the hidden state of \ac{JS} objects. The \ac{JS} console accepts commands which may read or change this state, but there is nothing like the element inspector for it.^[This may be because the \ac{DOM} is a tree structure while the \ac{JS} state is a general graph, and it's harder to build an editor for the latter.] What *is* visible in the dev tools is the *source code* of the scripts loaded by the page.
 
-Compare the above situation with the "structural" state of the web page; we are free to make arbitrarily fine-grained changes using the element inspector, and our changes take effect immediately without having to reset anything. There are, in fact, HTML text files backing the page structure, but they are irrelevant given the inspector tool. In short, the *state* of a web page has *naïve pokeability* (Definition\ \ref{def:naive-pokeability}) while its dynamic *behaviour* does not reliably have this property.
+Many changes to the "behavioural" state can be accomplished at the console; for example, updating part of the state to a new object. However, this cannot be relied upon in the same way as \ac{DOM} editing because \ac{JS} language features prohibit many changes. For example, a variable declared in the source as `const` will not be changeable in the console. Moreover, fine-grained changes to code cannot be performed there either. The main unit of code organisation, the `function`, is an opaque object in the runtime environment; one cannot simply replace a particular line or expression within it. Instead, a complete new definition must be entered into the console to replace it wholesale. Yet even this will fail if the source declares the function `const`. In such cases, we lack *naïve pokeability* (Definition\ \ref{def:naive-pokeability}) and we have no choice but to edit the source files somehow. If the browser does not provide for local edits to be made to these files, a separate text editor must be used. The changes made in this way will only take effect once the scripts are reloaded by refreshing the page and losing its \ac{JS} state.
 
-There is one caveat: since the HTML and JavaScript files are the "ground truth", any changes made via the inspector or the console will disappear when the page is closed or refreshed. Only changes to the underlying files are *persistent*, and websites typically do not allow random individuals to change the files on their servers. All this is sad news for our user deleting their ad, as they will have to repeat it each time they access the page (or use sophisticated programmatic middleware, such as an ad-blocking extension, to do this automatically).
+Let us return to the "structural" state of the web page and note that we are free to make arbitrarily fine-grained changes using the element inspector. These changes take effect immediately without having to reset anything. There are, in fact, HTML text files backing the page structure, but they cannot restrict the inspector tool in the way \ac{JS} files restrict the console. In short, the *state* of a web page has naïve pokeability while its dynamic *behaviour* does not reliably have this property.
+
+There is one caveat: the HTML and \ac{JS} files are the "ground truth", so any changes made via the inspector or the console will disappear when the page is closed or refreshed. Changes made in the browser are *transient* (Definition\ \ref{def:transient}); only changes to the underlying files are *persistent* (Definition\ \ref{def:persistent}), and websites typically do not allow unknown individuals to change the files on their servers. All this is sad news for our user deleting their ad, as they will have to repeat it each time they access the page (or use sophisticated programmatic middleware, such as an ad-blocking extension, to do this automatically).
 
 ## HyperCard
 Before the Web, "hypertext" was regularly created and distributed by people in the form of HyperCard stacks. Alan Kay criticised the web for having a browser that doesn't include an *authoring* tool, instantly limiting the *creation* of web pages to people who can code in a text editor. In HyperCard, the viewer and editor exist integrated together. Furthermore, there is an "edit" mode whereby a user can remix content from someone else, even reprogramming the dynamic behaviour.
@@ -110,46 +120,61 @@ Smalltalk provides for behaviour editing at a finer granularity than the Web dev
 
 That being said, Smalltalk systems tend to run on VMs that are implemented in a separate lower-level language like C++. Fundamental infrastructure such as object layout and memory management is available only as opaque primitives from the point of view of Smalltalk. Thus, to change these aspects one must still switch to a different programming system and re-compile.
 
-Going further in the same direction as Smalltalk is the Combined Object Lambda Architecture or COLA \parencite{COLAs}. COLA makes said basic infrastructure self-supplied (Definition\ \ref{def:self-supplied}) so as to approximate a truly self-sustainable system. It is also designed to encourage domain-specific adaptations down to a small scale of "mood-specific languages" beyond the coarse-grained variation found with ordinary programming languages. However, the architecture as described does not have much to say about the user interface or graphics, taking place instead in the world of batch-mode transformations of streams.
+Going further in the same direction as Smalltalk is the \ac{COLA} \parencite{COLAs}. COLA makes said basic infrastructure self-supplied (Definition\ \ref{def:self-supplied}) so as to approximate a truly self-sustainable system. It is also designed to encourage domain-specific adaptations (Definition\ \ref{def:dsa}) down to a small scale of "\acp{MSL}" beyond the coarse-grained variation found with ordinary programming languages. However, the architecture as described does not have much to say about the user interface or graphics, taking place instead in the world of batch-mode transformations of streams.
 
-# The Missing Synthesis
+\joel{
+## The Missing Synthesis
 
-The situation is that we can pick at most two from:
-
-1. GUIs with the potential for domain-specific graphical adaptation (Web, Smalltalk)
+We have given the above examples because they demonstrate some of our ideals from Section\ \ref{how-should-things-work}. Web browsers and Smalltalk exhibit GUIs with the potential for domain-specific graphical adaptation (Web, Smalltalk)
 2. Reliable, persistent naïve pokeability of state and behaviour (Smalltalk, COLA)
 3. Full self-sustainability with domain-specific languages (COLA)
 
 Why has a synthesis of all three not been achieved? Part of the difficulty is that programming is framed in terms of *languages* with a focus on parsed syntax and batch-mode transformations. This makes it an uphill battle to achieve even one of these three properties. 
+}
 
-It’s unfortunate that we conflate "coding" in a programming language with programming itself. This makes it hard to talk about the more general concept that contains alternative possibilities. We see *programming* as the ill-defined act of making a computer do things by itself. Coding, visual programming, programming by example and deep learning are some specific *means* by which to program.
+# Accidental Complexity Beyond Languages
+In our experience, the three most important sources of accidental complexity in programming are as follows:
 
-If we see programming as coding, then we unwittingly limit the scope of innovative ideas.
+1. In order to make even a small change to a program, we must go to the source code which may require an entirely different language and way of thinking. We lack *Self-Sustainability.*
+2. We must describe graphical constructs with language in order to fit them into program code. This represents a lack of what we will soon define as *Notational Freedom.*
+3. We have to avoid syntax errors, escape certain characters, and write code for parsing and serialising. This represents a lack of what we will soon define as *Explicit Structure.*
 
-* Instead of seeking the right notation, interface or representation for the job---we seek the right *textual syntax* for the job. If we can't find one, the real reason may simply be that text is not well-suited to the job! Yet if text is all we know, it looks like an intrinsically hard job.
-* Instead of being able to make changes to a running program, we are stuck changing its source code and re-creating it. It is easy to make closed programs this way but hard to make open ones. 
+These are not quite observations about programming *languages.* Instead, they concern the wider environment of tools in which programming is performed, such as the editor interface and facilities for running the programs.
+
+It is important not to conflate "coding" in a programming language with programming itself. In this dissertation, we see *programming* as the general act of making a computer do things by itself. By this definition, coding, visual programming, programming by example and deep learning are some specific *means* by which to program. If we ignore this subtlety, we risk unwittingly limiting the scope of innovative ideas in the following ways:
+
+* Instead of seeking the right notation, interface or representation for the job, we might seek the right *textual syntax* for the job. If we cannot find one, the real reason may simply be that text is not well-suited to the job. Yet if text is all we know, we will be under the false impression that it is an *intrinsically* hard job.
+* Instead of being able to make changes to a *running* program, we are stuck changing its source code and re-creating the program. It is easy to make "closed" programs this way and hard to make programs open to "re-programming" while running.
 * Instead of seeking a software *system* open to unanticipated changes as it runs, we might seek intricate *language* features that give flexibility only for *compiling* a program.
 
-This last point is the crux of the matter: we need a more general programming *systems* approach instead. In Chapters\ \ref{analysis} and\ \ref{tech-dims} we will discuss this and propose a systematic framework by which to analyse programming systems. This framework will include three properties that are central to the dissertation and develop them in detail. We will now proceed to familiarise the reader with the basic outline of these three properties.
+A key problem is that there is no established term for this scope of programming research, and hence no body of work in which we may situate it. This is the crux of the matter: we need a more general programming *systems* approach instead. We will discuss this further in Chapter\ \ref{analysis} and use it in Chapter\ \ref{tech-dims} to propose a systematic framework by which to analyse programming systems. This framework will include three properties that are central to the dissertation and develop them in detail. We will now familiarise the reader with the basic outline of these three properties.
 
 # The Three Properties
-The goal at the end of Section\ \ref{how-should-things-work} is much too ambitious a scope to achieve in this dissertation. However, from Definitions\ \ref{def:naive-pokeability}--\ref{def:dsa} and the above discussion, we distill three properties that underlie a good proportion of the issues we identified. They are:
+The goal at the end of Section\ \ref{how-should-things-work} is much too ambitious a scope to achieve in this dissertation. However, from Definitions\ \ref{def:naive-pokeability}--\ref{def:dsa} and the above discussion, we distill three properties that help address the issues we identified. They are:
 
 1. *Self-sustainability:* being able to evolve and re-program a system, using itself, while it is running. (This is a more intuitive definition that agrees with what we said earlier in Definition\ \ref{def:self-sustainable}.)
 2. *Notational Freedom:* being free to use any notation as desired to create any part of a program, at no additional cost beyond that required to implement the notation itself.
 3. *Explicit Structure:* being able to work with data structures directly, unencumbered by the complexities of parsing and serialising strings.
 
-We are interested in exploring, developing, and achieving these three properties in programming systems. We will refine and expand these definitions in later chapters, but they are reasonable to start with. Each one brings its own advantages to a programming system:
+## Importance of the Three Properties
+We are interested in exploring, developing, and achieving the Three Properties in programming systems. We will refine and expand these definitions in later chapters, but they are reasonable to start with. Each one brings its own advantages to a programming system:
 
 1. Self-sustainability reduces the accidental complexity of having to make changes using a separate, unfamiliar programming system. It also permits *innovation feedback:* anything helpful created using the system can benefit not only other programs sitting atop the system, but also the system's own development.
-2. Notational Freedom makes it easier to use the "\RTFJ". Once a programmer has decided what constitutes the latter in their specific context, Notational Freedom means they can use such a tool more easily as a Domain-Specifc Adaptation (Definition\ \ref{def:dsa}). For example, if diagrams are desired, Notational Freedom removes the traditional limitation to use ASCII art. More generally, Notational Freedom removes the need to describe graphical constructs using language.
-3. Explicit Structure avoids various pitfalls of strings, both in terms of correctness and convenience. Consumers of a structure benefit from an editor that can only save valid structures, and producers benefit by discovering errors early instead of later during consumption. Writing programs to use such structures is improved if one does not have to maintain parsing/serialising code or think about escaping.
+2. Notational Freedom makes it easier to use the "\RTFJ" (Definition\ \ref{def:right-tool}). Once a programmer has decided what the right tool is in their specific context, Notational Freedom means they can use such a tool more easily as a Domain-Specifc Adaptation (Definition\ \ref{def:dsa}). For example, if diagrams are desired, Notational Freedom removes the traditional limitation to use ASCII art. More generally, Notational Freedom removes the need to describe graphical constructs using language.
+3. Explicit Structure avoids various pitfalls of strings, both in terms of correctness and convenience. Consumers of a structure benefit from an editor that can only save valid structures, and producers benefit by discovering errors early instead of later during consumption. Writing programs to use such structures is improved if one does not have to maintain code for parsing and serialising or think about escaping special characters.
 
 These properties are exhibited occasionally in different systems, as we will mention in Chapters \ref{background} and\ \ref{analysis}. However, it is rare to see two or all three present in the same system. This rarity suggests they are probably under-explored and under-developed, so we could stand to learn a lot by studying them. We do not doubt that these properties have drawbacks in addition to the above advantages, but we stand to gain from these advantages taking us closer to the ideal at the end of Section\ \ref{how-should-things-work}.
 
-Furthermore, it is worth exploring the Three Properties in *combination* because they complement each other in the following ways. Suppose a system already has Notational Freedom; Self-Sustainability makes it easier to add new notations to it. In the converse case of a system lacking Notational Freedom, Self-Sustainability makes it easier to add Notational Freedom *itself* and lets the benefits flow into all aspects of the system's development (this is what we called *innovation feedback*). Despite this, both Notational Freedom and Self-Sustainability suffer without Explicit Structure. Notational Freedom is impossible to achieve in a world of parsed strings and text editors (this being merely what we term *syntactic* freedom in Section\ \ref{notational-freedom}) so it needs Explicit Structure as a necessary foundation. Self-Sustainability is currently best understood as a vague analogy to self-hosting compilers, as we will see in Section\ \ref{precursors-of-self-sustainability}. The COLA work follows this view, being unclear how such a property can be achieved in interactive, graphical systems. Explicit Structure lets us study these other two properties more purely, without getting confused by the accidental complexities of parsing and escaping.
+## The Three Properties in Combination
+It is worth exploring the Three Properties in *combination* because they complement each other in the following ways.
 
-We can prioritise the Three Properties based on the above inter-dependencies. Our primary goal is to explore Notational Freedom in interactive, graphical programming systems. To support this, we should achieve Self-Sustainability. To do both of these with minimal distraction, we should make sure to build on a foundation of Explicit Structure. We will not follow this order strictly, but it shows a sort of logic as to how each property fits into the bigger picture. We see that the only way discover how to achieve these goals is by *doing,* so we work to build a prototype programming system called *BootstrapLab* that makes progress on the Three Properties simultaneously.
+Suppose a system already has Notational Freedom. Self-Sustainability makes it easier to add new notations to it. In the converse case of a system lacking Notational Freedom, Self-Sustainability makes it easier to add Notational Freedom *itself* and lets the benefits flow into all aspects of the system's development; this is what we called *innovation feedback*.
+
+Notational Freedom is impossible to achieve without Explicit Structure. In a world of parsed strings and text editors, we are limited to what we will term *syntactic* freedom in Section\ \ref{notational-freedom}. Thus, Notational Freedom needs Explicit Structure as a necessary foundation.
+
+Self-Sustainability also suffers without Explicit Structure. Self-Sustainability is vaguely understood by analogy to self-hosting compilers, as we will see in Section\ \ref{precursors-of-self-sustainability}. The \ac{COLA} work\ \parencite{COLAs} follows this approach, being unclear how such a property can be achieved in interactive, graphical systems. Explicit Structure lets us study the other two Properties more purely, without getting confused by the accidental complexities of parsing and escaping (we will expand on this in Section\ \ref{we-study-the-spherical-cow}).
+
+We can prioritise the Three Properties based on the above inter-dependencies. Our primary goal is to explore Notational Freedom in interactive, graphical programming systems. To support this, we should achieve Self-Sustainability. To do both of these with minimal distraction, we should make sure to build on a foundation of Explicit Structure. We will not follow this order strictly, but it shows a logic as to how each property fits into the bigger picture. We see that the only way to discover how to achieve these goals is by *doing,* so we work to build a prototype programming system called *BootstrapLab* that makes progress on the Three Properties simultaneously.
 
 # Thesis Statement and Contributions
 The statement of our thesis is as follows:
@@ -158,22 +183,16 @@ The statement of our thesis is as follows:
 
 Our main contribution is to prove this by construction in the form of a prototype programming system called *BootstrapLab*, which is the topic of Chapter\ \ref{bl}. This contribution involves not only BootstrapLab itself, but also the necessary steps and principles that its construction led us to *discover.* We believe that it should be possible to build these Three Properties atop a wide variety of programming systems; our hope is that in Chapter\ \ref{bl} we have documented enough of a generalisable technique to make this feasible for the average programmer. It is as if we have developed the study of sorting by coming up with a prototype sorting algorithm---the new clarity is the important part, while the concrete program was just the vehicle that got us there.
 
-Additionally, in order to assess how well BootstrapLab achieves the Three Properties, we propose a *technical dimensions* framework in Chapter\ \ref{tech-dims} for analysing programming systems, which is our secondary contribution. BootstrapLab, being a programming system, is then evaluated in terms of dimensions constituting the Three Properties. In Chapter\ \ref{conclusion} we acknowledge the limitations revealed by this evaluation and suggest future work for both of our contributions.
+Additionally, in order to assess how well BootstrapLab achieves the Three Properties, we propose a *technical dimensions* framework in Chapter\ \ref{tech-dims} for analysing programming systems, which is our secondary contribution. BootstrapLab, being a programming system, is then evaluated in terms of dimensions constituting the Three Properties. We then review related work in Chapter\ \ref{ch-related-work}. In Chapter\ \ref{future-work-and-conclusions} we acknowledge the limitations revealed by our evaluation, suggest future work for both of our contributions, and conclude with what we have learned and achieved.
 
-\joel{
-Instead of seeking to master the ins-and-outs of Smalltalk, Unix or indeed BootstrapLab, what is needed is to steal the best ideas and synthesise them into something fresh---to have our cake and eat it too.
-}
-
-# Supporting Papers
-The following publications form chapters in this thesis:
-
-\fullcite{TechDims}
-
-This won the journal's Editors' Choice Award and was adapted into Chapter\ \ref{tech-dims}.
+# Supporting Publications
+The following essay was adapted into Chapter\ \ref{bl}:
 
 \fullcite{Onward22}
 
-This forms Chapter\ \ref{bl}.
+The following paper won the journal's Editors' Choice Award and was adapted into Chapter\ \ref{tech-dims}:
+
+\fullcite{TechDims}
 
 \joel{
 # Imported from Convivial Salon '20

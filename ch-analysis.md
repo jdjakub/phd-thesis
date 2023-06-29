@@ -89,7 +89,7 @@ In Batch Mode, the programmer writes code in a high-level language and passes th
 \begin{figure}
 \centering
 \input{../../fig/change-by-re-creation.tex}
-\caption{Change By Re-Creation: source code $S$ is compiled into a program $P$ which is run on some inputs to produce a result $R$ signifying the observable ``behaviour'' of a program in the Batch-Mode paradigm. To change this behaviour under the same inputs, we must trace up the arrows to the source code and edit it into $S'$. From this, a new program $P'$ is compiled, which is run to produce a new result $R'$, and so on.}
+\caption[Change By Re-Creation]{Change By Re-Creation: source code $S$ is compiled into a program $P$ which is run on some inputs to produce a result $R$ signifying the observable ``behaviour'' of a program in the Batch-Mode paradigm. To change this behaviour under the same inputs, we must trace up the arrows to the source code and edit it into $S'$. From this, a new program $P'$ is compiled, which is run to produce a new result $R'$, and so on.}
 \label{fig:change-by-re-creation}
 \end{figure}
 
@@ -173,7 +173,7 @@ Self-sustainability involves being able to evolve and re-program a system, using
 
 The lower limit, of minimal self-sustainability, looks something like the following: beyond the transient run-time state changes that make up the user level of any piece of software, the user cannot change anything without dropping down to the implementation level. This would resemble a traditional end-user "application" focused on a narrow domain with no means to do anything else.
 
-At a sufficiently large scope, self-sustainability is inevitable. By analogy, while any nation's economy might be dependent on other nations, the world economy is a closed system that provides its own inputs. Similarly, the ecosystem of software as a whole is necessarily self-sustainable. Even an *individual* Unix system is largely self-sustainable at its inter-process scope, but it is notable that we lose self-sustainability on the way down to the intra-process scope. We will discuss these two scopes as they relate to self-sustainability, after which we will distinguish the *user level* and *implementation level* of programming systems. Then we will conclude with a definition of *innovation feedback,* the key advantage a self-sustainable system has over others.
+At a sufficiently large scope, self-sustainability is inevitable. By analogy, while any nation's economy might be dependent on other nations, the world economy is a closed system that provides its own inputs. Similarly, the ecosystem of software as a whole is necessarily self-sustainable. Even an *individual* Unix system is largely self-sustainable at its inter-process scope, but it is notable that we lose self-sustainability on the way down to the intra-process scope. We will discuss these two scopes as they relate to self-sustainability, after which we will distinguish the *user level* and *implementation level* of programming systems. Then we will conclude with a definition of *innovation feedback,* the key advantage a self-sustainable system has over others. For further information and motivation on Self-Sustainability beyond our own analysis here, we recommend the introductory sections of\ \parencite{COLAs} and\ \parencite{OROM} and the vision presented in\ \parencite{CookClay}.
 
 ### Self-Sustainability at the Inter-Process Scope
 At the inter-process scope of Unix, we have individual processes---text editors, compilers, interpreters, debuggers---which change the large-scale system state (files), such as by creating new programs. Some of these processes run *shell scripts* to coordinate this activity, this being the de-facto programming language^[Technically, the various shell *dialects* (bash, csh, etc.) form multiple de-facto *languages*, but this is not important for the point.] at the inter-process scope. In this way, a Unix system is evolved and re-programmed using itself, while it is running. Hence, Unix (\ie{} programming-in-the-large) is self-sustainable, which is congruent with the origins of Unix as a system for programmers.
@@ -206,7 +206,7 @@ If the software is a programming system, then this can get confusing: both level
 \scalebox{0.85}{
   \input{../../fig/user-impl.tex}
 }
-\caption{Relativity of user versus implementation level depending on one's role.}
+\caption[Relativity of user vs. implementation levels]{Relativity of user versus implementation level depending on one's role.}
 \label{fig:user-impl-examples}
 \end{figure}
 
@@ -233,7 +233,7 @@ To summarise the picture in the self-sustainable case (Figure\ \ref{fig:plaf-sub
 \begin{figure}
 \centering
 \input{../../fig/plaf-substr-prod.tex}
-\caption{Example platform (C) supporting a substrate (Smalltalk VM) for a self-sustainable product system (Smalltalk). Because the product is self-sustainable, the user and implementation levels are no longer disjoint, so the platform/substrate/product distinction is a more helpful alternative.}
+\caption[Smalltalk analysed as platform/substrate/product]{Example platform (C) supporting a substrate (Smalltalk VM) for a self-sustainable product system (Smalltalk). Because the product is self-sustainable, the user and implementation levels are no longer disjoint, so the platform/substrate/product distinction is a more helpful alternative.}
 \label{fig:plaf-substr-prod}
 \end{figure}
 
@@ -244,8 +244,16 @@ A system that is self-sustainable has an advantage over those that are not: we c
 
 For example, at the inter-process scope of Unix, a text editor may be used to improve its own source code, which can then be compiled into an even better text editor. This improved editor can then edit its own source code and begin a new cycle of self-improvement. The shell interface, graphical interfaces and all tools are just *programs* which can be replaced with newly compiled improvements, all using other Unix programs. Therefore, a Unix system is not limited to improving detached *separate* distributions of programs destined for a different user, but naturally improves itself as well.
 
-\joel{Stefan warning: Hard to read}
-When put this way, it sounds obvious; of course computer software is used to improve computer software. Yet how different it is at the intra-process scope: the very same text editor *on its own* cannot compile its improved replacement. A Python interpreter written in C may empower us to create useful Python functions, but to improve the interpreter itself we need to inhabit the world of C, in which our Python functions are unavailable.
+\begin{figure}
+\centering
+\scalebox{0.88}{
+  \input{../../fig/innovation-feedback.tex}
+}
+\caption[Innovation feedback at the inter-process vs. intra-process scope]{Software innovations within a Unix system (left) cannot feed back into its hardware platform. However, the software innovations can feed into each other: a text editor $TE$ edits its source code $S_{TE}$. This new source $S_{TE'}$ is put through the compiler $C$ to create an improved text editor $TE'$, which can edit not only the source code $S$ of other programs but also its own. In a Python system (right), Python innovations can assist in the Python world but cannot feed back to assist with the C implementation of Python.}
+\label{fig:innovation-feedback}
+\end{figure}
+
+When put this way, it sounds obvious; of course computer software is used to improve computer software. Yet how different it is at the intra-process scope: the very same text editor *on its own* cannot compile its improved replacement. A Python interpreter written in C may empower us to create useful Python functions, but to improve the interpreter itself we need to inhabit the world of C, in which our Python functions are unavailable. Figure\ \ref{fig:innovation-feedback} contrasts this situation with innovation feedback in Unix.
 
 From our presentation, it may appear that self-sustainability is a peculiar special case that is naturally hard to achieve. Yet the world of software as a whole is self-sustainable, as is an individual Unix system. We conjecture that self-sustainability is a natural default that was *prevented* by the historical contingency of Unix enforcing its peculiar model on intra-process programming. Nevertheless, we accept the Unix Paradigm as a given, and accomplish the tasks of this dissertation on that basis.
 
@@ -338,7 +346,7 @@ More unfortunate work results from having to "escape" characters that have been 
 Consider the common practice of embedding SQL commands in the source code of various languages. In C#, these are forced into the syntax of the host language as "embedded queries", yet a programmer may prefer to use SQL syntax directly as part of the source. The traditional path-of-least-resistance to achieving the latter was to have SQL code inside program strings, which created significant security risks. This is by no means intrinsic to having SQL source be what the programmer *types* or *sees* (see Section\ \ref{explicit-structure} below.)
 
 ### Digital "plain text" is not inherently human-readable
-This argument is made best by Hall\ \parencite[p.\ 14]{Infra}:
+This argument is made best in \cite[p.\ 14]{Infra} which we will quote here:
 
 > The critical observation is that software infrastructure is heavily involved in supporting the human-readability of text. It is not the case that the bit sequences of UTF8 or any other text encodings are somehow intrinsically understandable to a human. An application interprets the bytes as character codes as per a known standard, which are mapped to glyphs in a font, and rendered to a grid of pixels. This chain of interpretation and transformation starts with clusters of electrons and ends with clusters of photons before the human nervous system takes over. The point being that there is still a necessary software layer performing a transformation in the middle.
 
