@@ -1,6 +1,8 @@
 \hypertarget{appendix-all-dims}{%
 \chapter{Technical Dimensions Catalogue}\label{appendix-all-dims}}
 
+While we do have new ideas to propose, our key contribution is integrating a wide range of existing concepts under a common umbrella. Our work is spread out across different domains, but each part connects to programming systems or focuses on a specific characteristic they may have.
+
 Here, we present our proposed technical dimensions in great detail. Please note that our intention is to provide a *reference* to be looked up and *used* as needed, not something that should be read from start to finish. Therefore, we recommend skimming through this for anything particularly interesting before proceeding to Section\ \ref{evaluating-the-dark-programming-system}. There, we will reference several dimensions in the context of a specific example, at which point it may be helpful to come back for more detail. For a quick overview, we include a concise reference sheet on the next page, though it may make more sense after reading the relevant sections.
 
 We present the dimensions grouped under *clusters*. These may be regarded as "topics of interest" or "areas of inquiry" when studying a given system, grouping together related dimensions against which to measure it.

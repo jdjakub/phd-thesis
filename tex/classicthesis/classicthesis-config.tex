@@ -97,6 +97,18 @@
 \hyphenation{self\-sus-tain-abil-ity}
 \hyphenation{Self\-sus-tain-abil-ity}
 \hyphenation{Self\-Sus-tain-abil-ity}
+
+% https://tex.stackexchange.com/questions/73063/acronym-hyperlink-without-special-color
+\makeatletter
+\AtBeginDocument{%
+  \renewcommand*{\AC@hyperlink}[2]{%
+    \begingroup
+      \hypersetup{hidelinks}%
+      \hyperlink{#1}{#2}%
+    \endgroup
+  }%
+}
+\makeatother
 % ****************************************************************************************************
 
 
@@ -130,6 +142,7 @@
   \usepackage{amsmath}
 \usepackage{amsthm}
 
+\theoremstyle{definition}
 \newtheorem{heuristic}{Heuristic}
 \newtheorem{defn}{Definition}
 
