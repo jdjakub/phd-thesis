@@ -26,7 +26,7 @@ Of course, with such a conceptually infinite sequence of order maps, care must b
 
 We then face a further *synchronisation* problem, where we must alter the display order whenever the order map is changed, and insert or remove entries from the order map to match its source.
 
-Other thoughts along these lines included *parent* maps for delegating lookups (similar to JavaScript's prototype system), *inverse* maps, and *meta* maps for possibly collecting all of these (drawing inspiration from Lua's metatables). Of these, we will only discuss inverse maps in more detail.
+Other thoughts along these lines included *parent* maps for delegating lookups (similar to \ac{JS}'s prototype system), *inverse* maps, and *meta* maps for possibly collecting all of these (drawing inspiration from Lua's metatables). Of these, we will only discuss inverse maps in more detail.
 
 Inverse maps come from the view of a map as a mathematical function from key names to values. Often in advanced data structures (such as those for graphical diagrams) it is essential to know "who points to me" via some key. For example, the question "Is this node the `source` of anyone else?" is a natural one, but normally it is impossible to answer based on ordinary dictionary keys. In ordinary programming languages, this information needs to be kept track of separately; say, in a manually synchronised list called `sources` that lives on the node. It is frustrating that the "forward" question is trivially answered by just following a map entry, yet the "backward" question has to be hacked around like this.^[Norvig's "Relation" pattern\ \cite{DynPat} for dynamic languages is relevant to this sort of concern.]
 
@@ -35,26 +35,26 @@ An inverse map would somehow collect all references to a map from other ones. A 
 # Graphs vs. Trees
 A classic debate in the world of explicit structure is whether to use restricted *tree* structures or to allow arbitrary *graphs*. A tree has the advantage that every node has a single parent, which is a useful canonical answer to the question "what context am I in?". On the other hand, many practical problems do not fit inside a tree structure; either because they are DAGs, and a node can have multiple parents, or because they involve cyclic relations. Because we did not know what sort of things we would require in BootstrapLab, we erred on the side of freedom and supported full graph relations. This bit back at us in two ways, both involving the graphics domain.
 
-Firstly, cyclic structures need to be rendered with care; a \naive\ depth-first search will never terminate. For a long time, we did not have any cyclic structures and got away with a depth-first approach to DOM generation in the temporary state view (Section\ \ref{temporary-infrastructure-in-bootstraplab}).
+Firstly, cyclic structures need to be rendered with care; a \naive\ depth-first search will never terminate. For a long time, we did not have any cyclic structures and got away with a depth-first approach to \ac{DOM} generation in the temporary state view (Section\ \ref{temporary-infrastructure-in-bootstraplab}).
 
-Secondly, while this was the case, the graphics sub-region of state needed to be a tree. Spatial containment and other visual nesting (e.g. for the tree editor) is a tree structure, as is the underlying parent-child relationship of THREE.js objects. Many aspects of rendering the tree editor required the ability to ask "what context am I in?" but this is unanswered by default in a graph substrate. Providing a "parent" key for each node would not do---this would be a cyclic reference. Instead, we kludged it: the first map to reference another map becomes its "parent", and this lasts until the reference is deleted. This parent property is available from JavaScript; as we port the tree editor to Masp, we will have to decide how to expose it in-system (probably through a special instruction).
+Secondly, while this was the case, the graphics sub-region of state needed to be a tree. Spatial containment and other visual nesting (e.g. for the tree editor) is a tree structure, as is the underlying parent-child relationship of THREE.js objects. Many aspects of rendering the tree editor required the ability to ask "what context am I in?" but this is unanswered by default in a graph substrate. Providing a "parent" key for each node would not do---this would be a cyclic reference. Instead, we kludged it: the first map to reference another map becomes its "parent", and this lasts until the reference is deleted. This parent property is available from \ac{JS}; as we port the tree editor to Masp, we will have to decide how to expose it in-system (probably through a special instruction).
 
-Of course, we eventually did require cyclic structures---for the tree editor! Each graphics node in the editor has a `source` key providing a way for edits to propagate back to the source state node. All edit nodes live in the graphics tree, including the one corresponding to the root node of the state. In this case, the `source` points all the way upwards to this root node. This cycle broke our state view and there was much gnashing of teeth to hack around this. Eventually, we bit the bullet and improved the state view JavaScript to cope with cycles---having previously hoped we were done with this temporary infrastructure.
+Of course, we eventually did require cyclic structures---for the tree editor! Each graphics node in the editor has a `source` key providing a way for edits to propagate back to the source state node. All edit nodes live in the graphics tree, including the one corresponding to the root node of the state. In this case, the `source` points all the way upwards to this root node. This cycle broke our state view and there was much gnashing of teeth to hack around this. Eventually, we bit the bullet and improved the state view \ac{JS} to cope with cycles---having previously hoped we were done with this temporary infrastructure.
 
 Let this be a warning that Alignment (Force\ \ref{alignment}) will come for you in the end. If your substrate allows cycles, your state view must tolerate them!
 
 # The Minimal Random-Access Instruction Set (And Its Perils)
 Recall Heuristic\ \ref{simple-asm} which instructed us to pursue an easy-to-implement instruction set. We pursued this goal to the extreme out of curiosity for what was possible. Of course, it turned out that the corresponding explosion in the number of instructions necessary to do a simple thing outweighed any implementation advantage...
 
-We did this by breaking down higher-level instructions to their component operations until we felt we could go no further. This led to a sort of "microcode" level where each instruction's implementation corresponded to some single-line JavaScript operation. In other words, the platform itself blocked any further decomposition.
+We did this by breaking down higher-level instructions to their component operations until we felt we could go no further. This led to a sort of "microcode" level where each instruction's implementation corresponded to some single-line \ac{JS} operation. In other words, the platform itself blocked any further decomposition.
 
-Our method for achieving this can be illustrated if we start with a hypothetical complex instruction, e.g. `copy a.b.c to x.y.z`. The actual *work* involved in executing this in JavaScript would involve three steps:
+Our method for achieving this can be illustrated if we start with a hypothetical complex instruction, e.g. `copy a.b.c to x.y.z`. The actual *work* involved in executing this in \ac{JS} would involve three steps:
 
 1. Traverse the path `a`, `b`, `c` and save the value in a local variable
 2. Traverse the path `x`, `y` and save the (map) value too
 3. Set the key `z` in the map to the saved value.
 
-If we score *strictly by JavaScript implementation size* (a mistake, in hindsight), we could improve by simply splitting up these steps into instructions of their own. Any other "complex" instructions that used some of the same steps (e.g. path traversal) will also be covered by these, and the total JavaScript will be reduced.
+If we score *strictly by \ac{JS} implementation size* (a mistake, in hindsight), we could improve by simply splitting up these steps into instructions of their own. Any other "complex" instructions that used some of the same steps (e.g. path traversal) will also be covered by these, and the total \ac{JS} will be reduced.
 
 For the first path traversal, we start at the root map (or more generally, any given starting map) and follow each of the keys in turn. We have only one step here (follow key) repeated three times. That's another micro-instruction!
 
@@ -97,13 +97,13 @@ One of the three code paths will be selected according to whatever happens to be
 
 It is easy to see how this applies for strict equality matching, but what about comparisons? We simply turn the condition into one of a fixed set of constants. For $3 < 7$ we would subtract to get $-4$ and then apply the mathematical `sign` function to obtain $-1$ (the other possibilities being 0 or 1). we would then index a map containing keys `-1`, `0` and `1`.
 
-Finally, operations like subtraction and `sign` were included as special instructions or achieved via the `js` escape hatch into JavaScript. We continued to experiment with other arithmetic instructions, including vector arithmetic (useful for graphics), but never got round to implementing an operand stack.
+Finally, operations like subtraction and `sign` were included as special instructions or achieved via the `js` escape hatch into \ac{JS}. We continued to experiment with other arithmetic instructions, including vector arithmetic (useful for graphics), but never got round to implementing an operand stack.
 
 \joel{ NOPE
 # Appendix: Tree Editor
-One interesting issue is the "display update" problem. For the JS tree view, we simply intercept all state updates and use `querySelector` to lookup the DOM node with the map's internal ID. Internal IDs are not currently accessible in-system, though we could provide instructions for this purpose. How, then, can we ensure that the relevant "display state" for a map entry is updated when it changes?
+One interesting issue is the "display update" problem. For the \ac{JS} tree view, we simply intercept all state updates and use `querySelector` to lookup the \ac{DOM} node with the map's internal ID. Internal IDs are not currently accessible in-system, though we could provide instructions for this purpose. How, then, can we ensure that the relevant "display state" for a map entry is updated when it changes?
 
-Even if we had an answer for this, there is a bigger problem. The DOM state is not part of the "state" of our substrate. When our state changes, this triggers a DOM state change. But the system's graphics are based on a special region of ordinary system state. Therefore, a state change will trigger another state change (to the graphics state.) What if the "graphics state" is being visualised in the tree editor? It will need to change too! And so on.
+Even if we had an answer for this, there is a bigger problem. The \ac{DOM} state is not part of the "state" of our substrate. When our state changes, this triggers a \ac{DOM} state change. But the system's graphics are based on a special region of ordinary system state. Therefore, a state change will trigger another state change (to the graphics state.) What if the "graphics state" is being visualised in the tree editor? It will need to change too! And so on.
 
 State change should cause state change (finite extent) in scene tree, if that state is visualised there.
 

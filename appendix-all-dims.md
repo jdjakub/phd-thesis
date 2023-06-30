@@ -1,9 +1,13 @@
 \hypertarget{appendix-all-dims}{%
 \chapter{Technical Dimensions Catalogue}\label{appendix-all-dims}}
 
-While we do have new ideas to propose, our key contribution is integrating a wide range of existing concepts under a common umbrella. Our work is spread out across different domains, but each part connects to programming systems or focuses on a specific characteristic they may have.
+Here, we present our proposed technical dimensions in detail. While they do contain some novel ideas of our own, they also integrate a wide range of existing concepts under a common umbrella. Note that because the material here was published prior to this dissertation\ \parencite{TechDims}, our Three Properties and their dimensions in Section\ \ref{the-three-properties-as-dimensions} represent an evolution of some of the concepts here. Specifically:
 
-Here, we present our proposed technical dimensions in great detail. Please note that our intention is to provide a *reference* to be looked up and *used* as needed, not something that should be read from start to finish. Therefore, we recommend skimming through this for anything particularly interesting before proceeding to Section\ \ref{evaluating-the-dark-programming-system}. There, we will reference several dimensions in the context of a specific example, at which point it may be helpful to come back for more detail. For a quick overview, we include a concise reference sheet on the next page, though it may make more sense after reading the relevant sections.
+* *Surface / internal notations* (Sections\ \ref{dimensions-surface-notation-and-internal-notation}--\ref{examples-two-strings-in-memory-explicitly-structured-internal-notation}) is an earlier iteration of what we defined as Explicit Structure (Section\ \ref{explicit-structure}).
+* Some aspects of the *Notation* dimensions (Section\ \ref{notation}), particularly *uniformity of notations* (Section\ \ref{dimension-uniformity-of-notations}), influenced our Notational Freedom (Section\ \ref{notational-freedom}).
+* The description of *self-sustainability* here (Section\ \ref{dimension-self-sustainability}) is an earlier version of what we fully developed in Section\ \ref{self-sustainability}.
+
+The intention of this catalogue is to provide a *reference* to be looked up and *used* as needed, not something that should be read from start to finish. We recommend skimming through the catalogue for anything particularly interesting before proceeding to Section\ \ref{evaluating-the-dark-programming-system}. There, we will reference several dimensions in the context of a specific example, at which point it may be helpful to come back for more detail. For a quick overview, we include a concise reference sheet on the next page, though it may make more sense after reading the relevant sections.
 
 We present the dimensions grouped under *clusters*. These may be regarded as "topics of interest" or "areas of inquiry" when studying a given system, grouping together related dimensions against which to measure it.
 
@@ -16,7 +20,7 @@ Each cluster is named and opens with a boxed *summary*, followed by a longer *di
 # Evaluating the Dark Programming System
 This section demonstrates using the framework to analyse the recent programming system *Dark*\ \parencite{DarkWeb}, explaining how it relates to past work and how it contributes to the state of the art.
 
-Dark is a programming system for building "serverless backends", i.e. services that are used by web and mobile applications. It aims to make building such services easier by "removing accidental complexity"^[https://roadmap.darklang.com/goals-of-dark-v2.html] resulting from the large number of systems typically involved in their deployment and operation. This includes infrastructure for orchestration, scaling, logging, monitoring and versioning. Dark provides integrated tooling (Figure\ \ref{fig:dark}) for development and is described as _deployless_, meaning that deploying code to production is instantaneous.
+Dark is a programming system for building "serverless backends", i.e. services that are used by web and mobile applications. It aims to make building such services easier by "removing accidental complexity"^[\url{https://roadmap.darklang.com/goals-of-dark-v2.html}] resulting from the large number of systems typically involved in their deployment and operation. This includes infrastructure for orchestration, scaling, logging, monitoring and versioning. Dark provides integrated tooling (Figure\ \ref{fig:dark}) for development and is described as _deployless_, meaning that deploying code to production is instantaneous.
 
 \begin{figure}
   \centering
@@ -27,15 +31,15 @@ Dark is a programming system for building "serverless backends", i.e. services t
 
 Dark illustrates the need for the broader perspective of programming systems. Of course, it contains a programming language, which is inspired by OCaml and F#. But Dark's distinguishing feature is that it eliminates the many secondary systems needed for deployment of modern cloud-based services. Those exist outside of a typical programming language, yet form a major part of the complexity of the overall development process.
 
-With technical dimensions, we can go beyond the "sales pitch", look behind the scenes, and better understand the interesting technical aspects of Dark as a programming system. Table\ \ref{tab:dark} summarises the more detailed analysis that follows.
+With technical dimensions, we can go beyond the "sales pitch", look behind the scenes, and better understand the interesting technical aspects of Dark as a programming system. Tables\ \ref{tab:dark1} and\ \ref{tab:dark2} summarise the more detailed analysis that follows.
 
-\newcommand{\wrap}[1]{\parbox[t]{10cm}{#1}}
+\newcommand{\wrap}[1]{\parbox[t]{5.6cm}{#1}}
 \renewcommand{\arraystretch}{1.3}
 
 \begin{table}
 \centering
 \caption[Dark dimensions summary]{Summary of where Dark lies on some of the dimensions.}
-\begin{tabular}{ >{\raggedleft\arraybackslash}p{4.6cm} l }
+\begin{tabular}{ >{\raggedleft\arraybackslash}p{3.6cm} p{5.6cm}}
 \hline
 Dimension (CLUSTER) & Summary \\ 
 \hline\hline
@@ -55,7 +59,17 @@ Convenience & \wrap{Powerful high-level domain-specific abstractions are provide
 \hline
 ADOPTABILITY \\
 Learnability & \wrap{High-level concepts will be immediately familiar to the target audience; low-level language has the usual learning curve of basic functional programming}\\
+\end{tabular}
+\label{tab:dark1}
+\end{table}
+
+\begin{table}
+\centering
+\caption[Dark dimensions summary]{Summary of where Dark lies on some of the dimensions.}
+\begin{tabular}{ >{\raggedleft\arraybackslash}p{3.6cm} p{5.6cm}}
 \hline
+Dimension (CLUSTER) & Summary \\ 
+\hline\hline
 NOTATION	\\
 Notational Structure & \wrap{Graphical notation for high-level concepts is complemented by structure editor for low-level code} \\
 Uniformity & \wrap{Common notational structures are used for database and code, enabling the same editing construct for sequential structures (records, pipelines, tables)}\\
@@ -67,7 +81,7 @@ Level of Automation & \wrap{Current implementation provides basic infrastructure
 CUSTOMISABILITY\\	
 Staging of Customisation & \wrap{System can be modified while running and changes are persisted, but they have to be made in the Dark editor, which is distinct from the running service}
 \end{tabular}
-\label{tab:dark}
+\label{tab:dark2}
 \end{table}
 
 ### Dimensional analysis of Dark

@@ -97,7 +97,7 @@ The *web browser* has a powerful set of *developer tools* (Figure\ \ref{fig:web-
 
 \begin{figure}
 \centering
-\includegraphics[width=11cm]{web-dev-tools.png}
+\includegraphics[width=\linewidth]{web-dev-tools.png}
 \caption[Web Developer Tools]{The Developer Tools available for any Web page or app in a modern browser.}
 \label{fig:web-dev-tools}
 \end{figure}
@@ -111,12 +111,26 @@ Let us return to the "structural" state of the web page and note that we are fre
 There is one caveat: the HTML and \ac{JS} files are the "ground truth", so any changes made via the inspector or the console will disappear when the page is closed or refreshed. Changes made in the browser are *transient* (Definition\ \ref{def:transient}); only changes to the underlying files are *persistent* (Definition\ \ref{def:persistent}), and websites typically do not allow unknown individuals to change the files on their servers. All this is sad news for our user deleting their ad, as they will have to repeat it each time they access the page (or use sophisticated programmatic middleware, such as an ad-blocking extension, to do this automatically).
 
 ## HyperCard
-Before the Web, "hypertext" was regularly created and distributed by people in the form of HyperCard stacks. Alan Kay criticised the web for having a browser that doesn't include an *authoring* tool, instantly limiting the *creation* of web pages to people who can code in a text editor. In HyperCard, the viewer and editor exist integrated together. Furthermore, there is an "edit" mode whereby a user can remix content from someone else, even reprogramming the dynamic behaviour.
+Before the Web, "hypertext" was regularly created and distributed by people in the form of HyperCard stacks. Alan Kay criticised the web for having a browser that doesn't include an *authoring* tool, instantly limiting the *creation* of web pages to people who can code in a text editor. In HyperCard, the viewer and editor exist integrated together (Figure\ \ref{fig:hypercard}). Furthermore, there is an "edit" mode whereby a user can remix content from someone else, even reprogramming the dynamic behaviour.
+
+\begin{figure}
+\centering
+\includegraphics[width=\linewidth]{hypercard.jpg}
+\caption[HyperCard]{HyperCard, a pre-Web Hypertext system, included a direct authoring tool to complement the browser.}
+\label{fig:hypercard}
+\end{figure}
 
 These aspects of HyperCard's design encouraged a community of producer-consumers for hypertext content. The web's higher cost of authoring led to a lower producer-to-consumer ratio, restricting the kind of medium that it would become. Note that the naïve pokeability of the element inspector does not amount to authoring a web page; such an interface is designed for fine-grained change rather than coarse-grained creation. It is also oriented towards programmers, being part of the "developer tools", compared to HyperCard's presentation of authoring as a primary use of the software.
 
 ## Smalltalk and COLA
-Smalltalk provides for behaviour editing at a finer granularity than the Web developer tools. Behaviour is separated first by class and then by method; only then is a text editor presented for the code. More importantly, changes to this code take effect once committed, with no "restarting" of the system taking place. The state of the system is persisted by default to an "image" file. In short, Smalltalk provides persistent naïve pokeability for both code and data.
+Smalltalk provides for behaviour editing at a finer granularity than the Web developer tools. Behaviour is separated first by class and then by method; only then is a text editor presented for the code (Figure\ \ref{pharo}). More importantly, changes to this code take effect once committed, with no "restarting" of the system taking place. The state of the system is persisted by default to an "image" file. In short, Smalltalk provides persistent naïve pokeability for both code and data.
+
+\begin{figure}
+\centering
+\includegraphics[width=\linewidth]{pharo.png}
+\caption[Pharo class browser]{The class browser in the \emph{Pharo} distribution of Smalltalk.}
+\label{fig:pharo}
+\end{figure}
 
 That being said, Smalltalk systems tend to run on VMs that are implemented in a separate lower-level language like C++. Fundamental infrastructure such as object layout and memory management is available only as opaque primitives from the point of view of Smalltalk. Thus, to change these aspects one must still switch to a different programming system and re-compile.
 
@@ -143,7 +157,14 @@ These are not quite observations about programming *languages.* Instead, they co
 
 It is important not to conflate "coding" in a programming language with programming itself. In this dissertation, we see *programming* as the general act of making a computer do things by itself. By this definition, coding, visual programming, programming by example and deep learning are some specific *means* by which to program. If we ignore this subtlety, we risk unwittingly limiting the scope of innovative ideas in the following ways:
 
-* Instead of seeking the right notation, interface or representation for the job, we might seek the right *textual syntax* for the job. If we cannot find one, the real reason may simply be that text is not well-suited to the job. Yet if text is all we know, we will be under the false impression that it is an *intrinsically* hard job.
+\begin{figure}
+\centering
+\includegraphics[width=\linewidth]{spreadsheet.png}
+\caption[Spreadsheet interface]{A spreadsheet contains text, but is not a \emph{syntax} or a \emph{language}; the grid lines are intrinsically graphical.}
+\label{fig:spreadsheet}
+\end{figure}
+
+* Instead of seeking the right notation, interface or representation for the job, we might seek the right *textual syntax* for the job. If we cannot find one, the real reason may simply be that text is not well-suited to the job (Figure\ \ref{fig:spreadsheet}). Yet if text is all we know, we will be under the false impression that it is an *intrinsically* hard job.
 * Instead of being able to make changes to a *running* program, we are stuck changing its source code and re-creating the program. It is easy to make "closed" programs this way and hard to make programs open to "re-programming" while running.
 * Instead of seeking a software *system* open to unanticipated changes as it runs, we might seek intricate *language* features that give flexibility only for *compiling* a program.
 
@@ -172,7 +193,7 @@ Suppose a system already has Notational Freedom. Self-Sustainability makes it ea
 
 Notational Freedom is impossible to achieve without Explicit Structure. In a world of parsed strings and text editors, we are limited to what we will term *syntactic* freedom in Section\ \ref{notational-freedom}. Thus, Notational Freedom needs Explicit Structure as a necessary foundation.
 
-Self-Sustainability also suffers without Explicit Structure. Self-Sustainability is vaguely understood by analogy to self-hosting compilers, as we will see in Section\ \ref{precursors-of-self-sustainability}. The \ac{COLA} work\ \parencite{COLAs} follows this approach, being unclear how such a property can be achieved in interactive, graphical systems. Explicit Structure lets us study the other two Properties more purely, without getting confused by the accidental complexities of parsing and escaping (we will expand on this in Section\ \ref{we-study-the-spherical-cow}).
+Self-Sustainability also suffers without Explicit Structure. Self-Sustain\-ability is vaguely understood by analogy to self-hosting compilers, as we will see in Section\ \ref{precursors-of-self-sustainability}. The \ac{COLA} work\ \parencite{COLAs} follows this approach, being unclear how such a property can be achieved in interactive, graphical systems. Explicit Structure lets us study the other two Properties more purely, without getting confused by the accidental complexities of parsing and escaping (we will expand on this in Section\ \ref{we-study-the-spherical-cow}).
 
 We can prioritise the Three Properties based on the above inter-dependencies. Our primary goal is to explore Notational Freedom in interactive, graphical programming systems. To support this, we should achieve Self-Sustainability. To do both of these with minimal distraction, we should make sure to build on a foundation of Explicit Structure. We will not follow this order strictly, but it shows a logic as to how each property fits into the bigger picture. We see that the only way to discover how to achieve these goals is by *doing,* so we work to build a prototype programming system called *BootstrapLab* that makes progress on the Three Properties simultaneously.
 
@@ -188,11 +209,11 @@ Additionally, in order to assess how well BootstrapLab achieves the Three Proper
 # Supporting Publications
 The following essay was adapted into Chapter\ \ref{bl}:
 
-\fullcite{Onward22}
+> \fullcite{Onward22}
 
 The following paper won the journal's Editors' Choice Award and was adapted into Chapter\ \ref{tech-dims}:
 
-\fullcite{TechDims}
+> \fullcite{TechDims}
 
 \joel{
 # Imported from Convivial Salon '20
