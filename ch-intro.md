@@ -122,8 +122,8 @@ Before the Web, "hypertext" was regularly created and distributed by people in t
 
 These aspects of HyperCard's design encouraged a community of producer-consumers for hypertext content. The web's higher cost of authoring led to a lower producer-to-consumer ratio, restricting the kind of medium that it would become. Note that the naïve pokeability of the element inspector does not amount to authoring a web page; such an interface is designed for fine-grained change rather than coarse-grained creation. It is also oriented towards programmers, being part of the "developer tools", compared to HyperCard's presentation of authoring as a primary use of the software.
 
-## Smalltalk and COLA
-Smalltalk provides for behaviour editing at a finer granularity than the Web developer tools. Behaviour is separated first by class and then by method; only then is a text editor presented for the code (Figure\ \ref{pharo}). More importantly, changes to this code take effect once committed, with no "restarting" of the system taking place. The state of the system is persisted by default to an "image" file. In short, Smalltalk provides persistent naïve pokeability for both code and data.
+## Smalltalk and \acs{COLA}
+Smalltalk provides for behaviour editing at a finer granularity than the Web developer tools. Behaviour is separated first by class and then by method; only then is a text editor presented for the code (Figure\ \ref{fig:pharo}). More importantly, changes to this code take effect once committed, with no "restarting" of the system taking place. The state of the system is persisted by default to an "image" file. In short, Smalltalk provides persistent naïve pokeability for both code and data.
 
 \begin{figure}
 \centering
@@ -134,7 +134,7 @@ Smalltalk provides for behaviour editing at a finer granularity than the Web dev
 
 That being said, Smalltalk systems tend to run on VMs that are implemented in a separate lower-level language like C++. Fundamental infrastructure such as object layout and memory management is available only as opaque primitives from the point of view of Smalltalk. Thus, to change these aspects one must still switch to a different programming system and re-compile.
 
-Going further in the same direction as Smalltalk is the \ac{COLA} \parencite{COLAs}. COLA makes said basic infrastructure self-supplied (Definition\ \ref{def:self-supplied}) so as to approximate a truly self-sustainable system. It is also designed to encourage domain-specific adaptations (Definition\ \ref{def:dsa}) down to a small scale of "\acp{MSL}" beyond the coarse-grained variation found with ordinary programming languages. However, the architecture as described does not have much to say about the user interface or graphics, taking place instead in the world of batch-mode transformations of streams.
+Going further in the same direction as Smalltalk is the \acl{COLA} or \acs{COLA} \acused{COLA} \parencite{COLAs}. \ac{COLA} makes said basic infrastructure self-supplied (Definition\ \ref{def:self-supplied}) so as to approximate a truly self-sustainable system. It is also designed to encourage domain-specific adaptations (Definition\ \ref{def:dsa}) down to a small scale of "\acp{MSL}" beyond the coarse-grained variation found with ordinary programming languages. However, the architecture as described does not have much to say about the user interface or graphics, taking place instead in the world of batch-mode transformations of streams.
 
 \joel{
 ## The Missing Synthesis

@@ -142,7 +142,7 @@ While the foregoing model applies to programming systems generally, a special co
 Instructions must be readable and writeable as ordinary state.
 \end{requirement}
 
-## \ac{COLA}'s Low-Level Byte Arrays
+## \acs{COLA}'s Low-Level Byte Arrays
 In \ac{COLA}, the substrate is quite minimal and the majority is inherited "for free" from the low-level runtime environment provided by Unix (Section\ \ref{the-low-level-binary-world}).
 
 At the lowest level, state in \ac{COLA} consists of an array of bytes, addressed numerically. Some structure is imposed on this via C's standard memory allocation routines, refining the model of state to a graph of fixed-size memory blocks and the stack. Changes to this state are represented as machine instructions encoded as bytes. This is the basic state model of a C program; the sample code for \ac{COLA} embellishes this with little more than a way to associate objects to their vtables^[A *vtable* specifies object behaviour by supplying runnable code for a requested method name. It is separate from the object "instance" so that multiple objects can share the same behaviour.] and a cache for method lookups.
@@ -237,7 +237,7 @@ It is important to stress that this "assembler" is relative to the form of the s
 
 \begin{heuristic}[Simple Assembler]
 \label{simple-asm}
-Prefer fewer instruction types (\acs{RISC}) over more (\acs{CISC}). This reduces the size of the interpreter and will be quickest to implement. It will make programs longer, but this can be mitigated by a high-level programming language. Force\ \ref{escape-plaf} outweighs Force\ \ref{avoid-bp} here too.
+Prefer fewer instruction types (RISC) over more (CISC). This reduces the size of the interpreter and will be quickest to implement. It will make programs longer, but this can be mitigated by a high-level programming language. Force\ \ref{escape-plaf} outweighs Force\ \ref{avoid-bp} here too.
 \end{heuristic}
 
 Right away, we know there will have to be a special piece of state for the *instruction pointer*. This could indicate the *current* instruction or the *next*; we chose the latter for BootstrapLab and called it `next_instruction`.
@@ -328,7 +328,7 @@ window.onkeydown = e => {
   restore_context();
 };
 \end{lstlisting}
-\caption[BootstrapLab ``device driver'' for DOM events]{``Device driver'' triggering a generic event handler sequence in-system.}
+\caption[BootstrapLab ``device driver'' for \acs{DOM} events]{``Device driver'' triggering a generic event handler sequence in-system.}
 \label{lst:devdrv}
 \end{figure}
 
@@ -344,7 +344,7 @@ Computer state is a graph of maps; lists are just maps with numerical keys. Inst
 
 In most cases, the base platform will provide some way of viewing and modifying state, but this is typically inconvenient to use. The next step in bootstrapping a self-sustainable system involves implementing temporary infrastructure that lets us work with state more conveniently.
 
-## Early Computing and \ac{COLA}
+## Early Computing and \acs{COLA}
 Temporary infrastructure to support in-system development can be found in many developments of self-sustainable systems. A historical example is the Teletype loader for the Altair 8800. Here, the base platform was the Altair hardware with its memory and native CPU instructions. The only way to modify state through the platform was through the use of hardware switches at the front of the computer (Figure\ \ref{fig:altair}), which could be used to read and set values in a given range of memory.
 
 Programming _in-system_ looked like the tedious setting of switches to poke numerical instructions to memory. To make entering programs easier, the recommended first step when using the Altair 8800 was to manually input instructions for a *boot loader* that communicated over the serial port. When finished, this could be run to load instructions from a paper tape. From here, programmers could write instructions more conveniently using a Teletype terminal and have them loaded into the Altair memory.
@@ -513,7 +513,7 @@ To edit state in \ac{JS}, we needed to either address its parent with a full pat
 \begin{figure}
 \centering
 \includegraphics[width=9cm]{editor.png}
-\caption[In-system tree editor vs. HTML state viewer]{Left: tree editor in graphics window. Right: temporary state viewer in the DOM.}
+\caption[In-system tree editor vs. HTML state viewer]{Left: tree editor in graphics window. Right: temporary state viewer in the \acs{DOM}.}
 \label{fig:editor}
 \end{figure}
 
