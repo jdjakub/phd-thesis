@@ -56,7 +56,7 @@ What we have here looks like a Waterfall development plan, each step strictly fo
 
 The general outline also resembles the discredited "recapitulation theory" in biology, where in order for an embryo to develop into a full organism, it passes through the evolutionary history of its ancestors. In other words, for a *particular* cell to develop into an animal, it needs to fast-track its ancestors' evolution from a cell in the distant past. While this has since been rejected in biology, it is a good summary of what is going on in our project here.
 
-The bootstrapping of a particular self-sustainable system fast-tracks the historical development of computing's abstractions. It begins at the low level and ascends through to higher-level languages, each time building the next stage in the current one. This journey could be seen as an attempt to reconstruct programming on top of a more structured, graphical substrate than the byte arrays we all had to use the first time around. With that in mind, let us now proceed to the first stage.
+For us, the bootstrapping of a *particular* self-sustainable system fast-tracks the historical development of computing's abstractions. It begins at the low level and ascends through to higher-level languages, each time building the next stage in the current one. This journey could be seen as an attempt to *reconstruct* programming on top of a more structured, graphical substrate than the byte arrays we all had to use the first time around. With that in mind, let us now proceed to the first stage.
 
 # Choose a Starting Platform
 
@@ -110,7 +110,7 @@ Product & Yes, atop Substrate & Yes \\
 \end{tabular}
 \vspace{1em}
 
-The design of the substrate can be considered along two axes (Figure\ \ref{substr-tab}). The first dimension follows the distinction between data and code, or *state* and state *change* (Section\ \ref{two-fundamentals-state-and-change}). We must first decide how the *state* of the system will be represented. Often, this is a matter of choosing an appropriate subset of what the platform already provides. Then, we decide how primitive *changes* to that state can be described and define the instruction set.
+The design of the substrate can be considered along two axes (Table\ \ref{substr-tab}). The first dimension follows the distinction between data and code, or *state* and state *change* (Section\ \ref{two-fundamentals-state-and-change}). We must first decide how the *state* of the system will be represented. Often, this is a matter of choosing an appropriate subset of what the platform already provides. Then, we decide how primitive *changes* to that state can be described and define the instruction set.
 
 The second dimension follows the division between the *computer* and *human* actors. The full state of the system will be an internal data structure, but a *part* of the state---comprising the state of the user interface---can be directly seen by the user. Similarly, *change* can be performed automatically or manually. There must be a way to run instructions automatically at a high speed, but the user interface must also provide controls for a human to make changes at their own pace.
 
@@ -135,7 +135,7 @@ Change & UI Controls & Instructions \\
 \label{substr-tab}
 \end{table}
 
-While the foregoing model applies to programming systems generally, a special condition is required for those that are self-sustainable. We must represent instructions as pieces of state, as opposed to having "two types of things"---ordinary data, and code---which must be viewed and edited using completely different tools. This property, conventionally known as *homoiconicity*, means instructions can be generated and manipulated just like ordinary state, whether programmatically or manually. Only if this is possible can higher-level abstractions can be built up, in-system, from the low level.
+While the foregoing model applies to programming systems generally, a special condition is required for those that are self-sustainable. We must represent instructions as pieces of state, as opposed to having "two types of things"---ordinary data, and code---which must be viewed and edited using completely different tools. This property, conventionally known as *homoiconicity*, means instructions can be generated and manipulated just like ordinary state, whether programmatically or manually. Only if this is possible can higher-level abstractions be built up, in-system, from the low level.
 
 \joel{Isn't homoiconicity basically just von Neumann instead of Harvard architecture? any difference?}
 \begin{requirement}[Homoiconicity]
@@ -190,9 +190,9 @@ Ensure the substrate natively supports \emph{string names} and \emph{substructur
 ## BootstrapLab's Simple, Structured State Model
 For the design of BootstrapLab, we chose the Web platform and \ac{JS} for personal preference reasons. This imposed a number of design decisions on the substrate, due to a tendency for earlier choices to determine which later ones will feel "natural" or "fitting".
 
-In our high-level platform language \ac{JS}, state is a graph of plain \ac{JS} objects acting as property dictionaries. Suppose we *still* chose a low-level binary substrate like that of \ac{COLA}. This would no doubt be possible: declare one giant \ac{JS} array called `state`, design numerical instruction encodings which overwrite numbers at certain indexes, etc. Yet this would feel like a perverse waste of something the platform was giving us for free. 
+In our high-level platform language \ac{JS}, state is a graph of plain \ac{JS} objects acting as property dictionaries. Suppose we *still* chose a low-level binary substrate like that of \ac{COLA}. This would no doubt be possible: declare one giant \ac{JS} array called `state`, design numerical instruction encodings which overwrite numbers at certain indexes, etc. Yet this would feel like a perverse *waste* of something the platform was giving us for free. 
 
-\ac{JS} already provides the basic human affordances of naming and substructure, so why would we throw them away and force ourselves to implement them in-system? The low-level \ac{COLA} substrate does plausibly follow from its base C platform. Our choice of \ac{JS} as the platform encourages us to preserve its own state model in the substrate we design.
+\ac{JS} already provides the basic human affordances of naming and substructure, so why would we throw them away and force ourselves to implement them in-system? The low-level \ac{COLA} substrate does plausibly follow from its base C platform; our choice of \ac{JS} as the platform encourages us to preserve *its* own state model in the substrate we design.
 
 Similarly, it would make no sense to represent instructions as numbers or strings. While in the binary world, machine instructions are byte sequences with bitfields for opcodes and operands, in a dictionary substrate inherited from \ac{JS}, it makes sense to have explicit fields for this data:
 
@@ -210,7 +210,7 @@ This "preservation" incentive pervades the journey from platform to product syst
 
 \begin{force}[Alignment]
 \label{alignment}
-Everything should fit: instructions, high-level expressions, and graphics expressions should all fit the substrate, and the substrate should fit the platform.
+Everything should \emph{fit}: instructions, high-level expressions, and graphics expressions should all fit the substrate, and the substrate should fit the platform.
 \joel{Violation \eg{} flat array as state via JS, fails to preserve a feature. Ideally, this force propagates all features from A to B.}
 \joel{Call this "preservation"?}
 \end{force}
@@ -388,7 +388,7 @@ The temporary infrastructure created in the preceding step may be enough to allo
 To make programming in-system pleasant enough, we need a high-level programming language that executes on top of the system substrate. This means that programs and all their necessary runtime state will be stored in the system state and the execution will be done either by a compiler to the substrate's instruction set or an interpreter.
 
 ## Shortcuts for Low-Level Substrates
-For a programming system built atop a limited platform (\eg{} hardware), the temporary infrastructure may be the best tool that is available for programming. In that case, we would write the compiler or interpreter directly using the instruction set. However, as long as the platform has higher capabilities or one has access to alternative platforms, this may not be optimal. When Paul Allen and Bill Gates wrote the famous BASIC programming language for the Altair 8800, they did not do this *on* the Altair, but using an Intel 8080 CPU emulator written and running on Harvard's PDP-10. The high-level language was thus developed *outside the system.*
+For a programming system built atop a limited platform (\eg{} hardware), the temporary infrastructure may be the best tool that is available for programming. In that case, we would write the compiler or interpreter directly using the instruction set. However, as long as the platform has higher capabilities or one has access to alternative platforms, this may not be optimal. When Paul Allen and Bill Gates wrote the famous BASIC programming language for the Altair 8800, they did not do this *on* the Altair, but instead used an Intel 8080 CPU emulator written and running on Harvard's PDP-10. The high-level language was thus developed *outside the system.*
 
 In \ac{COLA}, it is unclear how the Lisp-like programming language is built beyond the broad outlines. What is clear is that the bootstrapping process is carried out by means of source code files written in some text editor. In other words, it wisely takes advantage of the affordances of its Unix platform, avoiding the Turing Tarpit failure mode described in Section\ \ref{the-major-design-conflict}.
 
@@ -431,7 +431,7 @@ The equivalent Masp code is more verbose when rendered in ASCII. However, one of
 
 There are two basic decisions for implementing the high-level language. First, will we do it directly in-system using the instruction set, or using richer capabilities provided by the platform? Second, the language can be either interpreted or compiled. The four combinations have different properties.
 
-A *platform interpreter* is the easiest one to implement, but it cannot be used to easily bootstrap itself. To "jettison" the platform implementation, we later need to *port* the interpreter to the ASM language. (Porting it to the high-level language would not suffice since we would still need the platform interpreter to actually run it.)
+A *platform interpreter* is the easiest one to implement, but it cannot be used to easily bootstrap itself. To "jettison" the platform implementation, we later need to *port* the interpreter to the ASM language. (Porting it to the high-level language would not suffice, since we would still need the platform interpreter to actually run it.)
 
 A *platform compiler*, while harder to implement, is slightly easier to jettison because it only needs to be ported to the newly developed high-level language. The platform compiler can translate it to ASM, which we can already run in-system. This compiler can then turn any high-level expressions into ASM, including its own source expressions!
 
@@ -439,18 +439,18 @@ Yet harder to implement is an *in-system interpreter*, directly in ASM, but it w
 
 Finally, an *in-system compiler* is the most challenging to implement. It will allow the language to exist in-system sooner and possibly more efficiently but, as above, will likely need to be converted to a high-level programming language to allow in-system improvements.
 
-When implementing the interpreter or compiler in-system, all its intermediate state will also be stored in-system. However, in-system state can be used even when implementing the interpreter or compiler *on the platform.* This takes advantage of the platform's high-level language while leveraging the product system for debugging and visualisation, simplifying a later port to in-system implementation (see Heuristic\ \ref{in-state-op}). The transition from platform to in-system implementation can be even more gradual; once the intermediate state is stored in-system, it becomes possible to port *parts* of the interpreter piecemeal to in-system instructions, invoking them from the remaining parts running outside.
+When implementing the interpreter or compiler in-system, all its intermediate state will also be stored in-system. However, in-system state can be used even when implementing the interpreter or compiler *on the platform.* This takes advantage of the platform's high-level language while leveraging the product system for debugging and visualisation, simplifying a later port to in-system implementation (see Heuristic\ \ref{in-state-op}). The transition from platform to in-system implementation can be even more gradual; once the *intermediate state* is stored in-system, it becomes possible to port *parts* of the interpreter piecemeal to in-system instructions, invoking them from the remaining parts running outside.
 
 \begin{heuristic}[In-state operation]
 \label{in-state-op}
-Store high-level-language processing state in-system even if the processor runs on the platform. This will ease porting the processor to in-system implementation and support a gradual transition.
+Store high-level-language processing \emph{state} in-system even if the language \emph{processor} remains running on the platform. This will ease porting the processor to in-system implementation and support a gradual transition.
 \end{heuristic}
 
 ## Implementing Masp for BootstrapLab
 
-In BootstrapLab, Force\ \ref{escape-plaf} encouraged us to get executing Masp expressions early to get experience with the language. We choose to implement a *platform interpreter* for Masp using \ac{JS} as this was the easiest way to achieve that.
+In BootstrapLab, Force\ \ref{escape-plaf} encouraged us to get executing Masp expressions early to get experience with the language. We chose to implement a *platform interpreter* for Masp using \ac{JS} as this was the easiest way to achieve that.
 
-A naïve approach would simply implement the standard Lisp interpreter routines (`eval` and `apply`) as recursive \ac{JS} functions. However, this would miss an opportunity for visualisation and debugging that is already present in our substrate. Instead, we followed Heuristic\ \ref{in-state-op} and had intermediate interpreter state reside in-system. This made a later in-system port easier by doing half of the work now.
+A naïve approach would simply implement the standard Lisp interpreter routines (`eval` and `apply`) as recursive \ac{JS} functions. However, this would miss an opportunity for visualisation and debugging that is already present in our substrate. Instead, we followed Heuristic\ \ref{in-state-op} and had intermediate interpreter *state* reside in-system. This made a later in-system port easier by doing half of the work now.
 
 Lisp evaluation is done by walking over the expression tree. At any point, we are looking at a subtree and will evaluate it until reaching a primitive value. Ordinarily, the "current subexpression" is an argument to `eval` at the top of the stack, where the stack records our path from the original top-level expression. Since we already had a tree visualisation, we used that instead of a stack. We did, however, need to maintain references to parent tree nodes (see Appendix\ section\ \ref{graphs-vs.-trees}) in order to backtrack towards the next unevaluated subexpression once the current one is evaluated. Furthermore, instead of *destructively* replacing tree nodes with their "more-evaluated" versions, we "annotate" the tree instead. This design choice follows Subtext\ \parencite{Subtext} and will make it possible to trace provenance and enable novel programming experiences. Figures\ \ref{fig:masp-1}--\ref{fig:masp-n} show some examples.
 
@@ -499,9 +499,9 @@ The Masp interpreter we developed used in-system state, but controlled it from \
 
 Nevertheless, to make the high-level language and editor a part of self-sustainable programming system, they ultimately need to be implemented in-system. Thus we incurred a *substrate debt* due to Force\ \ref{escape-plaf} which we now need to pay off. The advantage of delaying this work is that we can at least port \ac{JS} to Masp, which is more convenient than using ASM. Generally, such substrate debt should be paid off as soon as the indebted implementation is complete. In total, we had three parts of it to pay off:
 
-* The temporary state viewer, to be superseded by an in-system editor
-* Its replacement state editor, to be ported from JavaScript to Masp
-* The Masp interpreter, to be ported from JavaScript to ASM
+1. The temporary state viewer, to be superseded by an in-system editor
+2. Its replacement state editor, to be ported from JavaScript to Masp
+3. The Masp interpreter, to be ported from JavaScript to ASM
 
 In BootstrapLab, we took a two-step approach to supplanting the temporary state viewer. We first replaced a viewer that exists fully outside of the system with an editor that uses in-system state and graphics, but is controlled from \ac{JS}. We then started to port the editor code from the platform to in-system Masp, which is where we are at the time of writing.
 

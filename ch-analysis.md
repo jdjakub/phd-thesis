@@ -55,7 +55,7 @@ We will see in Chapter\ \ref{bl} that building a self-sustainable system follows
 # Paradigms of Programs and Programming
 The concept of a scientific "paradigm" was popularised by Kuhn\ \parencite{Kuhn}. It refers to the set of norms and conventions in which scientific questions are pursued and results are interpreted. In computing, a "programming paradigm" is a set of norms around the concepts and style in which programs are built.
 
-In this section, we wish to broaden the scope and consider the foundational assumptions of programming itself, and the effects this has on how it is performed. A paradigm here is a set of norms and conventions centred around an idea of what a "program" is, what programs are for, and what is technologically feasible in the current environment.
+In this section, we wish to broaden the scope and consider the foundational assumptions of programming itself, and the effects this has on how it is performed. A paradigm here is a set of norms and conventions centred around an idea of what a "program" is, what programs are *for*, and what is technologically feasible in the current environment.
 
 We observe that certain periods of computing history and influential programming systems embody distinct paradigms in this way. We propose three: Batch Mode, Unix, and Interactive. Each one accommodates our Three Properties differently.
 
