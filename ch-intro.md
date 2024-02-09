@@ -209,11 +209,11 @@ Additionally, in order to assess how well BootstrapLab achieves the Three Proper
 # Supporting Publications
 The following essay was adapted into Chapter\ \ref{bl}:
 
-> \fullcite{Onward22}
+\fullcite{Onward22}
 
-The following paper won the journal's Editors' Choice Award and was adapted into Chapter\ \ref{tech-dims}:
+The following paper was adapted into Chapter\ \ref{tech-dims}:
 
-> \fullcite{TechDims}
+\fullcite{TechDims}
 
 \joel{
 # Imported from Convivial Salon '20

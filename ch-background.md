@@ -80,11 +80,69 @@ The two remarkable features we see in the \ac{COLA} idea are *self-sustain\-abil
 
 > Applying \[internal evolution\] locally provides scoped, domain-specific languages in which to express arbitrarily small parts of an application (these might be better called *mood-specific* languages). Implementing new syntax and semantics should be (and is) as simple as defining a new function or macro in a traditional language.
 
-An example of a \ac{MSL} is the one reported in\ \parencite[p.\ 4]{Steps08} for concisely specifying how TCP packets should be processed. The report also notes:
+An example of a \ac{MSL} is the one reported in\ \textcite[p.\ 4]{Steps08} for concisely specifying how TCP packets should be processed. The report also notes:
 
 > The header formats are parsed from the diagrams in the original specification documents, converting "ascii art" into code to manipulate the packet headers.
 
-This machine interpretation of ASCII art diagrams is another example of a \ac{MSL}, and we see this as the extreme end of what they are capable of. The ability for a programmer to express arbitrarily small parts of an application in a form they deem suitable is, in its fully *general* form, what we call Notational Freedom. With such a capability, code could be synthesised from *real* tabular diagrams of packet headers, not just those rendered with ASCII characters.
+A representative diagram and the grammar for parsing it (itself written in a grammar-definition DSL) can be found in\ \textcite[p.\ 44]{Steps07} (Figures\ \ref{fig:packet-format} and\ \ref{fig:packet-grammar}). They note:
+
+> We can now define accessors for the fields of an IP packet header simply by drawing its structure. The following looks like documentation, but it's a valid *program.*
+
+\begin{figure}
+\raggedright
+\begin{lstlisting}[basicstyle=\footnotesize\ttfamily,keepspaces=true]
++-------------+-------------+-------------------------+----------+----------------------------------------+
+| 00 01 02 03 | 04 05 06 07 | 08 09 10 11 12 13 14 15 | 16 17 18 | 19 20 21 22 23 24 25 26 27 28 29 30 31 |
++-------------+-------------+-------------------------+----------+----------------------------------------+
+|   version   |  headerSize |      typeOfService      |                     length                        |
++-------------+-------------+-------------------------+----------+----------------------------------------+
+|                     identification                  |   flags  |                 offset                 |
++---------------------------+-------------------------+----------+----------------------------------------+
+|        timeToLive         |         protocol        |                    checksum                       |
++---------------------------+-------------------------+---------------------------------------------------+
+|                                               sourceAddress                                             |
++---------------------------------------------------------------------------------------------------------+
+|                                             destinationAddress                                          |
++---------------------------------------------------------------------------------------------------------+
+\end{lstlisting}
+\caption[TCP packet \ac{MSL}.]{ASCII art diagram for an IP packet, in principle both human-readable and machine-parseable.}
+\label{fig:packet-format}
+\end{figure}
+
+\begin{figure}
+\raggedright
+\begin{lstlisting}[basicstyle=\footnotesize\ttfamily,keepspaces=true]
+    structure :=
+         error  = ->[self error: ['"structure syntax error near: " , [self contents]]]
+           eol  = '\r''\n'* | '\n''\r'*
+         space  = [ \t]
+       comment  = [-+] (!eol .)* eol
+            ws  = (space | comment | eol)*
+             _  = space*
+        letter  = [a-zA-Z]
+         digit  = [0-9]
+    identifier  = id:$(letter (letter | digit)*) _  -> [id asSymbol]
+        number  =                    num:$digit+ _  -> [Integer fromString: num base: '10]
+       columns  =       '|'                         -> (structure-begin self)
+                         ( _ num:number             -> [bitmap at: column put: (set bitpos num)]
+                             (num:number)* '|'      -> (let ()
+                                                         (set bitpos num)
+                                                         (set column [[self readPosition] - anchor]))
+                         )+ eol ws                  -> [bitmap at: column put: (set width [bitpos + '1])]
+           row  =        ( n:number                 -> (set row n)
+                           ) ? '|'                  -> (let ()
+                                                         (set anchor [self readPosition])
+                                                         (set column '0))
+                         _ ( id:identifier '|'      -> (structure-field self id)
+                             _ )+ eol ws            -> (set row [row + width])
+          name  =      id:identifier (!eol .)* eol  -> (structure-end id)
+       diagram  =     ws columns row+ name | error
+\end{lstlisting}
+\caption{Grammar for parsing the ASCII art into a data structure definition\ \parencite[p.\ 44]{Steps07}.}
+\label{fig:packet-grammar}
+\end{figure}
+
+We see this as the extreme end of what a \ac{MSL} is capable of. The ability for a programmer to express arbitrarily small parts of an application in a form they deem suitable is, in its fully *general* form, what we call Notational Freedom. With such a capability, code could be synthesised from *real* tabular diagrams^[We are thinking of vector graphics formats here, but computer vision techiques would allow someone to use raster screenshots if they so desired.] of packet headers, not just those rendered with ASCII characters.
 
 ## Application-Focused Systems
 The previously discussed programming systems were either universal, not focusing on any particular kind of application, or targeted at broad fields, such as Artificial Intelligence and symbolic data manipulation in Lisp's case. In contrast, the following examples focus on narrower application domains. Many support programming based on rich interactions with specialised visual and textual notations.
