@@ -33,6 +33,11 @@ In the worst case, both of these approaches could be blocked; run-time tampering
 
 In specific situations, software authors do have good reasons to restrict access to internals. In a game, it is important to enforce the rules; access to internals would enable arbitrary cheating. However, this is a *special case* not representative of most types of software. Despite this, we are unable to simply *choose* to build software that is "open". Even if *we* wrote the app and desire to support adaptation beyond what we anticipated, we face the fact that our tools can only create software that is "closed". The task of "supporting unanticipated modification" is itself a *feature* that we must somehow figure out and implement on top, and it is unclear how to achieve such a feature. Nevertheless, it is worth striving for a world where this accidental complexity is as reduced as possible. We might expect this to involve a mix of "demolition" work---that of removing barriers that have been placed in the way---and "construction" work of building tools that help us work more effectively.
 
+# A More Compelling Example
+The reason we have considered changing a colour is that this is an extremely small change that nevertheless has a plausible user story behind it (as opposed to, say, flipping a single bit in the app's memory just to see what happens). What we have established is that *even a tiny change* involves egregious accidental complexity, which does not provide much hope for more practical changes we might actually want to make. There are many other ways an end-user might want to adapt some software they are using, but a clearer example of this is a frequent activity of programmers: debugging.
+
+The most frequent changes to software made my programmers consist of fixing bugs.
+
 # How Should Things Work?
 
 Imagine a world where the average computer user can patch or improve their software the same way they might change a lightbulb or perform DIY in their home. This clearly relies on the ability to make small *piecemeal* changes to their home, without having to demolish the place and re-build it anew. We will call this *naïve pokeability*:

@@ -67,6 +67,8 @@
 %********************************************************************
 % Frontmatter
 %*******************************************************
+\joel{
+
 \include{FrontBackmatter/DirtyTitlepage}
 \include{FrontBackmatter/Titlepage}
 \include{FrontBackmatter/Titleback}
@@ -75,7 +77,10 @@
 \cleardoublepage\include{FrontBackmatter/Abstract}
 \cleardoublepage\include{FrontBackmatter/Publications}
 \cleardoublepage\include{FrontBackmatter/Acknowledgments}
+}
 \cleardoublepage\include{FrontBackmatter/Contents}
+\joel{
+
 %********************************************************************
 % Mainmatter
 %*******************************************************
@@ -98,6 +103,8 @@
 \include{Chapters/ch-related-work}
 \cleardoublepage
 \include{Chapters/ch-conclusion}
+
+}
 %\include{multiToC} % <--- just debug stuff, ignore for your documents
 % ********************************************************************
 % Backmatter
@@ -105,6 +112,9 @@
 \appendix
 %\renewcommand{\thechapter}{\alph{chapter}}
 \cleardoublepage
+\include{Chapters/appendix-substrate-ref}
+\joel{
+
 \include{Chapters/appendix-bl}
 \cleardoublepage
 \include{Chapters/appendix-all-dims}
@@ -114,6 +124,8 @@
 \cleardoublepage\include{FrontBackmatter/Bibliography}
 %\cleardoublepage\include{FrontBackmatter/Declaration}
 \cleardoublepage\include{FrontBackmatter/Colophon}
+
+}
 % ********************************************************************
 % Game Over: Restore, Restart, or Quit?
 %*******************************************************
