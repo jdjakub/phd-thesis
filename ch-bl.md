@@ -395,13 +395,12 @@ In \ac{COLA}, it is unclear how the Lisp-like programming language is built beyo
 ## High-Level Language for BootstrapLab
 If we take \ac{JS}, and strip away the concrete syntax, we get a resulting tree structure of function definitions, object literals, and imperative statements. A similar structure with similar semantics would be obtained from other dynamic languages. In fact, this would largely resemble Lisp S-expressions under Lisp semantics; hardly surprising considering Lisp's famously minimal syntax of expression trees. Furthermore, the evaluation procedure for Lisp is simple and well-established.
 
-For these reasons, we designed a Lisp-like tree language in the substrate. This way, we provide high-level constructs (`if-else`, loops, functions, recursion, and so on) for in-system programming. Alignment (Force\ \ref{alignment}) encouraged us to revisit Lisp's design to better fit with our substrate. For example, ordinary Lisp is based on lists whose entries have *implicit* meanings based on their positions. This fits with the substrate made of S-expressions. Our substrate comes with named labels and suggests a language based around maps whose entries are explicitly *named*, so we called it *Masp.*^[This is not too hard to come up with, but we would like to credit the origin of the name to\ \parencite{Masp} and related discussion.] Figure\ \ref{fig:lisp} contrasts the two.
+For these reasons, we designed a Lisp-like tree language in the substrate. This way, we provide high-level constructs (`if-else`, loops, functions, recursion, and so on) for in-system programming. Alignment (Force\ \ref{alignment}) encouraged us to revisit Lisp's design to better fit with our substrate. For example, ordinary Lisp is based on lists whose entries have *implicit* meanings based on their positions. This aligns with the substrate made of S-expressions. Our substrate comes with named labels and suggests a language based around maps whose entries are explicitly *named*, so we called it *Masp.*^[This is not too hard to come up with, but we would like to credit the origin of the name to\ \parencite{Masp} and related discussion.].
 
 \tomas{Maybe use more verbose JSON like syntax, because figuring out the nesting rules below is not obvious. (Plus you need to have curly brackets if you want your language to take over the world, right??)}
 
 \begin{figure}
 \raggedright
-Lisp:
 \begin{verbatim}
 (define fac
   (lambda (n)
@@ -410,22 +409,25 @@ Lisp:
       (* n (fac (decr n)))))
 (fac 3)
 \end{verbatim}
-Masp:
-\begin{verbatim}
-apply: define,  name: fac,  as:
-  apply: lambda,  arg_names: { 1: n },  body:
-    to: n,  apply:
-      0: 1,  _:
-        apply: *,  1: n,  2:
-          apply: fac,  n:
-            apply: decr,  1: n
-apply: fac,  n: 3
-\end{verbatim}
-\caption[Lisp vs. Masp]{Lisp, built around lists, vs. Masp, built around maps.}
+\caption[Lisp example.]{The factorial function in Lisp, built around lists.}
 \label{fig:lisp}
 \end{figure}
 
-The equivalent Masp code is more verbose when rendered in ASCII. However, one of our key goals is to enable the use of other, better notations if desired, which we will discuss in the next section. Here, we start from an internal representation that has *more* information (explicit named arguments) than Lisp, but we can choose to display this however we feel appropriate (perhaps by showing a name label only for the entry being edited).
+\begin{figure}
+\centering\includegraphics[width=14cm]{masp/masp1-3.png}
+\caption[Masp as ideally rendered.]{The factorial function in Masp, built around maps. Notational Freedom would allow us to present Masp in something like the first, heavily sugared form; the way in which the underlying expressions are built out of maps would only become apparent after user-configurable de-sugaring.}
+\label{fig:masp1-3}
+\end{figure}
+
+\begin{figure}
+\centering\includegraphics[width=14cm]{masp/masp4-5.png}
+\caption[Masp, fully de-sugared.]{The final steps of de-sugaring the Masp factorial function. A technical apples-to-apples comparison with Lisp might involve the final stage, but this would omit the ways its verbosity could be mitigated by Notational Freedom.}
+\label{fig:masp4-5}
+\end{figure}
+
+Figure\ \ref{fig:lisp} shows a Lisp definition of the factorial function followed by a call, while Figures\ \ref{fig:masp1-3} and\ \ref{fig:masp4-5} show versions of the Masp equivalent at different levels of notational sugar. In terms of *internal* representation, the final, most verbose version in Figure\ \ref{fig:masp4-5} (no.\ 5) would be the one to compare to Lisp. It contains strictly *more* information than the Lisp code (explicit named arguments), but given our key goal of Notational Freedom, this should not imply a burdensome interface. We would prefer to interact with such programs in the first notation (Figure\ \ref{fig:masp1-3}, no.\ 1), which uses infix operators, different typefaces, and a pattern-match construct that does not exist under that name internally.^[Similarly to how we handled conditionals in ASM (Section\ \ref{designing-the-instruction-set}, if/else is a pattern match in Masp, which is implemented as applying a *map* (here seen as a function "literal") to the value. See Appendix\ \ref{masp-ref} for more details.] Yet the underlying data structures need be no less machine-friendly than those of Lisp, preserving the powerful metaprogramming potential that makes it so valuable. Thanks to Notational Freedom and Explicit Structure, there is no need to compromise one of these for the sake of the other; there is hope to get the best of both worlds here.
+
+A fuller description of Masp is given in Appendix\ \ref{masp-ref}. The diagrams here are an "artist's impression" of a plausible notation design, but BootstrapLab is in far too primitive a state to support this at present. The actual rendering of Masp in the system (see Figure\ \ref{fig:editor}) is even more verbose than no.\ 5, because different map entries live on separate lines and are not inlined to save space. However, it is still worth understanding what all this work we are doing will ultimately enable.
 
 ## Choosing an Appropriate Implementation
 

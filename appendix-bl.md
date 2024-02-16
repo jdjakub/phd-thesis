@@ -43,61 +43,6 @@ Of course, we eventually did require cyclic structures---for the tree editor! Ea
 
 Let this be a warning that Alignment (Force\ \ref{alignment}) will come for you in the end. If your substrate allows cycles, your state view must tolerate them!
 
-# The Minimal Random-Access Instruction Set (And Its Perils)
-Recall Heuristic\ \ref{simple-asm} which instructed us to pursue an easy-to-implement instruction set. We pursued this goal to the extreme out of curiosity for what was possible. Of course, it turned out that the corresponding explosion in the number of instructions necessary to do a simple thing outweighed any implementation advantage...
-
-We did this by breaking down higher-level instructions to their component operations until we felt we could go no further. This led to a sort of "microcode" level where each instruction's implementation corresponded to some single-line \ac{JS} operation. In other words, the platform itself blocked any further decomposition.
-
-Our method for achieving this can be illustrated if we start with a hypothetical complex instruction, e.g. `copy a.b.c to x.y.z`. The actual *work* involved in executing this in \ac{JS} would involve three steps:
-
-1. Traverse the path `a`, `b`, `c` and save the value in a local variable
-2. Traverse the path `x`, `y` and save the (map) value too
-3. Set the key `z` in the map to the saved value.
-
-If we score *strictly by \ac{JS} implementation size* (a mistake, in hindsight), we could improve by simply splitting up these steps into instructions of their own. Any other "complex" instructions that used some of the same steps (e.g. path traversal) will also be covered by these, and the total \ac{JS} will be reduced.
-
-For the first path traversal, we start at the root map (or more generally, any given starting map) and follow each of the keys in turn. We have only one step here (follow key) repeated three times. That's another micro-instruction!
-
-At this stage, we have this truly simple instruction: `follow-key k`. It clearly relies on some implicit state register for the current map, and takes a single parameter. We pushed the limits of sanity by going further, factoring the parameter *out* into another state register, so the resulting instruction is just `follow-key` (we called it `index`). In other words, we applied the following heuristic:
-
-\begin{heuristic}[Registers for parameters]
-Factor out instruction ``parameters'' into special state registers where possible.
-\label{reg-for-param}
-\end{heuristic}
-
-The motivation for this is a vague intuition about sharing parameter values. Under a parameter scheme, copying the same thing to multiple destinations will duplicate the "source" parameter many times, even though the only thing that's changing is the destination. The converse is true for operations with the same destination---maybe not overwriting copies, but arithmetic or other accumulating operations. By breaking these parameters into state, we set a source or destination once only. This has a subjective aesthetic appeal from the point of view of minimality, and an even more dubious efficiency value. We emphasise that it was an experiment and advise against it for the purposes of implementing a system quickly.
-
-As mentioned at the end of Section\ \ref{designing-the-instruction-set}, we end up with only four registers (`next_instruction`, `focus`, `map`, `source`) and five^[Or six, if we analyse the overloaded `store` instruction as `store-reg` and `store-map`.] core instructions (`load`, `store`, `deref`, `index`, `js`). These have a structural representation in-system, but also a convenient textual syntax for brevity in textual media (like this dissertation).
-
-Combinations of these express the expected copying and jumping operations. For example, `load source-reg`, `deref`, `store dest-reg` copies the value in top-level `source-reg` to `dest-reg`. The first instruction loads the literal string `source-reg` into the `focus`; the second replaces `focus` with the contents of its named register; the third copies the `focus` to the named destination.^[It turns out that, if you extract the destination parameter from `store`, you meet an infinite regress and will be unable to store to any top-level register. For example, if we extract the parameter to `dest_reg`, we have to somehow give it the value it previously took in the instruction---but this is precisely a `store` operation and we're already in the middle of one.]
-
-The `copy a.b.c to x.y.z` from earlier would decompose as follows:
-
-1. `load a`, `deref`, `store map`, `load b`, `index`, `load c`, `index`, `load map`, `deref`, `store source`
-2. `load x`, `deref`, `store map`, `load y`, `index`
-3. `load z`, `store`
-
-(Recall that `index` replaces `map` with the result of following its key named by `focus`, and `store` without any arguments copies from `source` to the `focus` key entry within `map`.)
-
-A jump is accomplished by overwriting the address in `next_instruction` (i.e. a map containing a `map` field and a `key` field). The map or the key can be overwritten in a single instruction, but if an entirely new address is required, this needs to be built up separately and overwritten atomically. In other words, we cannot overwrite the `map` and then overwrite the `key`. The ugly reality is, after overwriting the `map`, it will have jumped to a different instruction somewhere else!
-
-A conditional jump is sneaked in by indexing a map to obtain the new list of instructions (which is the map that will overwrite the `map` under `next_instruction`). For example, in the following register snapshot:
-
-```
-...
-weather: 'stormy'
-map: {
-    sunny: { ... sunny code sequence ... }
-    rainy: { ... rainy code sequence ... }
-    _:     { ... other code sequence ... }
-}
-```
-
-One of the three code paths will be selected according to whatever happens to be in the `weather` register via the following instructions: `load weather`, `deref`, `store focus`, `index`. The `map` register will hold the result, in this case the "other" code sequence (recall that the special key `_` is used as an "else" clause for lookups). What remains is then to copy this within `next_instruction`.
-
-It is easy to see how this applies for strict equality matching, but what about comparisons? We simply turn the condition into one of a fixed set of constants. For $3 < 7$ we would subtract to get $-4$ and then apply the mathematical `sign` function to obtain $-1$ (the other possibilities being 0 or 1). We would then index a map containing keys `-1`, `0` and `1`.
-
-Finally, operations like subtraction and `sign` were included as special instructions or achieved via the `js` escape hatch into \ac{JS}. We continued to experiment with other arithmetic instructions, including vector arithmetic (useful for graphics), but never got round to implementing an operand stack.
 
 \joel{ NOPE
 # Appendix: Tree Editor
