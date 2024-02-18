@@ -4,15 +4,15 @@
 This chapter serves as a more complete description of the BootstrapLab substrate than the one given in Section\ \ref{design-a-substrate}. Following Section\ \ref{two-fundamentals-state-and-change}, we divide it into a discussion of *State* and *Change*.
 
 # State in BootstrapLab
-
 State is a graph of *maps* (key-value dictionaries) pointing to each other, along with \ac{JS} *primitives:* numbers, booleans, strings, `null`, `undefined`, and ordinary \ac{JS} objects. A *list* is a map with numerical keys. Like in \ac{JS}, this does not prevent it from having non-numerical keys at the same time.
 
 Maps contain *entries* or *fields* consisting of a *key* and a *value*. We also refer to maps and primitives together as *values*. Starting from a given map `m`, we write a *path* `m.foo.bar.baz` to denote the value arrived at by following the keys `foo`, `bar`, and `baz`. For this to be defined, `m.foo` and `m.foo.bar` must be maps.
 
-The substrate inherits the reference semantics of \ac{JS}; if one wants to insulate a map from side effects originating from other references, one must perform a copy to some level of depth and operate on the copy.
+The substrate inherits the reference semantics of \ac{JS}; if one wants to insulate a map from side effects originating from other references, one must perform a copy to some level of depth and operate on the copy. Other \ac{JS} semantics, such as prototype chains, were considered but postponed for the sake of practicality; see Section\ \ref{the-cutting-room-floor} for an outline of what was left out of the substrate.
 
 There is a *root* for the state, from which everything is discoverable; all absolute paths begin here, and every value that "exists" necessarily has some path from root, although it may have more than one owing to the graph structure. An "address" consists of a map and a key; analogously to paths, a piece of state may have more than one "address" if it is referenced from multiple maps.
 
+## Registers
 Because values at the root level are accessible from only a single key, they are the "first port of call" for instructions and are known as *registers*. Some specific *substrate* registers are reserved for use by instructions. The main substrate registers are:
 
 - `focus`: an "accumulator" register used by most instructions.
@@ -20,34 +20,45 @@ Because values at the root level are accessible from only a single key, they are
 - `source`: holds the new value when updating a map entry.
 - `next_instruction`: program counter; holds the address of the next instruction and the instruction itself.
 - `scene`: container for the scene tree affecting the graphics window (discussed shortly).
+- `addend`, `factor`, `basis`: operands for mathematical instructions.
 
 All other keys at the root level are general-purpose *user registers* available for programs to use.
 
 ## Graphics State: The `scene` Tree
 While state in general can be graph-structured, it is tree-structured^[See Section\ \ref{graphs-vs-trees} for how this was accomplished.] under the `scene` register. The `scene` itself is a list of *graphics maps*. The substrate recognises a map as a graphics map if it contains at least one *graphics property:* any of the keys `width`, `height`, `color`^[We comply with the fact that, for better or worse, American spelling conventions are the *de facto* standard for internal identifiers and code more generally.], `opacity`, `position`, `center`, `top_left`, `zoom`, `text`, or `children`. The presence of these keys causes the substrate to connect their values to shapes in the graphics window and maintain synchronisation. Any graphics map can have a list of `children` in the scene hierarchy.
 
-At present, only crude graphics are possible via two shapes. A rectangle has a `center`, `color`, `width`, and `height`, while a text label has a `top_left`, `text`, and `opacity`. For example:
+At present, only crude graphics are possible via two shapes. A rectangle has a `center`, `color`, `width`, and `height` (Figure\ \ref{fig:rect-spec}), while a text label has a `top_left`, `text`, and `opacity` (Figure\ \ref{fig:text-spec}).
 
-\begin{figure}[!h]
-\centering\includegraphics[width=12cm]{../../fig/rect-and-text.png}
+\begin{figure}
+\centering\includegraphics[width=8cm]{../../fig/rect.png}
+\label{fig:rect-spec}
+\caption[Rectangle properties]{A rectangle inferred from the presence of \texttt{color}, \texttt{width}, \texttt{height}, and \texttt{center}. As can be seen, \texttt{color} expects a hex string.}
 \end{figure}
 
-As can be seen, `color` accepts a hex string; `opacity`, not shown, is a number between 0 and 1. More interesting is the protocol of vector properties like `center` and `top_left`. Firstly, the naming of these properties themselves follows a design principle which could be called "Naïve Honesty".^[By analogy to Boxer's "Naïve Realism".]
+\begin{figure}
+\centering\includegraphics[width=8cm]{../../fig/text.png}
+\label{fig:text-spec}
+\caption[Text label properties]{A text label inferred from the presence of \texttt{text} and \texttt{top\_left}. The \texttt{opacity} property, not shown, takes a number between 0 and 1.}
+\end{figure}
+
+More interesting is the protocol of vector properties like `center` and `top_left`. Firstly, the naming of these properties themselves follows a design principle which could be called "Naïve Honesty".^[By analogy to Boxer's "Naïve Realism"\ \parencite{Boxer}.]
 
 \begin{heuristic}[Naïve Honesty]
 If a more abstract term has only one intended meaning in a particular API, use the honest concrete concept instead.
 \label{naive-honesty}
 \end{heuristic}
 
-For example, the term "position", widely used in graphics APIs, is not very self-documenting when it comes to shapes. In practice, it always means "the centre of the shape" or "the top left-hand corner" or some such meaningful function of the shape itself. Therefore, why not just be explicit about this, and save the user the effort of figuring out what it actually means? The co-ordinates are specified according to the same principle: instead of the ever-ambiguous `x`, `y`, and `z`, we have `right`, `up`, and `forward`. In an ideal substrate, one could specify co-ordinates via `left` and `down` or any combination, and the system would automatically flip the signs as necessary for its platform graphics API calls. However, this functionality does not yet exist in BootstrapLab.
+For example, the term "position", widely used in graphics APIs, is not very self-documenting when it comes to shapes. In practice, it always means "the centre of the shape" or "the top left-hand corner" or some such meaningful function of the shape itself. Therefore, why not just be explicit about this, and save the user the effort of figuring out what it actually means? The co-ordinates are specified according to the same principle: instead of the ever-ambiguous `x`, `y`, and `z`, we have `right`, `up`, and `forward`. In an ideal substrate, one could specify co-ordinates via `left`, `down`, `backward`, or any combination, and the system would automatically flip the signs as necessary for its platform graphics API calls. However, this functionality does not yet exist in BootstrapLab.
 
-Third, a vector property may have a `basis` key naming a registered co-ordinate frame. This can be seen in the special *camera* graphics map, linked to the zoomable/pannable view in the graphics window:
-
-\begin{figure}[!h]
+\begin{figure}
 \centering\includegraphics[width=4cm]{../../fig/camera.png}
+\label{fig:camera-spec}
+\caption[Camera properties]{The camera `zoom` and `position` are bidirectionally synchronised between the state and the graphics window.}
 \end{figure}
 
-If unspecified, the basis is assumed to be that of the parent node in the tree. However, the user can set an explicit `basis` to express co-ordinates as most convenient to them, while the substrate will convert between frames under the hood. This is another application of Naïve Honesty in regard to more of our frustrations about graphics programming: the co-ordinate basis of a vector is often left as *implicit* information for the programmer to carry around in his head, who must also have a notebook handy to write the relevant matrix equations to transform things properly. We believe this tedium is exactly what should be handled automatically by the substrate (on this theme, see \textcite{Gator}). As it stands, bases are registered by the key name of the graphics map into a flat list, and are thus vulnerable to name collisions and synchronisation issues. However, what we have is a promising start.
+Third, a vector property may have a `basis` key naming a registered co-ordinate frame. This can be seen in the special *camera* graphics map (Figure\ \ref{fig:camera-spec}), linked to the zoomable/pannable view in the graphics window. If left unspecified, the basis is assumed to be that of the parent node in the tree. However, the user can set an explicit `basis` to express co-ordinates as most convenient to them, while the substrate will convert between frames under the hood.
+
+This is another application of Naïve Honesty in regard to our frustrations about graphics programming: the co-ordinate basis of a vector is often left as *implicit* information for the programmer to carry around in his head, who must also have a notebook handy to write the relevant matrix equations to transform things properly. We believe this tedium is exactly what should be handled automatically by the substrate (on this theme, see \textcite{Gator}). As it stands, bases are registered by the key name of the graphics map into a flat list, and are thus vulnerable to name collisions and synchronisation issues. However, what we have is a promising start.
 
 Naïve Honesty can be seen as a response to a design requirement called "No Guessing":
 
@@ -85,6 +96,12 @@ Because this notation is so verbose, and no instruction has more than one parame
 load my_reg ; deref ; store my_dest
 ```
 
+In circumstances where there are many instructions and we need to be even more concise, we only use the first letters of the names. The above example would reduce to:
+
+```
+l my_reg ; d ; s my_dest
+```
+
 In the next section, we will specify the semantics of the instructions. In line with the spirit of *Notational Freedom* (Section\ \ref{notational-freedom}), we will use box-and-arrow diagrams, since we judge this more suitable for our substrate than traditional formal semantics notations. However, we will take some cues from the latter; for example, we show the state before and after the instruction. We also use symbols to stand for abstract values. Specifically, $K$ denotes any string (or "key"), $M$ denotes a map, and $V$ denotes an arbitrary value. We additionally employ a grey spot to highlight the part of the state that was mutated.
 
 ## Change Map Entry and Supporting Instructions
@@ -95,7 +112,7 @@ The `store` instruction, with no parameters, expects a map $M$ in the `map` regi
     \centering\includegraphics[width=10cm]{../../fig/semantics/store.png}
 \end{figure}
 
-The `index` instruction, like the `store` to which it is dual^[We mean this in an informal sense, but it points to some interesting analysis which we have not undertaken. Compare also `deref` and the register version of `store`, leaving `focus` curiously on its own.], takes a map $M$ in `map` and a key string $K$ in `focus`. After execution, `map` contains the value $M.K$, unless this is `undefined`. In that case, it will try the special key `_` as failsafe and `map` will contain $M.$`_` instead, which could still be `undefined`.
+The `index` instruction, like the `store` to which it is dual^[We mean this in an informal sense, but it points to some interesting analysis which we have not undertaken. Compare also `deref` and the register version of `store`, leaving `load` curiously on its own.], takes a map $M$ in `map` and a key string $K$ in `focus`. After execution, `map` contains the value $M.K$, unless this is `undefined`. In that case, it will try the special key `_` as failsafe and `map` will contain $M.$`_` instead, which could still be `undefined`.
 
 \begin{figure}[!h]
 \centering\includegraphics[width=10cm]{../../fig/semantics/index.png}
@@ -145,69 +162,19 @@ The `js` instruction takes a `func` parameter and calls it as a \ac{JS} function
 }}
 ```
 
+Some features of the platform were common enough to be worth implementing as their own instructions, as an optimisation:
+
+- `add` adds the `addend` register to `focus`.
+- `mul` multiplies `focus` by the `factor` register.
+- `sign` replaces `focus` with its mathematical sign ($+1$, $0$, or $-1$).
+- `typeof` replaces `focus` with its result under the \ac{JS} `typeof` operator.
+- `basis` rewrites the vector in `focus` to be the same vector in the basis named by the `basis` register.
+
+However, these remain experimental rather than practical and we did not get around to implementing an operand stack.
+
+We could argue in favour of such instructions in terms of Alignment (Force\ \ref{alignment}). Supposing our basic state-prodding instructions were Turing-complete, we could certainly implement arithmetic, etc. using Church numerals encoded as maps, but this would be a waste of the vastly more efficient capabilities provided by the platform. Similarly, in a real-world instruction set (\eg{} x86), any special-purpose silicon in the *hardware* platform ought to be accessible from some instruction; we view arithmetic and logic instructions as access points to the heavily optimised ALU, as opposed to "intrinsic" requirements of the instruction set.
+
+Tentatively, we conjecture that instructions are either *intrinsic*, necessary for Turing-completeness, or *gateways* to platform optimisations. Any instructions for accessing \eg{} video memory could be considered *intrinsic* if we subsume video memory as just a special part of the overall state.
+
 ## The Fetch-Execute Cycle
 The `next_instruction` register holds a map with keys `ref` and `value`. The `value` entry hold the next instruction itself, while `ref` contains entries `map` and `key` as the address of the instruction, where `key` is an integer. During the fetch-execute cycle, `key` is incremented. In this way, a list of instructions can serve as a "basic block". Furthermore, if incrementing the `key` "runs off the end" of a list, the substrate will follow any `continue_to` entry in the list and continue execution at key `1` of the associated map.
-
-# The Minimal Random-Access Instruction Set (And Its Perils)
-In this section, we will explain the design rationale that led us to the peculiarities of the instruction set. Recall Heuristic\ \ref{simple-asm} which instructed us to pursue an *easy-to-implement* instruction set. We pursued this goal to the extreme out of curiosity for what was possible. Of course, it turned out that the corresponding explosion in the number of instructions necessary to do a simple thing outweighed any implementation advantage...
-
-We did this by breaking down higher-level instructions to their component operations until we felt we could go no further. This led to a sort of "microcode" level where each instruction's implementation corresponded to some single-line \ac{JS} operation. In other words, the platform itself blocked any further decomposition.
-
-Our method for achieving this can be illustrated if we start with a hypothetical complex instruction, e.g. `copy a.b.c to x.y.z`. The actual *work* involved in executing this in \ac{JS} would involve three steps:
-
-1. Traverse the path `a`, `b`, `c` and save the value in a local variable
-2. Traverse the path `x`, `y` and save the (map) value too
-3. Set the key `z` in the map to the saved value.
-
-If we score *strictly by \ac{JS} implementation size* (a mistake, in hindsight), we could improve by simply splitting up these steps into instructions of their own. Any other "complex" instructions that used some of the same steps (e.g. path traversal) will also be covered by these, and the total \ac{JS} will be reduced.
-
-For the first path traversal, we start at the root map (or more generally, any given starting map) and follow each of the keys in turn. We have only one step here (follow key) repeated three times. That's another micro-instruction!
-
-At this stage, we have this very simple instruction: `follow-key k`. It clearly relies on some implicit state register for the current map, and takes a single parameter. We pushed the limits of sanity by going further, factoring the parameter *out* into another state register, so the resulting instruction is just `follow-key` (we called it `index`). In other words, we applied the following heuristic:
-
-\begin{heuristic}[Registers for parameters]
-Factor out instruction ``parameters'' into special state registers where possible.
-\label{reg-for-param}
-\end{heuristic}
-
-The motivation for this is a vague intuition about sharing parameter values. Under a parameter scheme, copying the same thing to multiple destinations will duplicate the "source" parameter many times, even though the only thing that's changing is the destination. The converse is true for operations with the same destination---maybe not overwriting copies, but arithmetic or other accumulating operations. By breaking these parameters into state, we set a source or destination once only. This has a subjective aesthetic appeal from the point of view of minimality, and an even more dubious efficiency value. We emphasise that it was an experiment and advise against it for the purposes of implementing a system quickly.
-
-## Copying And Jumping
-
-Combinations of the instructions express the expected copying and jumping operations. For example, `load source-reg`, `deref`, `store dest-reg` copies the value in root-level `source-reg` to `dest-reg`. The first instruction loads the literal string `source-reg` into the `focus`; the second replaces `focus` with the contents of its named register; the third copies the `focus` to the named destination.^[It turns out that, if you extract the destination parameter from `store`, you meet an infinite regress and will be unable to store to any top-level register. For example, if we extract the parameter to `dest_reg`, we have to somehow give it the value it previously took in the instruction---but this is precisely a `store` operation and we're already in the middle of one.]
-
-The `copy a.b.c to x.y.z` from earlier would decompose as follows:
-
-1. `load a`, `deref`, `store map`, `load b`, `index`, `load c`, `index`, `load map`, `deref`, `store source`
-2. `load x`, `deref`, `store map`, `load y`, `index`
-3. `load z`, `store`
-
-(Recall that `index` replaces `map` with the result of following its key named by `focus`, and `store` without any arguments copies from `source` to the `focus` key entry within `map`.)
-
-A jump is accomplished by overwriting the address in `next_instruction.ref` (a map containing a `map` field and a `key` field). The map or the key can be overwritten in a single instruction, but if an entirely new address is required, this needs to be built up separately and overwritten atomically. In other words, we cannot overwrite the `map` and then overwrite the `key`. The ugly reality is, after overwriting the `map`, it will have jumped to a different instruction somewhere else!
-
-A *conditional* jump is sneaked in by *indexing* into a map to obtain the new list of instructions (which is the map that will overwrite the `map` under `next_instruction.ref`). For example, in the following register snapshot:
-
-```
-...
-weather: 'stormy'
-map: {
-    sunny: { ... sunny code sequence ... }
-    rainy: { ... rainy code sequence ... }
-    _:     { ... other code sequence ... }
-}
-```
-
-One of the three code paths will be selected according to whatever happens to be in the `weather` register via the following instructions: `load weather`, `deref`, `store focus`, `index`. The `map` register will hold the result, in this case the "other" code sequence (recall that the special key `_` is used as an "else" clause for lookups). What remains is then to copy this within `next_instruction.ref`.
-
-This example proved that we can do strict equality matching, but what about comparisons? We may observe how conditional jumps are traditionally based on a relation to zero, \eg{} "jump if less than zero". A condition like $3 < 7$ is rearranged into $3 - 7 < 0$ and the "jump if less than zero" instruction is called with the value $-4$. In BootstrapLab, we go one step further: if we apply the mathematical `sign` function to the value $-4$, we get $-1$. We can then simply use the trick we already described and `index` into a map containing keys `-1`, `0` and `1`. All of the relevant conditions can be expressed this way: for example, "greater than or equal to zero" can be achieved by pointing the keys `0` and `1` to the same code sequence.
-
-Finally, operations like subtraction and `sign` were included as special instructions or achieved via the `js` escape hatch into \ac{JS}. We continued to experiment with other arithmetic instructions, including vector arithmetic (useful for graphics), but never got round to implementing an operand stack.
-
-## Proof of Turing-Completeness
-because i say so
-
-## Remarks
-Fails the self-interpret test
-
-See also blog post
