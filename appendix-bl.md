@@ -135,10 +135,10 @@ l v_destination; d; dest; l v_focus; d; sr
 
 Notice that this is identical to the implementation of `dest` except for the insertion of a `deref` after the first `load`.
 
-We can summarise the modified instruction set, at the register level, as having a "read head" `focus` and a "write head" `destination`. The only way a value in the state gets to the register file is in through `focus` and out through `destination`, coupled by the `dest` instruction. Beyond the register level, we could analyse `map` as a combined read-write head. However, we will leave further analysis for subsequent work. Interested readers may consult\ \textcite{PrimInstrucs} for some further intuitions and design philosophy.
+We can summarise the modified architecture, at the register level, as having a "read head" `focus` and a "write head" `destination`. The only way a value in the state gets to the register file is in through `focus` and out through `destination`, coupled by the `dest` instruction. Beyond the register level, we could analyse `map` as a combined read-write head. However, we will leave further analysis for subsequent work. Interested readers may consult\ \textcite{PrimInstrucs} for some further intuitions and design philosophy.
 
 # The Cutting Room Floor
-Force \ref{escape-plaf} directed us to do without several advanced substrate features we were tempted to include. For example, it would be useful to attach state change listeners to keep parts of the state in sync with others. We could go even further and include constraint-based programming features.
+*Escape The Platform* (Force \ref{escape-plaf}) directed us to do without several advanced substrate features we were tempted to include. For example, it would be useful to attach state change listeners to keep parts of the state in sync with others. We could go even further and include constraint-based programming features.
 
 On another note, our substrate is based on "maps" without a predefined ordering of the entries. However, there is always some order in which they will be displayed:
 

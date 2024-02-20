@@ -72,7 +72,7 @@ A reasonable reply to No Guessing might be to just write better documentation. H
 
 # Change in BootstrapLab
 
-In-keeping with Alignment (Force\ \ref{alignment}), the smallest units of change ought to just "fall out" of the structure of the State:
+In keeping with Alignment (Force\ \ref{alignment}), the smallest units of change ought to just "fall out" of the structure of the State:
 
 - Change a map entry to a new value (our `store` instruction)
 - Create a new map (our `load` instruction)
@@ -105,31 +105,37 @@ l my_reg ; d ; s my_dest
 In the next section, we will specify the semantics of the instructions. In line with the spirit of *Notational Freedom* (Section\ \ref{notational-freedom}), we will use box-and-arrow diagrams, since we judge this more suitable for our substrate than traditional formal semantics notations. However, we will take some cues from the latter; for example, we show the state before and after the instruction. We also use symbols to stand for abstract values. Specifically, $K$ denotes any string (or "key"), $M$ denotes a map, and $V$ denotes an arbitrary value. We additionally employ a grey spot to highlight the part of the state that was mutated.
 
 ## Change Map Entry and Supporting Instructions
+We will now proceed to explain the semantics of `store`, `index`, `deref`, and `load`.
 
+### Parameterless Store: Change Map Entry
 The `store` instruction, with no parameters, expects a map $M$ in the `map` register, a key string $K$ in the `focus` register, and a value $V$ in the `source` register. After execution, the entry $K$ of $M$ will have the value $V$.
 
 \begin{figure}[!h]
     \centering\includegraphics[width=10cm]{../../fig/semantics/store.png}
 \end{figure}
 
+### Index: Follow Key In Map
 The `index` instruction, like the `store` to which it is dual^[We mean this in an informal sense, but it points to some interesting analysis which we have not undertaken. Compare also `deref` and the register version of `store`, leaving `load` curiously on its own.], takes a map $M$ in `map` and a key string $K$ in `focus`. After execution, `map` contains the value $M.K$, unless this is `undefined`. In that case, it will try the special key `_` as failsafe and `map` will contain $M.$`_` instead, which could still be `undefined`.
 
 \begin{figure}[!h]
 \centering\includegraphics[width=10cm]{../../fig/semantics/index.png}
 \end{figure}
 
+### Store To Register: Change Root Entry
 There are alternate semantics^[This "overloading" of an instruction is straightforward in a map substrate, as compared to a flat binary one (Section\ \ref{let-us-avoid-the-low-level-binary-world}), although an argument could be made for it to be a separate instruction called `store-reg`.] when `store` is executed with a parameter `register` of string value $K$. In this case, given a value $V$ in `focus`, the root-level entry $K$ will have value $V$.
 
 \begin{figure}[!h]
 \centering\includegraphics[width=10cm]{../../fig/semantics/store-reg.png}
 \end{figure}
 
+### Deref: Follow Key In Root
 With a string $K$ in `focus` and register $K$ holding the value $V$, an execution of `deref` will place $V$ in `focus`.
 
 \begin{figure}[!h]
 \centering\includegraphics[width=10cm]{../../fig/semantics/deref.png}
 \end{figure}
 
+### Load: Instantiate A Literal
 Finally, `load` takes a parameter `value` with a value $V$. After execution, the `focus` register contains $V$.
 
 \begin{figure}[!h]
@@ -174,7 +180,9 @@ However, these remain experimental rather than practical and we did not get arou
 
 We could argue in favour of such instructions in terms of Alignment (Force\ \ref{alignment}). Supposing our basic state-prodding instructions were Turing-complete, we could certainly implement arithmetic, etc. using Church numerals encoded as maps, but this would be a waste of the vastly more efficient capabilities provided by the platform. Similarly, in a real-world instruction set (\eg{} x86), any special-purpose silicon in the *hardware* platform ought to be accessible from some instruction; we view arithmetic and logic instructions as access points to the heavily optimised ALU, as opposed to "intrinsic" requirements of the instruction set.
 
-Tentatively, we conjecture that instructions are either *intrinsic*, necessary for Turing-completeness, or *gateways* to platform optimisations. Any instructions for accessing \eg{} video memory could be considered *intrinsic* if we subsume video memory as just a special part of the overall state.
+Tentatively, we conjecture that instructions are either *intrinsic*, \ie{} necessary for Turing-completeness, or *gateways* to platform optimisations. Any instructions for accessing \eg{} video memory could be considered *intrinsic* if we subsume video memory as just a special part of the overall state. Furthermore, any special instructions that affect the outside world (\eg{} refresh the screen, or send network packets) could be re-interpreted as writing to special parts of state that have side effects (see also Self's behaviour-as-state\ \parencite{Self} or Plan 9's "control files"\ \parencite{Plan9}).
 
 ## The Fetch-Execute Cycle
 The `next_instruction` register holds a map with keys `ref` and `value`. The `value` entry hold the next instruction itself, while `ref` contains entries `map` and `key` as the address of the instruction, where `key` is an integer. During the fetch-execute cycle, `key` is incremented. In this way, a list of instructions can serve as a "basic block". Furthermore, if incrementing the `key` "runs off the end" of a list, the substrate will follow any `continue_to` entry in the list and continue execution at key `1` of the associated map.
+
+The fetch-execute cycle is activated via the \ac{JS} console function `run_and_render(n)`, taking a number `n` of instructions to execute. If `n` is omitted, it defaults to 1, effectively acting as a single-step command. Finally, any instruction can have a `break` parameter; if set to a value \ac{JS} considers "truthy", the fetch-execute cycle will halt after executing the instruction.
