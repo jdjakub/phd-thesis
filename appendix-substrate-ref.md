@@ -10,7 +10,7 @@ Maps contain *entries* or *fields* consisting of a *key* and a *value*. We also 
 
 The substrate inherits the reference semantics of \ac{JS}; if one wants to insulate a map from side effects originating from other references, one must perform a copy to some level of depth and operate on the copy. Other \ac{JS} semantics, such as prototype chains, were considered but postponed for the sake of practicality; see Section\ \ref{the-cutting-room-floor} for an outline of what was left out of the substrate.
 
-There is a *root* for the state, from which everything is discoverable; all absolute paths begin here, and every value that "exists" necessarily has some path from root, although it may have more than one owing to the graph structure. An "address" consists of a map and a key; analogously to paths, a piece of state may have more than one "address" if it is referenced from multiple maps.
+There is a *root* for the state, from which everything is discoverable; all absolute paths begin here, and every value that "exists" necessarily has some path from root, although it may have more than one owing to the graph structure. The root is not addressable from user code, but in \ac{JS} it is a global called `ctx`. An "address" consists of a map and a key; analogously to paths, a piece of state may have more than one "address" if it is referenced from multiple maps.
 
 ## Registers
 Because values at the root level are accessible from only a single key, they are the "first port of call" for instructions and are known as *registers*. Some specific *substrate* registers are reserved for use by instructions. The main substrate registers are:
@@ -62,13 +62,21 @@ This is another application of Naïve Honesty in regard to our frustrations abou
 
 Naïve Honesty can be seen as a response to a design requirement called "No Guessing":
 
-\newtheorem{requirement}{Requirement} \joel{TODO: REMOVE WHEN MAKE ALL}
+\joel{\newtheorem{requirement}{Requirement}}
 \begin{requirement}[No Guessing]
 The user of an API should never have to uncover the meaning of a concept through trial-and-error experimentation. In graphics programming, the user should never have to create a throwaway object and transform it to resolve ambiguity about sign conventions, axis conventions, unit conventions, basis conventions, etc.
 \label{no-guessing}
 \end{requirement}
 
 A reasonable reply to No Guessing might be to just write better documentation. However, this is not a solution to implicit bases in user code, and Naïve Honesty attacks the root of the problem in the poor conventions themselves.
+
+## Manually Updating State
+In order to update a piece of state *and ensure* that all relevant UI updates to reflect this, the `upd()` function is used in \ac{JS} code and the console. For example, to change the colour of the shape in Figure\ \ref{fig:rect-spec} to red, one would issue the following command in the console:
+
+```
+upd(ctx, 'scene', 'shapes', 'children',
+    'yellow_shape', 'color', '0xff0000')
+```
 
 # Change in BootstrapLab
 
@@ -79,7 +87,7 @@ In keeping with Alignment (Force\ \ref{alignment}), the smallest units of change
 - Actions necessary to support the above (`index` and `deref`)
 - Inheritance of platform changes, \ie{} mutate \ac{JS} state and call any API (`js`)
 
-We will elaborate on these shortly, but first we will specify how instructions are represented as state, and how we will notate them in shorthand and diagrams. We will mostly stick to reference material here; for more in-depth design rationale, see Section\ \ref{the-minimal-random-access-instruction-set-and-its-perils}.
+The result is our instruction set, which we call \ac{BL-ASM}. We will elaborate on these shortly, but first we will specify how instructions are represented as state, and how we will notate them in shorthand and diagrams. We will mostly stick to reference material here; for more in-depth design rationale, see Section\ \ref{the-minimal-random-access-instruction-set-and-its-perils}.
 
 ## Instruction Encoding In State, Text, and Diagrams
 An instruction is a map with an `op` field serving as the opcode, along with any parameters as further entries. Some examples:
@@ -180,7 +188,7 @@ However, these remain experimental rather than practical and we did not get arou
 
 We could argue in favour of such instructions in terms of Alignment (Force\ \ref{alignment}). Supposing our basic state-prodding instructions were Turing-complete, we could certainly implement arithmetic, etc. using Church numerals encoded as maps, but this would be a waste of the vastly more efficient capabilities provided by the platform. Similarly, in a real-world instruction set (\eg{} x86), any special-purpose silicon in the *hardware* platform ought to be accessible from some instruction; we view arithmetic and logic instructions as access points to the heavily optimised ALU, as opposed to "intrinsic" requirements of the instruction set.
 
-Tentatively, we conjecture that instructions are either *intrinsic*, \ie{} necessary for Turing-completeness, or *gateways* to platform optimisations. Any instructions for accessing \eg{} video memory could be considered *intrinsic* if we subsume video memory as just a special part of the overall state. Furthermore, any special instructions that affect the outside world (\eg{} refresh the screen, or send network packets) could be re-interpreted as writing to special parts of state that have side effects (see also Self's behaviour-as-state\ \parencite{Self} or Plan 9's "control files"\ \parencite{Plan9}).
+Tentatively, we conjecture that instructions are either *intrinsic*, \ie{} necessary for Turing-completeness, or *gateways* to platform optimisations. Any instructions for accessing \eg{} video memory could be considered *intrinsic* if we subsume video memory as just a special part of the overall state. Furthermore, any special instructions that affect the outside world (\eg{} refresh the screen, or send network packets) could be re-interpreted as writing to special parts of state that have side effects; see also Self's behaviour-as-state\ \parencite{Self} or Plan 9's "control files"\ \parencite{Plan9}.
 
 ## The Fetch-Execute Cycle
 The `next_instruction` register holds a map with keys `ref` and `value`. The `value` entry hold the next instruction itself, while `ref` contains entries `map` and `key` as the address of the instruction, where `key` is an integer. During the fetch-execute cycle, `key` is incremented. In this way, a list of instructions can serve as a "basic block". Furthermore, if incrementing the `key` "runs off the end" of a list, the substrate will follow any `continue_to` entry in the list and continue execution at key `1` of the associated map.
