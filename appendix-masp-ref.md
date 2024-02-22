@@ -1,7 +1,7 @@
 \hypertarget{masp-ref}{%
 \chapter{Masp Reference}\label{masp-ref}}
 
-The objective of *Masp* is to get all the benefits of a Lisp-like expression language in a way that is Aligned (Definition\ \ref{alignment}) with our map-based substrate (see Section\ \ref{bl-substrate-ref}). We want to preserve the dynamic, functional, and metaprogramming facilities of Lisp, while leaving behind the reliance on positional parameters and making full use of map affordances.
+The objective of *Masp* is to get all the benefits of a Lisp-like expression language in a way that is Aligned (Force\ \ref{alignment}) with our map-based substrate (see Appendix\ \ref{bl-substrate-ref}). We want to preserve the dynamic, functional, and metaprogramming facilities of Lisp, while leaving behind the reliance on positional parameters and making full use of map affordances.
 
 Lisp is built around the "linked list" data structure as implemented by "cons" cells. Expressions to be evaluated take the form of lists. However, lists can also represent "data" lists that are not meant to be evaluated. Similarly, Masp includes both "data" maps and maps representing an expression to evaluate. Accordingly, we will divide our description of Masp into *State* and *Change*.
 
@@ -24,7 +24,7 @@ The evaluator looks at the `apply` key, sees it is a \ac{JS} string, and looks u
 
 This illustrates that, as far as \ac{JS} primitives are concerned, nearly all are treated as "terminal" values that need no evaluation. The sole exception is a string, which denotes a variable to be looked up in the current env.
 
-By convention, single-argument functions like `quote` name the argument `to` in order to provide the reading "*apply* function *to* argument". Some functions, such as `+`, `*`, `-`, etc. number their arguments instead of using their official names:^[Despite our tolerance of verbosity with the promise of future Notational Freedom, we could not stomach having `addend`, `multiplicand`, `subtrahend`, etc. in Masp arithmetic.] `apply: +, 1: 10, 2: 20`. 
+By convention, single-argument functions like `quote` name the argument `to` in order to provide the reading "*apply* function *to* argument". Some functions, such as `add`, `mul`, `sub`, etc. number their arguments instead of using their official names:^[Despite our tolerance of verbosity with the promise of future Notational Freedom, we could not stomach having `addend`, `multiplicand`, `subtrahend`, etc. in Masp arithmetic.] `apply: add, 1: 10, 2: 20`. 
 
 As in Lisp, an individual function parameter can be "extensional" (evaluated before use) or "intensional" (used in its un-evaluated form). For example, the `if` function used as `(if cond then else)` has `cond` in extensional position; the behaviour of `if` depends entirely on whether `cond` evaluates to `true` or `false` and not on the make-up of the `cond` expression itself. Meanwhile, the `then` and `else` code are used *intensionally* because one of them should not be evaluated (otherwise, the "wrong" branch would still get to cause its side effects). For simplicity, functions in Masp are assumed all-extensional by default; this can be disabled by setting the `dont_eval_args` entry on the function closure, in which case it is up to the function itself to perform any evaluation.
 
@@ -60,9 +60,10 @@ A *local evaluation context,* or *context* for short, contains a local `env`, an
 \caption[The Masp tree.]{The \texttt{masp} register contains an \texttt{initial\_env} with basic primitives, a \texttt{program}, and the current evaluation context \texttt{ctx}. When fully evaluated, the program has its tree structure expanded into a tree of local contexts, each with an \texttt{expr} and a \texttt{value} (\texttt{env}s have been omitted for brevity). Solid rectangles enclose ordinary maps; dashed rectangles draw attention to local contexts.}
 \end{figure}
 
-
+### Beginning The Walkthrough
 We will walk through the process from the perspective of `masp_step`. If the `expr` is a string, we add a `value` obtained from looking up the `expr` in the local `env`. If `expr` is a map with no `apply` entry, \ie{} a "literal" map, we set the `value` to a special closure in which `literal` is set to the `expr` and the current env is included. Otherwise, if the `apply` node has not yet been evaluated, we wrap it in a new context and enter (\ie{} we make it the new `ctx`). Once there is a value for the function closure, evaluation proceeds to the arguments unless `dont_eval_args` is set on the closure. A tracking variable in the context, `arg_i`, helps us discover the next unevaluated argument, as determined by the order of map keys from \ac{JS}' `Object.keys()`.
 
+### Protocol Between \ac{JS} Primitives and Masp
 After processing the arguments, we inspect the `body` of the function closure. If it is a \ac{JS} function, we call this "primitive" with the context and argument values. The protocol for Masp primitives is that returning `true` (on the \ac{JS} stack) means that it has returned a value (in Masp); otherwise, it is evaluating a subexpression and needs to be run again afterwards. For example, here is the \ac{JS} code for the `decr` (decrement) primitive:
 
 ```
@@ -87,6 +88,7 @@ It sets the value in the context and returns `true`, signalling that it has also
 
 Because `dont_eval_args` is set, `define` will receive the `name` argument as an unevaluated string. It needs to evaluate the `as` argument, and if it has already done so, it binds it to the `name` in the global `initial_env`, sets the Masp return value as `null` (\ie{} no return value, entirely side-effects) and returns `true` to return in Masp. Otherwise, it creates and enters a new context for `as`, and implicitly returns `undefined` in \ac{JS}, which is falsy, telling the evaluator that `define` has not finished evaluating.
 
+### Evaluating A Non-Primitive Body
 Back to inspecting the `body`. If a `body` is absent but we have a `literal` map instead, we push the single argument (named `to`) through the map and treat the result as the `body` (going via the `_` key if this fails). This facilitates pattern-matching for the purpose of obtaining *further code to execute* beyond obtaining just a value straight away.
 
 At this point, we have a `body` made of Masp code to evaluate in an appropriate context. We create a new context, duplicate the body code so we can destructively replace expressions with contexts down the line, and set that as the `value` of the `apply` context. We fill the local `env` with the processed arguments, and enter this new context (\ie{} set it as the `ctx`).

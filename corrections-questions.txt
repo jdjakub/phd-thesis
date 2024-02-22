@@ -1,2 +1,4 @@
 Excel lambda functions citation?
 Anything to cite for tombstone?
+Figure 4.4 full BL interface: which lib to cite, 3JS or JsonTree which I heavily modified? Cite Github?
+Cite proj edit?

@@ -1,4 +1,4 @@
-TIKZ_FILES = ../fig/format-errors.tex ../fig/plaf-substr-prod.tex ../fig/change-by-re-creation.tex ../fig/user-impl.tex
+TIKZ_FILES = ../fig/format-errors.tex ../fig/plaf-substr-prod.tex ../fig/change-by-re-creation.tex ../fig/user-impl.tex ../fig/bl-layers.tex
 # Screw LaTeX. Might as well use drw[1]. My Mathcha diagrams never end up looking like they do in Mathcha. I could spend 1 billion years manually poking coordinates in a text file, or I can just use PNGs. Once again, I am defeated.
 # [1] https://programmingmadecomplicated.wordpress.com/2017/10/29/introducing-drw-a-useful-tool-to-solve-a-practical-problem/
 IMG_FILES = ../fig/semantics/*.png

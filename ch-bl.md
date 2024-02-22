@@ -32,7 +32,16 @@ The following sections propose key steps for evolving self-sustain\-ability in t
 
 \tomas{It would be nice to include the diagram I sketched here (if we think it can be useful for explaining things...)}
 
-Following the terminology in Section\ \ref{platforms-and-substrates}, we use the term *product system* (or simply "the system") to refer to the programming system that we evolve towards self-sustainability. We use the *producer system* (or simply "producer") to bootstrap the product system. The producer is divided into two layers: the *platform* consists of all the pre-existing capabilities of the producer, while the *substrate* is the basis for the product system that we have to build. We use the term *in-system* to refer to changes made within the product system, by using it as a programming system at its user level. We also model the product system as having a *state* that *changes over time* as we introduced in Section\ \ref{two-fundamentals-state-and-change}.
+Following the terminology in Section\ \ref{platforms-and-substrates}, we use the term *product system* (or simply "the system") to refer to the programming system that we evolve towards self-sustainability. We use the *producer system* (or simply "producer") to bootstrap the product system. The producer is divided into two layers: the *platform* consists of all the pre-existing capabilities of the producer, while the *substrate* is the basis for the product system that we have to build. We use the term *in-system* to refer to changes made within the product system, by using it as a programming system at its user level. These terms are summarised in Figure\ \ref{fig:layers}. We also model the product system as having a *state* that *changes over time* as we introduced in Section\ \ref{two-fundamentals-state-and-change}.
+
+\begin{figure}
+\centering
+\scalebox{0.75}{
+  \input{../../fig/bl-layers.tex}
+}
+\caption[BootstrapLab platform, substrate, product.]{The producer comprises the \ac{JS} platform in the context of the web browser, along with the substrate written in \ac{JS}. Working in-system means using the product (BootstrapLab) to work on itself.}
+\label{fig:layers}
+\end{figure}
 
 \joel{
 This is necessarily the case for any interesting interactive programming system, regardless of its programming paradigm. Even in functional, declarative, reactive or logic paradigms, the evaluation or re-computation in response to interaction with a user produces a new (changed) state.
@@ -46,7 +55,7 @@ Recall the definition of *bootstrapping* we gave in Section\ \ref{precursors-of-
 The rest of the chapter documents the steps involved in designing a self-sustainable system. Be advised that the sequence is a *rational reconstruction.* The implementation of BootstrapLab followed a more meandering path, but the following steps gesture at the Platonically optimal pathway for bootstrapping a self-sustainable programming system:
 
 1. *Choose a starting platform.* The platform is a *pre-existing* programming system that we use to create and run the product system. The platform cannot be re-programmed, let alone to become self-sustainable, but it allows us to build a self-sustainable product system. To choose a platform, we consider its distance from desired substrate features and personal preference.
-2. *Design a substrate.* The substrate defines the basic infrastructure supporting the product system: how the state is *represented* and *changed*. The design of a substrate re-uses parts of the platform where possible and extends it where necessary. We must decide which platform capabilities to use to represent the state and how to expose graphics and interaction. We design a minimal *instruction set,* \ac{BL-ASM}, which describes changes to the state, and can be represented using the state. We then use the platform to implement an engine that executes these instructions.
+2. *Design a substrate.* The substrate defines the basic infrastructure supporting the product system: how the state is *represented* and *changed*. The design of a substrate re-uses parts of the platform where possible and extends it where necessary. We must decide which platform capabilities to use to represent the state and how to expose graphics and interaction. We design a minimal *instruction set,* \acsu{BL-ASM}, which describes changes to the state, and can be represented using the state. We then use the platform to implement an engine that executes these instructions.
 3. *Implement temporary infrastructure.* Use the platform to implement tools for working within the substrate, most importantly a *state viewer* or editor. These tools constitute a "ladder" that we will pull up behind us once we have ascended to in-system implementations of these tools.
 4. *Implement a high-level language.* The substrate's instruction set (\ac{BL-ASM}) is cumbersome, so ensure programs can be expressed in-system via high-level constructs. Decide how to represent expressions as structured state and whether to *interpret* or *compile* them into \ac{BL-ASM}. Ideally, develop such an engine in \ac{BL-ASM} gradually and interactively. Alternatively, implement it at the platform level and later *port* it to \ac{BL-ASM} or the high-level language itself.
 5. *Pay off outstanding substrate debt.* Port all remaining temporary infrastructure into the system, taking advantage of the infrastructure itself and the high-level language. The result is a *self-sustainable* programming system.
@@ -83,7 +92,7 @@ In \ac{COLA}, the platform is C\ \parencite{OROM} or C++\ \parencite{COLAs} and 
 
 In BootstrapLab, we chose \ac{JS} and the Web platform. This provides us with built-in Web technologies and libraries (including graphics) and the browser developer tools. This platform provides a range of convenient tools to assist bootstrapping. Because of its large scope, we have to carefully choose primitives to expose to the product system.
 
-*What can be changed at the user level?* At this point, there is no product system to speak of yet. This means that nothing can be changed in-system. The platform can, in principle, be modified, but by assumption this is so unfamiliar or uneconomical that the reader has opted to make a self-sustainable system instead.
+*What can be changed at the user level?* At this point, there is no product system to speak of yet. This means that nothing can be changed in-system. The platform can, in principle, be modified, but by assumption this is so unfamiliar or uneconomical that the developer has opted to make a self-sustainable system instead.
 
 # Design a Substrate
 > The substrate defines the basic infrastructure supporting the product system: how the state is *represented* and *changed*. The design of a substrate re-uses parts of the platform where possible and extends it where necessary. We must decide which platform capabilities to use to represent the state and how to expose graphics and interaction. We design a minimal *instruction set,* \ac{BL-ASM}, which describes changes to the state, and can be represented using the state. We then use the platform to implement an engine that executes these instructions.
@@ -168,7 +177,7 @@ Push complex features in-system to avoid delaying in-system development and to h
 
 We will refer to these throughout the journey. They conflict over where the implementation of convenient functionality should reside. In any specific design, they will resolve in some compromise. It is helpful to consider the extreme points of this.
 
-Force\ \ref{escape-plaf} wants to get the substrate over with as quickly as possible, eager to escape the (real) limitations of the platform and get working in a system that *can* be arbitrarily changed. Force\ \ref{escape-plaf}, left unchecked, will guide us to adopt a substrate resembling a Turing machine: have a tape for the state; instructions for manually shifting left and right, reacting to the current symbol, and writing a new one; have a user interface in which to do these things manually. Such a substrate is so simple it could be coded in an hour or two. Yet our first duties in-system will be to implement extremely basic features, like data addressing and arithmetic, in an extremely tedious way. The endpoint of Force\ \ref{escape-plaf} is the Turing Tarpit.
+Force\ \ref{escape-plaf} wants to get the substrate over with as quickly as possible, eager to escape the (real) limitations of the platform and get working in a system that *can* be arbitrarily changed. Force\ \ref{escape-plaf}, left unchecked, will guide us to adopt a substrate resembling a Turing machine:^[Or, equivalently, a lambda calculus evaluator, or Gödel's recursive functions, or Conway's Game of Life, etc.] have a tape for the state; instructions for manually shifting left and right, reacting to the current symbol, and writing a new one; have a user interface in which to do these things manually. Such a substrate is so simple it could be coded in an hour or two. Yet our first duties in-system will be to implement extremely basic features, like data addressing and arithmetic, in an extremely tedious way. The endpoint of Force\ \ref{escape-plaf} is the Turing Tarpit\ \parencite{Tarpit}.
 
 On the other hand, if we follow Force\ \ref{avoid-bp} unchecked, we spend much time and effort working with the platform to produce, in effect, a *complete* novel programming system. Any feature we would find useful in-system, we would have already implemented outside it. Yet this means that all the important functionality could not be changed except by going back to the source code in the platform; we'd have created a boring old *non-*self-sustainable programming system. The endpoint of Force\ \ref{avoid-bp} is programming-as-usual. 
 
@@ -184,7 +193,7 @@ This type of substrate is still better than a Turing machine, and was a historic
 
 \begin{heuristic}[Minimally human-friendly low-level]
 \label{min-friendly-ll}
-Ensure the substrate natively supports \emph{string names} and \emph{substructures.} This is a minimal response to "Avoid Boilerplate" (Force\ \ref{avoid-bp}) that still keeps the substrate simple enough and thus does not strongly conflict with "Escape The Platform" (Force\ \ref{escape-plaf}).
+Ensure the substrate natively supports \emph{string names} and \emph{substructures.} This is a minimal concession to "Avoid Boilerplate" (Force\ \ref{avoid-bp}) that still keeps the substrate simple enough and thus does not strongly conflict with "Escape The Platform" (Force\ \ref{escape-plaf}).
 \end{heuristic}
 
 ## BootstrapLab's Simple, Structured State Model
@@ -219,7 +228,7 @@ In the end, our substrate largely inherits the state model, only making simplifi
 
 We also noticed that we would not get very far if all our progress in-system could be wiped clean by losing our browser tab. Our platform, sitting within the Unix paradigm (Section\ \ref{the-unix-paradigm}), does not provide *persistence* out of the box, so we had to implement a mechanism in the substrate. We walk the state graph from the root node and discover a spanning tree, specially marking cyclic or double-parent references. We then serialise this into a JSON file which we can load by undoing the process. This is reminiscent of the image-based persistence in Smalltalk, though it is frustratingly manual. Nevertheless, it was critical to patch this unfortunate aspect of the platform and this was enough to do so.
 
-Even though \ac{JS} is a high-level language, we consider this substrate low-level *relative* to the platform below it. "Avoid Boilerplate" (Force\ \ref{avoid-bp}) gave us several ideas for convenient features of a smarter state model, but "Escape The Platform" (Force\ \ref{escape-plaf}) urged us to press ahead without them and see if we needed them later. Appendix\ \ref{bl-trivia} contains these details.
+\ac{JS} is a "high-level" language, but this is *relative* to the conventional "ground" reference point of the *hardware* as the lowest level. However, the "lowest level" of interest to us is *our* platform, which in this case is not hardware but \ac{JS}. Therefore, measuring from \ac{JS} as the reference point, we consider this substrate low-level *relative* to it. In other words, the gap between our substrate and \ac{JS} is very small. It could have been otherwise; "Avoid Boilerplate" (Force\ \ref{avoid-bp}) gave us several ideas for convenient features of a smarter state model, but "Escape The Platform" (Force\ \ref{escape-plaf}) urged us to press ahead without them and see if we needed them later. Appendix\ \ref{bl-trivia} contains these details.
 
 ### Designing the Instruction Set
 While the "data" half of the substrate may be easy to inherit from the platform, the "code" half is typically not. Simply including an interpreter for source code in \ac{JS} is not an option; this would embed a reliance on a strings and parsing in the core of the system, against our desire for Explicit Structure.
@@ -237,40 +246,50 @@ It is important to stress that this "assembler" is relative to the form of the s
 
 \begin{heuristic}[Simple Assembler]
 \label{simple-asm}
-Prefer fewer instruction types (RISC) over more (CISC). This reduces the size of the interpreter and will be quickest to implement. It will make programs longer, but this can be mitigated by a high-level programming language. "Escape The Platform" (Force\ \ref{escape-plaf}) outweighs "Avoid Boilerplate" (Force\ \ref{avoid-bp}) here too.
+Prefer fewer instruction types (\acs{RISC}) over more (\acs{CISC}). This reduces the size of the interpreter and will be quickest to implement. It will make programs longer, but this can be mitigated by a high-level programming language. "Escape The Platform" (Force\ \ref{escape-plaf}) outweighs "Avoid Boilerplate" (Force\ \ref{avoid-bp}) here too.
 \end{heuristic}
 
 Right away, we know there will have to be a special piece of state for the *instruction pointer*. This could indicate the *current* instruction or the *next*; we chose the latter for BootstrapLab and called it `next_instruction`.
 
-The value of this "register" is determined by how exactly we fetch the next instruction. Perhaps each one has a `next` field which we can simply follow. In this case, the `next_instruction` will simply be the instruction itself. This also gives us convenient conditionals (\eg{} fields called `if_true` and `if_false`) but means that instruction *sequences* will have a nesting structure. This latter consequence may be inconvenient for presentation in a tree view. For BootstrapLab, we chose the alternative of numerically indexed lists of instructions which easily display in a column. This choice determined `next_instruction` to instead hold an *address* made of container map and key name:
+The value of this "register" is determined by how exactly we fetch the next instruction. Perhaps each one has a `next` field which we can simply follow. In this case, the `next_instruction` will simply be the instruction itself. This also gives us convenient conditionals (\eg{} fields called `if_true` and `if_false`) but means that instruction *sequences* will have a nesting structure. This latter consequence may be inconvenient for presentation in a tree view. For BootstrapLab, we chose the alternative of numerically indexed lists of instructions which easily display in a column. This choice determined `next_instruction` to instead hold an *address*, called `ref`, made of container map and key name:
 
 ```
 next_instruction: {
-  map: <instruction list>,
-  key: 1 // i.e. first instruction in the list
+  ref: {
+    map: <instruction list>,
+    key: 1 // i.e. first instruction in the list
+  },
+  value: // the fetched instruction itself
 }
 ```
 
-Here, the "fetch" step involves dereferencing the address and then incrementing the key name.
+Here, the "fetch" step involves dereferencing the address, incrementing the key name, and updating the `value` key to the instruction itself.
 
 Next, we turn to what types of instructions we need. Alignment (Force\ \ref{alignment}) means that, given a state model, obtaining an instruction set should be more of a "derivation" than a hard design problem. This is because some choices are obviously inappropriate and others clearly fitting to the state model. For example, in a tree-structured state model, it would be foolish to have instructions that can only see the root level:
 
 ```
-{op: 'copy', from: 'source_key', to: 'dest_key'}
+{ op: 'copy', from: 'source_key', to: 'dest_key' }
 ```
 
 Without the ability to read or write keys *within* an arbitrary tree node, as far as programmatic change is concerned, the state becomes a *de facto* flat list instead of a tree. Therefore, it is critical that anywhere in the state can be accessed or modified by an appropriate instruction sequence.
 
-The checklist of basic functions for an instruction set to be Turing-complete is as follows:
+We suspect that the following basic functions suffice to make an instruction set Turing-complete:
 
-1. Copy from one location to another (a "literal" is just copied from the instruction itself)
+1. Copy from one location to another (an "immediate" or "literal" is just copied from the instruction itself)
 2. Treat a value as an address and follow the reference
 3. Unconditional jump (copy a value to the instruction pointer)
 4. Conditional jump (take a path based on a runtime condition)
 
-"Avoid Boilerplate" (Force\ \ref{avoid-bp}) may push us to include basic boilerplate like arithmetic or an operand stack. Furthermore, it is advisable to have an "escape hatch" into the platform if possible. In BootstrapLab, our platform language \ac{JS} provides the `eval()` function to execute a string of \ac{JS} code. We exposed this as a `js` instruction. This allows us to use and store \ac{JS} code in the *running* system instead of having to edit the source file.
+"Avoid Boilerplate" (Force\ \ref{avoid-bp}) may push us to include basic boilerplate like arithmetic or an operand stack. Furthermore, it is advisable to have an "escape hatch" into the platform if possible. In BootstrapLab, our platform language \ac{JS} provides the `eval()` function to execute a string of \ac{JS} code. We exposed this as a `js` instruction. This allows us to use and store \ac{JS} code in the *running* system instead of having to edit the source file, contributing a little to self-sustainability.
 
-The resulting instruction set for BootstrapLab was derived from these considerations, as well as extreme application of Heuristic\ \ref{simple-asm}. It uses the top-level map as a set of "registers" whose contents are *immediately* accessible. State that is "further away" is accessed by following key paths from there, or from existing map references. There are several special registers used by instructions, but other names in the top level are available as local variables in user code. The instructions are as follows (see Section\ \ref{change-in-bootstraplab} for a full reference):
+The resulting instruction set for BootstrapLab was derived from these considerations, as well as extreme application of Heuristic\ \ref{simple-asm}. It uses the top-level map as a set of "registers" whose contents are *immediately* accessible. The main registers are:
+
+- `focus`: an "accumulator" register used by most instructions. Holds the key for map operations.
+- `map`: holds the map to be updated or navigated by map instructions.
+- `source`: holds the new value when updating a map entry.
+- `next_instruction`: program counter; holds the address of the next instruction and the instruction itself.
+
+State that is "further away" than the top level is accessed by following key paths from there, or from existing map references. Beside the few special registers used by instructions, other names in the top level are available as local variables in user code. The instructions are as follows (see Section\ \ref{change-in-bootstraplab} for full details):
 
 * `load` fills the `focus` register with a literal value. \joel{For example, `load reg1` causes the `focus` register to contain the string `reg1`.}
 * `deref` treats the value in `focus` as naming a register and copies the register's value into `focus`. \joel{For example, if `reg1` contained the value `42`, `deref` would store `42` in `focus`.}
@@ -283,11 +302,11 @@ An instruction is represented as a map with an `op` field for its name and other
 { op: 'store', register: 'source' }
 ```
 
-It is remarkable that these few operations really are sufficient even for conditional and unconditional jumps. A jump is achieved by overwriting `next_instruction`, and this can be conditionalised by `index`ing a map of code paths based on a selector. We made the decision that `index`, if accessing a key not present in the map, will try and retrieve the special key `_` instead. This supports a generic "else" or "otherwise" clause for conditionals.
+It is remarkable that these few operations really are sufficient even for conditional and unconditional jumps. A jump is achieved by overwriting `next_instruction`, and this can be conditionalised by `index`ing a map of code paths based on a selector. We made the decision that `index`, if accessing a key not present in the map, will try and retrieve the special key `_` instead. This supports a generic "else" or "otherwise" clause for conditionals. We provide a worked example in Section\ \ref{copying-and-jumping} and also show how an arbitrary path-to-path copy reduces to these primitive operations. This lends support to the Turing-completeness suspicion: since we can effect the basic operations^[See the discussion in Section\ \ref{inheritance-of-js-level-change} for why we do not consider arithmetic as among these basic operations.] found in real-world, practical, non-minimal instruction sets, our set is at least as Turing-complete as they are.
 
-The minimal, microcode-like instruction set here was an experiment in extreme parsimony; see Appendix\ section\ \ref{the-minimal-random-access-instruction-set-and-its-perils} for the gory details. Although it was interesting, certain basic operations (such as jumps) are extremely verbose, taking many instructions. Although it was quick to implement these instructions in \ac{JS}, it was too tedious to work with them in-system. In retrospect, it looks like we went too far with "Escape The Platform" (Force\ \ref{escape-plaf}) here and fell into its associated Turing Tarpit trap. We thus consider an *extreme* interpretation of Heuristic\ \ref{simple-asm} refuted for the purposes of working in-system sooner. We recommend achieving a better balance by including direct path arguments in instructions (\eg{} "copy `a.b.c` to `x.y.z`" as a single instruction), as well as separate (un)conditional jump instructions.
+The minimal, microcode-like instruction set here was an experiment in extreme parsimony; see Section\ \ref{the-minimal-random-access-instruction-set-and-its-perils} for the gory details. Although it was interesting, certain basic operations (such as jumps) are extremely verbose, taking many instructions. Although it was quick to implement these instructions in \ac{JS}, it was too tedious to work with them in-system. In retrospect, it looks like we went too far with "Escape The Platform" (Force\ \ref{escape-plaf}) here and fell into its associated Turing Tarpit trap. We thus consider an *extreme* interpretation of Heuristic\ \ref{simple-asm} refuted for the purposes of working in-system sooner. We recommend achieving a better balance by including direct path arguments in instructions (\eg{} "copy `a.b.c` to `x.y.z`" as a single instruction), as well as separate (un)conditional jump instructions.
 
-Nevertheless, at this point we have a workable instruction set for BootstrapLab; we will subsequently refer to it as \acsu{BL-ASM}.
+Nevertheless, at this point we have a workable instruction set for BootstrapLab; we will subsequently refer to it as \ac{BL-ASM}.
 
 ### Graphics and Interaction
 Now that we have covered the computer-oriented part of the substrate, we turn to the human-oriented user interface state and change aspects. One way we wish to distinguish BootstrapLab from \ac{COLA} is that graphical interfaces are present from the beginning and not just an afterthought. There are two factors here: how graphics are represented in the substrate, and how they are actually displayed.
@@ -310,11 +329,11 @@ In BootstrapLab, this is a sub*tree* of the state under the top-level name `scen
 \begin{figure}
 \centering
 \includegraphics[width=8cm]{scene-tree-example.png}
-\caption[BootstrapLab scene tree]{Example of how nested tree fields are represented (right) vs. the rendered output (left). The right-hand half is the temporary state view discussed in Section\ \ref{implement-temporary-infrastructure}.}
+\caption[BootstrapLab scene tree]{Example of how nested tree fields are represented (right) vs. the rendered output (left). The right-hand half is the temporary state view discussed in Section\ \ref{implement-temporary-infrastructure}, where curly braces and commas have been dropped from the notation. The \texttt{+}/\texttt{-} signs are UI controls for expanding and collapsing tree nodes, respectively.}
 \label{fig:scene-tree}
 \end{figure}
 
-For interaction, we need to expose the platform's ability to listen for user input. In BootstrapLab, we execute a named code sequence in the substrate from JavaScript event handlers, which now function as "device drivers" (Figure\ \ref{lst:devdrv}).
+For interaction, we need to expose the platform's ability to listen for user input. In BootstrapLab, we would execute a named code sequence in the substrate from JavaScript event handlers, which now function as "device drivers" (Figure\ \ref{lst:devdrv}).
 
 \begin{figure}
 \begin{lstlisting}[language=JavaScript]
@@ -330,11 +349,11 @@ window.onkeydown = e => {
   restore_context();
 };
 \end{lstlisting}
-\caption[BootstrapLab ``device driver'' for \acs{DOM} events]{``Device driver'' triggering a generic event handler sequence in-system.}
+\caption[BootstrapLab ``device driver'' for \acs{DOM} events]{Sketch of a ``Device driver'' triggering a generic event handler sequence in-system. We have experimented with running in-system code in response to input, but as of the time of writing, BootstrapLab's event handlers are less sophisticated than this sketch (see Section\ \ref{input-handling}).}
 \label{lst:devdrv}
 \end{figure}
 
-This is a basic sketch with some issues elided that a complete account would cover. For example, what happens when an input event occurs during the handling of a previous event? Possibilities include ignoring the extra event or providing some sort of stack analogue^[Of course, in a structured substrate, there is room for improvement on the linear form of the low-level machine stack; see Section\ \ref{implementing-masp-for-bootstraplab} for how we did this for the high-level language.] for nested handlers. Such a data structure may also be necessary for saving and restoring the instruction pointer along with other context. These concerns have analogues in interrupt handling for operating system design, which could be consulted for further guidance.
+This is a basic sketch with some issues elided that a complete account would cover. For example, what happens when an input event occurs during the handling of a previous event? Possibilities include ignoring the extra event or providing some sort of stack analogue^[Of course, in a structured substrate, there is room for improvement on the linear form of the low-level machine stack; see Section\ \ref{implementing-masp-for-bootstraplab} for how we did this for the high-level language.] for nested handlers. Such a data structure may also be necessary for saving and restoring the instruction pointer along with other context. These concerns have analogues in interrupt handling for operating system design, which we would consult for future work. However, at this early stage, we found our existing approach to be adequate and progressed to the next step.
 
 ### BootstrapLab Substrate Summary
 Computer state is a graph of maps; lists are just maps with numerical keys. Instructions are `load`, `deref`, `store`, `index`, `js`. Special top-level keys are `focus`, `map`, `source` and `next_instruction`. User Interface state is controlled via the special `scene` subtree of state. Each node may use special keys like `text`, `width`, `height`, `color`, `position`, and `children`, as well as arbitrary other keys for user data. For a full reference, see Appendix\ \ref{bl-substrate-ref}.
@@ -369,7 +388,7 @@ The \ac{JS} tree view is a complex set of functionality set to work and display 
 \begin{figure}
 \centering
 \includegraphics[width=\linewidth]{three-columns.png}
-\caption[BootstrapLab interface]{The full BootstrapLab interface. From the left: graphics window, temporary HTML state viewer, and browser developer tools.}
+\caption[BootstrapLab interface]{The full BootstrapLab interface. From the left: graphics window, temporary HTML state viewer, and browser developer tools. The \texttt{+}/\texttt{-} signs in the state viewer are UI controls for expanding and collapsing tree nodes, respectively.}
 \label{fig:three-cols}
 \end{figure}
 
@@ -395,9 +414,9 @@ For a programming system built atop a limited platform (\eg{} hardware), the tem
 In \ac{COLA}, it is unclear how the Lisp-like programming language is built beyond the broad outlines. What is clear is that the bootstrapping process is carried out by means of source code files written in some text editor. In other words, it wisely takes advantage of the affordances of its Unix platform, avoiding the Turing Tarpit failure mode described in Section\ \ref{the-major-design-conflict}.
 
 ## High-Level Language for BootstrapLab
-If we take \ac{JS}, and strip away the concrete syntax, we get a resulting tree structure of function definitions, object literals, and imperative statements. A similar structure with similar semantics would be obtained from other dynamic languages. In fact, this would largely resemble Lisp S-expressions under Lisp semantics; hardly surprising considering Lisp's famously minimal syntax of expression trees. Furthermore, the evaluation procedure for Lisp is simple and well-established.
+If we take \ac{JS}, and strip away the concrete syntax, we get a resulting tree structure of function definitions, object literals, and imperative statements. A similar structure with similar semantics would be obtained from other dynamic languages. In fact, this would largely resemble Lisp S-expressions under Lisp semantics; hardly surprising considering Lisp's famously minimal syntax of expression trees. Furthermore, the evaluation procedure for Lisp is simple and well-established. For these reasons, we designed a Lisp-like tree language in the substrate. This way, we provide high-level constructs (if/else, loops, functions, recursion, and so on) for in-system programming.
 
-For these reasons, we designed a Lisp-like tree language in the substrate. This way, we provide high-level constructs (`if-else`, loops, functions, recursion, and so on) for in-system programming. Alignment (Force\ \ref{alignment}) encouraged us to revisit Lisp's design to better fit with our substrate. For example, ordinary Lisp is based on lists whose entries have *implicit* meanings based on their positions. This aligns with the substrate made of S-expressions. Our substrate comes with named labels and suggests a language based around maps whose entries are explicitly *named*, so we called it *Masp.*^[This is not too hard to come up with, but we would like to credit the origin of the name to\ \parencite{Masp} and related discussion.].
+We call it Lisp-*like* because Alignment (Force\ \ref{alignment}) encouraged us to *revisit* Lisp's design to better fit with our substrate. Ordinary Lisp is based on lists whose elements have *implicit* meanings based on their positions; this aligns with its substrate made of S-expressions. However, our *map-based* substrate comes with named labels and suggests a language based around maps whose entries are explicitly *named*, so we called it *Masp.*^[This is not too hard to come up with, but we would like to credit the origin of the name to\ \parencite{Masp} and related discussion.].
 
 \tomas{Maybe use more verbose JSON like syntax, because figuring out the nesting rules below is not obvious. (Plus you need to have curly brackets if you want your language to take over the world, right??)}
 
@@ -427,7 +446,7 @@ For these reasons, we designed a Lisp-like tree language in the substrate. This 
 \label{fig:masp4-5}
 \end{figure}
 
-Figure\ \ref{fig:lisp} shows a Lisp definition of the factorial function followed by a call, while Figures\ \ref{fig:masp1-3} and\ \ref{fig:masp4-5} show versions of the Masp equivalent at different levels of notational sugar. In terms of *internal* representation, the final, most verbose version in Figure\ \ref{fig:masp4-5} (no.\ 5) would be the one to compare to Lisp. It contains strictly *more* information than the Lisp code (explicit named arguments), but given our key goal of Notational Freedom, this should not imply a burdensome interface. We would prefer to interact with such programs in the first notation (Figure\ \ref{fig:masp1-3}, no.\ 1), which uses infix operators, different typefaces, and a pattern-match construct that does not exist under that name internally.^[Similarly to how we handled conditionals in \ac{BL-ASM} (Section\ \ref{designing-the-instruction-set}, if/else is a pattern match in Masp, which is implemented as applying a *map* (here seen as a function "literal") to the value. See Appendix\ \ref{masp-ref} for more details.] Yet the underlying data structures need be no less machine-friendly than those of Lisp, preserving the powerful metaprogramming potential that makes it so valuable. Thanks to Notational Freedom and Explicit Structure, there is no need to compromise one of these for the sake of the other; there is hope to get the best of both worlds here.
+Figure\ \ref{fig:lisp} shows a Lisp definition of the factorial function followed by a call, while Figures\ \ref{fig:masp1-3} and\ \ref{fig:masp4-5} show versions of the Masp equivalent at different levels of notational sugar. In terms of *internal* representation, the final, most verbose version in Figure\ \ref{fig:masp4-5} (no.\ 5) would be the one to compare to Lisp. It contains strictly *more* information than the Lisp code (explicit named arguments), but given our key goal of Notational Freedom, this should not imply a burdensome interface. We would prefer to interact with such programs in the first notation (Figure\ \ref{fig:masp1-3}, no.\ 1), which uses infix operators, different typefaces, and a pattern-match construct that does not exist under that name internally.^[Similarly to how we handled conditionals in \ac{BL-ASM} (Section\ \ref{designing-the-instruction-set}), if/else is a pattern match in Masp, which is implemented as applying a *map* (here seen as a function "literal") to the value. See Section\ \ref{maps-as-functions} for more details.] Yet the underlying data structures need be no less machine-friendly than those of Lisp, preserving the powerful metaprogramming potential that makes it so valuable. Thanks to Notational Freedom and Explicit Structure, there is no need to compromise one of these for the sake of the other; there is hope to get the best of both worlds here.
 
 A fuller description of Masp is given in Appendix\ \ref{masp-ref}. The diagrams here are an "artist's impression" of a plausible notation design, but BootstrapLab is in far too primitive a state to support this at present. The actual rendering of Masp in the system (see Figure\ \ref{fig:editor}) is even more verbose than no.\ 5, because different map entries live on separate lines and are not inlined to save space. However, it is still worth understanding what all this work we are doing will ultimately enable.
 
@@ -467,11 +486,11 @@ Store high-level-language processing \emph{state} in-system even if the language
 
 ## Implementing Masp for BootstrapLab
 
-In BootstrapLab, "Escape The Platform" (Force\ \ref{escape-plaf}) encouraged us to get executing Masp expressions early to get experience with the language. We chose to implement a *platform interpreter* for Masp using \ac{JS} as this was the easiest way to achieve that.
+To summarise the above logic, "Escape The Platform" (Force\ \ref{escape-plaf}) encouraged us to start executing Masp expressions early to get experience with the language. We chose to implement a *platform interpreter* for Masp using \ac{JS} as this was the easiest way to achieve that.
 
 A naïve approach would simply implement the standard Lisp interpreter routines (`eval` and `apply`) as recursive \ac{JS} functions. However, this would miss an opportunity for visualisation and debugging that is already present in our substrate. Instead, we followed Heuristic\ \ref{in-state-op} and had intermediate interpreter *state* reside in-system. This made a later in-system port easier by doing half of the work now.
 
-Lisp evaluation is done by walking over the expression tree. At any point, we are looking at a subtree and will evaluate it until reaching a primitive value. Ordinarily, the "current subexpression" is an argument to `eval` at the top of the stack, where the stack records our path from the original top-level expression. Since we already had a tree visualisation, we used that instead of a stack. We did, however, need to maintain references to parent tree nodes (see Appendix\ section\ \ref{graphs-vs.-trees}) in order to backtrack towards the next unevaluated subexpression once the current one is evaluated. Furthermore, instead of *destructively* replacing tree nodes with their "more-evaluated" versions, we "annotate" the tree instead. This design choice follows Subtext\ \parencite{Subtext} and will make it possible to trace provenance and enable novel programming experiences. Figures\ \ref{fig:masp-1}--\ref{fig:masp-n} show some examples.
+Lisp evaluation is done by walking over the expression tree. At any point, we are looking at a subtree and will evaluate it until reaching a primitive value. Ordinarily, the "current subexpression" is an argument to `eval` at the top of the stack, where the stack records our path from the original top-level expression. Since we already had a tree visualisation, we used that instead of a stack. We did, however, need to maintain references to parent tree nodes (see Section\ \ref{graphs-vs.-trees}) in order to backtrack towards the next unevaluated subexpression once the current one is evaluated. Furthermore, instead of *destructively* replacing tree nodes with their "more-evaluated" versions, we "annotate" the tree instead. This design choice follows Subtext\ \parencite{Subtext} and will make it possible to trace provenance and enable novel programming experiences. Figures\ \ref{fig:masp-1}--\ref{fig:masp-n} show some examples. For further details, see Section\ \ref{change-in-masp}.
 
 \begin{figure}
 \centering
@@ -482,14 +501,14 @@ Lisp evaluation is done by walking over the expression tree. At any point, we ar
 
 \begin{figure}
 \centering
-\includegraphics[width=6cm]{masp/2-eval-fac-n.png}
-\caption[Masp Factorial evaluation step 2]{After some evaluation steps, both the original expression (the name \texttt{fac}) and its value (its function closure) are visible. Similarly, the literal expression \texttt{1} has evaluated to itself.}
+\includegraphics[width=8cm]{masp/2-eval-fac-n.png}
+\caption[Masp Factorial evaluation step 2]{After some evaluation steps, both the original expression (the name \texttt{fac}) and its value (its function closure) are visible. Similarly, the literal expression \texttt{1} has evaluated to itself. Part of Figure\ \ref{fig:masp1-3} has been included to help deceipher the verbose notation displayed by the state view.}
 \label{fig:masp-2}
 \end{figure}
 
 \begin{figure}
 \centering
-\includegraphics[width=6cm]{masp/3-expand-fac.png}
+\includegraphics[width=8cm]{masp/3-expand-fac.png}
 \caption[Masp Factorial evaluation step 3]{The next step of evaluation, read as: ``To the value \texttt{1} (which came from the expression \texttt{n}), apply this function literal in an environment where \texttt{n} is bound to \texttt{1}''.}
 \label{fig:masp-3}
 \end{figure}
@@ -497,7 +516,7 @@ Lisp evaluation is done by walking over the expression tree. At any point, we ar
 \begin{figure}
 \centering
 \includegraphics[width=8cm]{masp/4-apply-mul.png}
-\caption[Masp Factorial evaluation step 4]{Some steps later, we have an application of a built-in multiplication function whose JS code is visible. The second operand is an as-yet unevaluated recursive application of \texttt{fac}.}
+\caption[Masp Factorial evaluation step 4]{Some steps later, we have an application of a built-in multiplication function whose \ac{JS} code is visible (see Section\ \ref{protocol-between-js-primitives-and-masp} for how \ac{JS} primitives work). The second operand is an as-yet unevaluated recursive application of \texttt{fac}.}
 \label{fig:masp-n}
 \end{figure}
 
@@ -516,27 +535,34 @@ In the ideal development journey, we would have a high-level programming languag
 
 The Masp interpreter we developed used in-system state, but controlled it from \ac{JS}. Our state viewer was also fully implemented in \ac{JS}. Editing took place through the browser development console. The alternative, creating a Masp interpreter and state editor in-system using the low-level \ac{BL-ASM} instructions, had been technically possible but prohibitively tedious. The in-system tooling was far from supplanting the existing platform interface of \ac{JS} in the text editor. Continuing to use the latter was, therefore, the only sensible choice to make progress.
 
-Nevertheless, to make the high-level language and editor a part of self-sustainable programming system, they ultimately need to be implemented in-system. Thus we incurred a *substrate debt* due to "Escape The Platform" (Force\ \ref{escape-plaf}) which we now need to pay off. The advantage of delaying this work is that we can at least port \ac{JS} to Masp, which is more convenient than using \ac{BL-ASM}. Generally, such substrate debt should be paid off as soon as the indebted implementation is complete. In total, we had three parts of it to pay off:
+Nevertheless, to make the high-level language and editor a part of self-sustainable programming system, they ultimately need to be implemented in-system. Thus we incurred a *substrate debt* which we owe to "Escape The Platform" (Force\ \ref{escape-plaf}) and now need to pay off. The advantage of delaying this work and ending up with Masp is that we can at least port \ac{JS} to Masp, which is more convenient than using \ac{BL-ASM} (recall Figure\ \ref{tombstones}). Generally, such substrate debt should be paid off as soon as the indebted implementation is complete. In total, we had three parts of it to pay off:
 
 1. The temporary state viewer, to be superseded by an in-system editor
-2. Its replacement state editor, to be ported from JavaScript to Masp
-3. The Masp interpreter, to be ported from JavaScript to \ac{BL-ASM}
+2. Its replacement state editor, to be ported from \ac{JS} to Masp
+3. The Masp interpreter, to be ported from \ac{JS} to \ac{BL-ASM}
 
-In BootstrapLab, we took a two-step approach to supplanting the temporary state viewer. We first replaced a viewer that exists fully outside of the system with an editor that uses in-system state and graphics, but is controlled from \ac{JS}. We then started to port the editor code from the platform to in-system Masp, which is where we are at the time of writing.
+In BootstrapLab, we split the task of supplanting the temporary state viewer into two halves. We first replaced the temporary viewer, which exists fully outside of the system, with an editor that uses in-system state and graphics, but is controlled from \ac{JS} (recall Heuristic\ \ref{in-state-op}). We then started to port the editor code from the platform to in-system Masp, which is where we are at the time of writing.
 
 ## Supplanting the Temporary State Viewer
 Once we could run Masp programs in the substrate, we needed a better way of entering and editing them. We desired a state editor in the graphics window to make the existing state view obsolete. Considering the proof-of-concept nature of this work, we created a rudimentary tree editor that nevertheless surpassed the existing practice of issuing commands in the \ac{JS} console.
 
-To edit state in \ac{JS}, we needed to either address its parent with a full path from the top level, or to use a reference previously obtained this way. To set a primitive value, we would type a \ac{JS} command including the key name and the value. This was not a high bar to clear. Evidently, we could greatly improve the experience by simply clicking on the relevant key name and typing.
+To edit state in \ac{JS}, we needed to either address its parent with a full path from the top level, or to use a reference previously obtained this way. To set a primitive value, we would type a \ac{JS} command including the key name and the value. For example, the following console command could be issued to make a shape red:
+
+```
+upd(ctx, 'scene', 'shapes', 'children',
+    'yellow_shape', 'color', '0xff0000')
+```
+
+ This was not a high bar to clear. Evidently, we could greatly improve the experience by simply *clicking* on the relevant key name and typing.
 
 \begin{figure}
 \centering
 \includegraphics[width=9cm]{editor.png}
-\caption[In-system tree editor vs. HTML state viewer]{Left: tree editor in graphics window. Right: temporary state viewer in the \acs{DOM}.}
+\caption[In-system tree editor vs. HTML state viewer]{Left: tree editor in graphics window. Right: temporary state viewer in the \acs{DOM}. The \texttt{+}/\texttt{-} controls for expanding and collapsing nodes are not present in the editor, but these operations can still be performed by double-clicking.}
 \label{fig:editor}
 \end{figure}
 
-We implemented a basic tree view in the graphics window (Figure\ \ref{fig:editor}). Nodes can be expanded and collapsed, and entries can be changed by clicking and typing. The display is "on-demand" and breadth-first: map entries are read upon expanding a node. This means that cycles in our graph substrate do not pose a fatal problem, as they did in the temporary state view (see Appendix\ section\ \ref{graphs-vs.-trees}). The basic CRUD operations are accounted for as follows:
+We implemented a basic tree view in the graphics window (Figure\ \ref{fig:editor}). Nodes can be expanded and collapsed, and entries can be changed by clicking and typing. The display is "on-demand" and breadth-first: map entries are read upon expanding a node. This means that cycles in our graph substrate do not pose a fatal problem, as they did in the temporary state view (see Section\ \ref{graphs-vs.-trees}). The basic CRUD operations are accounted for as follows:
 
 * Update (primitive): The `Tab` key commits the value and selects the next entry.
 * Create: If the above runs past the end of the map, special "new entry" fields for entering a new key and value are created. These disappear if abandoned without committing.
@@ -548,7 +574,7 @@ It is worth noting that Alignment (Force\ \ref{alignment}) applies here too: the
 
 We might even be tempted to conclude that it only makes sense to use a low-level substrate, since we can complete a basic editor sooner and subsequently work in-system. This neglects the fact, however, that the higher-level structures of our substrate would inevitably be required at some point. Thus we would have to do the same work anyway, but only once we had suffered through the human-unfriendly low-level substrate.
 
-It is also remarkable that, in this restricted interaction domain, we finally *did* manage to surpass our default \ac{JS} text editor. There is a cost to typing out concrete syntax like `:` and `{}` for \ac{JS} map structures, as well as ensuring indentation is correct. For entering state structures, we found the structured editing style to be quicker. As a result, where previously we might have added new persistent state in our \ac{JS} startup code, we now directly entered it into the system and persisted it manually.
+It is also remarkable that, in this restricted interaction domain, we finally *did* manage to surpass our default \ac{JS} text editor. There is a cost to typing out concrete syntax like `:` and `{}` for \ac{JS} map structures, as well as ensuring indentation is correct.^[Although \ac{JS} will run fine with or without indentations, source code is meant for *human* eyes---and ours regarded proper indentation as a requirement for legibility.] For entering state structures, we found the structured editing style to be quicker. As a result, where previously we might have added new persistent state in our \ac{JS} startup code, we now directly entered it into the system and persisted it manually.
 
 There is a caveat to all this. The whole exercise was in the service of paying our substrate debt from earlier---pulling up the state viewer "ladder" that had got us to this point. Ideally, we would have built up its replacement in-system. Yet as pointed out, \ac{JS} was still the most appealing way to program at this stage, so we used it for this editor as well. In other words, we took on a new debt in order to pay off the first one! To resolve it, we would port the \ac{JS} to Masp---a process which is underway at the time of writing for both the Masp interpreter and the state editor.
 
@@ -592,7 +618,7 @@ To reprogram the editor to work like this, we would do the following from within
 ## A More Ambitious Novel Interface
 The above "taster" is a simple example of an interface that could be plausibly implemented early in BootstrapLab's self-sustaining lifetime. Beyond this, it points to a more general class of extensions which would support *projectional editing.* Projectional editors are a class of programming interfaces that provide domain-specific interfaces for certain program subexpressions, such as \LaTeX-style mathematical expressions to replace ASCII renderings (recall Section\ \ref{linguistic-freedom}). We would do well to import such ideas into BootstrapLab. We proceed to sketch how such an interface would be added to the system, and how its ramifications are different from ordinary non-self-sustainable projectional editors.
 
-As an example, suppose we want to program some fancy graphics. Fancy graphics require sophisticated vector mathematical formulae. In textual programming languages, these are expressed as ASCII with limited infix notation. The Gezira/Nile project\ \parencite{Gezira,Nile} attempted to improve on this with Unicode mathematical syntax. Obviously the extreme endpoint would be \LaTeX. All we have at the moment is something worse than all of these: verbose, explicit tree views spanning multiple lines.
+As an example, suppose we want to program some fancy graphics. Fancy graphics require sophisticated vector mathematical formulae. In textual programming languages, these are expressed as ASCII with limited infix notation. The Gezira/Nile project\ \parencite{Gezira,Nile} attempted to improve on this with Unicode mathematical syntax. An extreme endpoint would be \LaTeX. All we have at the moment is something worse than all of these: verbose, explicit tree views spanning multiple lines.
 
 We think ahead with a view towards making the fancy graphics programming more pleasant. Suppose we decide that we would ideally like to implement them with the aid of concise mathematical notation, as opposed to our current state of verbose trees. How can we achieve this?
 
@@ -601,7 +627,7 @@ The broad approach would be similar to our previous taster example. We would hav
 The above points are, of course, a high-level sketch, but it is *programming* all the same and is plausible to achieve with a high-level language. Techniques from the literature would be helpful, such as Hazel's calculus for editing structures with holes\ \parencite{Hazel}, or bi-directional synchronisation between the rendered graphics and the state's ground truth\ \parencite{SnS}.
 
 ## Real Example: Colour Preview
-While the above speculation has value, it is only fair that we show a real example. We only had time to implement a very modest proof-of-concept: instead of a hex string for colours, let us see a rectangle with that colour instead.
+While the above speculation has value, it is only fair that we show a real example. As a very modest proof-of-concept: instead of a hex string for colours, let us see a rectangle with that colour instead.
 
 Some Masp code (Figure\ \ref{lst:rendermapentry}) lives under the global register called `render_map_entry`. It is invoked from the \ac{JS} function for rendering map entries in the tree editor. It checks if a map entry is named "color", and if so, returns an appropriately coloured box with a grey border. Figure\ \ref{fig:hex-vs-boxes} shows the difference.
 
@@ -610,6 +636,7 @@ These results so far could have been achieved without going to the trouble of im
 As this Masp code is evaluated on its own source tree, it encounters the hex constant `0xaaaaaa` representing the grey border and displays this *with the very notation it implements.* See Figure\ \ref{fig:grey-box} for the difference. This is a minimal demonstration of Innovation Feedback (Section\ \ref{the-key-benefit-innovation-feedback}): there is no artificial barrier to innovations (in this case, displaying colour previews) applying to their own implementation code.
 
 \begin{figure}
+\joel{
 \begin{lstlisting}
 to: key_name,  apply:
   _: { apply: quote,  to: unhandled }
@@ -627,7 +654,9 @@ to: key_name,  apply:
     2: { apply: set,  map: box,  key: color,  to: value }
     3: box
 \end{lstlisting}
-\caption[Masp code for local colour preview]{This Masp code checks if a map entry is named ``color''. If so, it returns an appropriately coloured box with a grey border. Otherwise, it returns the string \texttt{unhandled}.}
+}
+\centering\includegraphics[width=14cm]{masp/render-map-entry.png}
+\caption[Masp code for local colour preview]{This Masp code checks if a map entry is named ``color''. If so, it returns an appropriately coloured box with a grey border. Otherwise, it returns the string \texttt{unhandled}. The left is how we would prefer to read it; the right is slightly tidier than what is actually visible in the state viewer.}
 \label{lst:rendermapentry}
 \end{figure}
 
