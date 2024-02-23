@@ -1,9 +1,6 @@
 \hypertarget{bl}{%
 \chapter{BootstrapLab: The Three Properties in the Web Browser}\label{bl}}
 
-\newtheorem{force}{Force}
-\newtheorem{requirement}{Requirement}
-
 \joel{
 Having tried the "notation-first" approach with diminishing returns in Chapter\ \ref{year1}, we now turn our efforts towards prioritising self-sustainability. Recall that we took the "\OROM{}" half of the COLA design as our starting point and made things happen with plain JavaScript. This left us at the mercy of text strings as a starting point for building the "code" half.}
 
@@ -205,13 +202,15 @@ In our high-level platform language \ac{JS}, state is a graph of plain \ac{JS} o
 
 Similarly, it would make no sense to represent instructions as numbers or strings. While in the binary world, machine instructions are byte sequences with bitfields for opcodes and operands, in a dictionary substrate inherited from \ac{JS}, it makes sense to have explicit fields for this data:
 
-```
+\lstset{language=JavaScript}
+
+\begin{lstlisting}
 {
   operation: 'copy',
   from: [ alice, 'age' ],
   to: [ bob, 'age' ]
 }
-```
+\end{lstlisting}
 
 As this example shows, addresses in a dictionary-based state model consist of an object reference and a key name.
 
@@ -230,7 +229,7 @@ We also noticed that we would not get very far if all our progress in-system cou
 
 \ac{JS} is a "high-level" language, but this is *relative* to the conventional "ground" reference point of the *hardware* as the lowest level. However, the "lowest level" of interest to us is *our* platform, which in this case is not hardware but \ac{JS}. Therefore, measuring from \ac{JS} as the reference point, we consider this substrate low-level *relative* to it. In other words, the gap between our substrate and \ac{JS} is very small. It could have been otherwise; "Avoid Boilerplate" (Force\ \ref{avoid-bp}) gave us several ideas for convenient features of a smarter state model, but "Escape The Platform" (Force\ \ref{escape-plaf}) urged us to press ahead without them and see if we needed them later. Appendix\ \ref{bl-trivia} contains these details.
 
-### Designing the Instruction Set
+## Designing the Instruction Set
 While the "data" half of the substrate may be easy to inherit from the platform, the "code" half is typically not. Simply including an interpreter for source code in \ac{JS} is not an option; this would embed a reliance on a strings and parsing in the core of the system, against our desire for Explicit Structure.
 
 Slightly better would be an interpreter for the \ac{JS} abstract syntax tree. However, "Escape The Platform" (Force\ \ref{escape-plaf}) still pushes against this. A high-level language interpreter is nontrivial even without parsing and would delay our ability to work in-system. Also, an interpreter is a computer program; this program, or parts of it, might be best expressed or debugged via particular notations; by having it in the substrate, we'd restrict ourselves to the interface of \ac{JS} in our text editor.
@@ -253,23 +252,23 @@ Right away, we know there will have to be a special piece of state for the *inst
 
 The value of this "register" is determined by how exactly we fetch the next instruction. Perhaps each one has a `next` field which we can simply follow. In this case, the `next_instruction` will simply be the instruction itself. This also gives us convenient conditionals (\eg{} fields called `if_true` and `if_false`) but means that instruction *sequences* will have a nesting structure. This latter consequence may be inconvenient for presentation in a tree view. For BootstrapLab, we chose the alternative of numerically indexed lists of instructions which easily display in a column. This choice determined `next_instruction` to instead hold an *address*, called `ref`, made of container map and key name:
 
-```
+\begin{lstlisting}
 next_instruction: {
   ref: {
-    map: <instruction list>,
+    map: // the instruction list
     key: 1 // i.e. first instruction in the list
   },
   value: // the fetched instruction itself
 }
-```
+\end{lstlisting}
 
 Here, the "fetch" step involves dereferencing the address, incrementing the key name, and updating the `value` key to the instruction itself.
 
 Next, we turn to what types of instructions we need. Alignment (Force\ \ref{alignment}) means that, given a state model, obtaining an instruction set should be more of a "derivation" than a hard design problem. This is because some choices are obviously inappropriate and others clearly fitting to the state model. For example, in a tree-structured state model, it would be foolish to have instructions that can only see the root level:
 
-```
+\begin{lstlisting}
 { op: 'copy', from: 'source_key', to: 'dest_key' }
-```
+\end{lstlisting}
 
 Without the ability to read or write keys *within* an arbitrary tree node, as far as programmatic change is concerned, the state becomes a *de facto* flat list instead of a tree. Therefore, it is critical that anywhere in the state can be accessed or modified by an appropriate instruction sequence.
 
@@ -298,9 +297,9 @@ State that is "further away" than the top level is accessed by following key pat
 
 An instruction is represented as a map with an `op` field for its name and other fields for parameters. For example:
 
-```
+\begin{lstlisting}
 { op: 'store', register: 'source' }
-```
+\end{lstlisting}
 
 It is remarkable that these few operations really are sufficient even for conditional and unconditional jumps. A jump is achieved by overwriting `next_instruction`, and this can be conditionalised by `index`ing a map of code paths based on a selector. We made the decision that `index`, if accessing a key not present in the map, will try and retrieve the special key `_` instead. This supports a generic "else" or "otherwise" clause for conditionals. We provide a worked example in Section\ \ref{copying-and-jumping} and also show how an arbitrary path-to-path copy reduces to these primitive operations. This lends support to the Turing-completeness suspicion: since we can effect the basic operations^[See the discussion in Section\ \ref{inheritance-of-js-level-change} for why we do not consider arithmetic as among these basic operations.] found in real-world, practical, non-minimal instruction sets, our set is at least as Turing-complete as they are.
 
@@ -308,7 +307,7 @@ The minimal, microcode-like instruction set here was an experiment in extreme pa
 
 Nevertheless, at this point we have a workable instruction set for BootstrapLab; we will subsequently refer to it as \ac{BL-ASM}.
 
-### Graphics and Interaction
+## Graphics and Interaction
 Now that we have covered the computer-oriented part of the substrate, we turn to the human-oriented user interface state and change aspects. One way we wish to distinguish BootstrapLab from \ac{COLA} is that graphical interfaces are present from the beginning and not just an afterthought. There are two factors here: how graphics are represented in the substrate, and how they are actually displayed.
 
 It may be useful to see this as a microcosm of the entire journey. First we must select a graphics library available for our platform (\ie{} the *graphics platform*). Then we must decide how graphics are represented in our substrate (a graphics *sub-*substrate) and how these graphics actually end up on our screen.
@@ -336,7 +335,7 @@ In BootstrapLab, this is a sub*tree* of the state under the top-level name `scen
 For interaction, we need to expose the platform's ability to listen for user input. In BootstrapLab, we would execute a named code sequence in the substrate from JavaScript event handlers, which now function as "device drivers" (Figure\ \ref{lst:devdrv}).
 
 \begin{figure}
-\begin{lstlisting}[language=JavaScript]
+\begin{lstlisting}
 window.onkeydown = e => {
   state.set('input', 'type', 'keydown');
   state.set('input', 'key', e.key);
@@ -355,7 +354,7 @@ window.onkeydown = e => {
 
 This is a basic sketch with some issues elided that a complete account would cover. For example, what happens when an input event occurs during the handling of a previous event? Possibilities include ignoring the extra event or providing some sort of stack analogue^[Of course, in a structured substrate, there is room for improvement on the linear form of the low-level machine stack; see Section\ \ref{implementing-masp-for-bootstraplab} for how we did this for the high-level language.] for nested handlers. Such a data structure may also be necessary for saving and restoring the instruction pointer along with other context. These concerns have analogues in interrupt handling for operating system design, which we would consult for future work. However, at this early stage, we found our existing approach to be adequate and progressed to the next step.
 
-### BootstrapLab Substrate Summary
+## BootstrapLab Substrate Summary
 Computer state is a graph of maps; lists are just maps with numerical keys. Instructions are `load`, `deref`, `store`, `index`, `js`. Special top-level keys are `focus`, `map`, `source` and `next_instruction`. User Interface state is controlled via the special `scene` subtree of state. Each node may use special keys like `text`, `width`, `height`, `color`, `position`, and `children`, as well as arbitrary other keys for user data. For a full reference, see Appendix\ \ref{bl-substrate-ref}.
 
 *What can be changed at the user level?* System state can be modified and instructions can be executed, but only using the cumbersome capabilities of the platform. In case of BootstrapLab, this means using the \ac{JS} debugging console to edit state and call a function to execute a certain number of instructions.
@@ -421,7 +420,6 @@ We call it Lisp-*like* because Alignment (Force\ \ref{alignment}) encouraged us 
 \tomas{Maybe use more verbose JSON like syntax, because figuring out the nesting rules below is not obvious. (Plus you need to have curly brackets if you want your language to take over the world, right??)}
 
 \begin{figure}
-\raggedright
 \begin{verbatim}
 (define fac
   (lambda (n)
@@ -548,10 +546,9 @@ Once we could run Masp programs in the substrate, we needed a better way of ente
 
 To edit state in \ac{JS}, we needed to either address its parent with a full path from the top level, or to use a reference previously obtained this way. To set a primitive value, we would type a \ac{JS} command including the key name and the value. For example, the following console command could be issued to make a shape red:
 
-```
-upd(ctx, 'scene', 'shapes', 'children',
-    'yellow_shape', 'color', '0xff0000')
-```
+\begin{lstlisting}[basicstyle=\small]
+upd(ctx, 'scene', 'shapes', 'children', 'yellow_shape', 'color', '0xff0000')
+\end{lstlisting}
 
  This was not a high bar to clear. Evidently, we could greatly improve the experience by simply *clicking* on the relevant key name and typing.
 
@@ -634,6 +631,8 @@ Some Masp code (Figure\ \ref{lst:rendermapentry}) lives under the global registe
 These results so far could have been achieved without going to the trouble of implementing the hook in Masp. \ac{JS} would have sufficed. However, having this code in Masp lets us do something not possible with the equivalent \ac{JS}. The system has access to the explicitly structured Masp code and can choose how to display it.
 
 As this Masp code is evaluated on its own source tree, it encounters the hex constant `0xaaaaaa` representing the grey border and displays this *with the very notation it implements.* See Figure\ \ref{fig:grey-box} for the difference. This is a minimal demonstration of Innovation Feedback (Section\ \ref{the-key-benefit-innovation-feedback}): there is no artificial barrier to innovations (in this case, displaying colour previews) applying to their own implementation code.
+
+The major caveat is that, unlike the hex strings, this new notation is *read-only.* If we try to use the tree editor on this entry, it will most likely break; we would have to revert back to the old notation in order to change the colour. The obvious next step would be to go from *notation* to more of an *interface;* to turn the colour *preview* into a colour *picker* and ensure the tree editor is not fragile with respect to it. However, this was not necessary to demonstrate our main point that Innovation Feedback is now feasible.
 
 \begin{figure}
 \joel{

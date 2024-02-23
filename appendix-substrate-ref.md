@@ -48,7 +48,7 @@ If a more abstract term has only one intended meaning in a particular API, use t
 \label{naive-honesty}
 \end{heuristic}
 
-For example, the term "position", widely used in graphics APIs, is not very self-documenting when it comes to shapes. In practice, it always means "the centre of the shape" or "the top left-hand corner" or some such meaningful function of the shape itself. Therefore, why not just be explicit about this, and save the user the effort of figuring out what it actually means? The co-ordinates are specified according to the same principle: instead of the ever-ambiguous `x`, `y`, and `z`, we have `right`, `up`, and `forward`. In an ideal substrate, one could specify co-ordinates via `left`, `down`, `backward`, or any combination, and the system would automatically flip the signs as necessary for its platform graphics API calls. However, this functionality does not yet exist in BootstrapLab.
+For example, the term "position", widely used in graphics APIs, is not very self-documenting when it comes to shapes. In practice, it always means "the centre of the shape" or "the top left-hand corner" or some such meaningful function of the shape itself. Therefore, why not just be explicit about this, and save the user the effort of figuring out what it actually means? The co-ordinates are specified according to the same principle: instead of the ever-ambiguous `x`, `y`, and `z`, we have `right`, `up`, and `forward` (that is, into the screen from your position). In an ideal substrate, one could specify co-ordinates via `left`, `down`, `backward`, or any combination, and the system would automatically flip the signs as necessary for its platform graphics API calls. However, this functionality does not yet exist in BootstrapLab.
 
 \begin{figure}
 \centering\includegraphics[width=4cm]{../../fig/camera.png}
@@ -62,7 +62,6 @@ This is another application of Naïve Honesty in regard to our frustrations abou
 
 Naïve Honesty can be seen as a response to a design requirement called "No Guessing":
 
-\joel{\newtheorem{requirement}{Requirement}}
 \begin{requirement}[No Guessing]
 The user of an API should never have to uncover the meaning of a concept through trial-and-error experimentation. In graphics programming, the user should never have to create a throwaway object and transform it to resolve ambiguity about sign conventions, axis conventions, unit conventions, basis conventions, etc.
 \label{no-guessing}
@@ -73,10 +72,9 @@ A reasonable reply to No Guessing might be to just write better documentation. H
 ## Manually Updating State
 In order to update a piece of state *and ensure* that all relevant UI updates to reflect this, the `upd()` function is used in \ac{JS} code and the console. For example, to change the colour of the shape in Figure\ \ref{fig:rect-spec} to red, one would issue the following command in the console:
 
-```
-upd(ctx, 'scene', 'shapes', 'children',
-    'yellow_shape', 'color', '0xff0000')
-```
+\begin{lstlisting}[language=JavaScript,basicstyle=\small]
+upd(ctx, 'scene', 'shapes', 'children', 'yellow_shape', 'color', '0xff0000')
+\end{lstlisting}
 
 # Change in BootstrapLab
 
@@ -100,15 +98,15 @@ An instruction is a map with an `op` field serving as the opcode, along with any
 
 Because this notation is so verbose, and no instruction has more than one parameter (see Section\ \ref{the-minimal-random-access-instruction-set-and-its-perils}), we use an inline textual notation with unnamed parameters. We would write the above like so:
 
-```
+\begin{lstlisting}[language=blasm]
 load my_reg ; deref ; store my_dest
-```
+\end{lstlisting}
 
 In circumstances where there are many instructions and we need to be even more concise, we only use the first letters of the names. The above example would reduce to:
 
-```
+\begin{lstlisting}[language=blasmmini]
 l my_reg ; d ; s my_dest
-```
+\end{lstlisting}
 
 In the next section, we will specify the semantics of the instructions. In line with the spirit of *Notational Freedom* (Section\ \ref{notational-freedom}), we will use box-and-arrow diagrams, since we judge this more suitable for our substrate than traditional formal semantics notations. However, we will take some cues from the latter; for example, we show the state before and after the instruction. We also use symbols to stand for abstract values. Specifically, $K$ denotes any string (or "key"), $M$ denotes a map, and $V$ denotes an arbitrary value. We additionally employ a grey spot to highlight the part of the state that was mutated.
 
@@ -170,11 +168,13 @@ Because of the fact that `load` makes a copy of its `value`, creating a new map 
 ## Inheritance of \ac{JS}-level Change
 The `js` instruction takes a `func` parameter and calls it as a \ac{JS} function. This functions as an all-purpose "escape hatch" into the \ac{JS} platform, analogous to `asm` blocks in C code.
 
-```
+\begin{minipage}{\linewidth}
+\begin{lstlisting}[language=JavaScript]
 { op: js, func: () => {
     alert("Hello, World!");
 }}
-```
+\end{lstlisting}
+\end{minipage}
 
 Some features of the platform were common enough to be worth implementing as their own instructions, as an optimisation:
 

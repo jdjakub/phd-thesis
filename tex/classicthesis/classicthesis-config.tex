@@ -146,6 +146,8 @@
 \theoremstyle{definition}
 \newtheorem{heuristic}{Heuristic}
 \newtheorem{defn}{Definition}
+\newtheorem{force}{Force}
+\newtheorem{requirement}{Requirement}
 
 % ********************************************************************
 % General useful packages
@@ -209,6 +211,7 @@
 % ****************************************************************************************************
 \usepackage{listings}
 %\lstset{emph={trueIndex,root},emphstyle=\color{BlueViolet}}%\underbar} % for special keywords
+\joel{
 \lstset{language=[LaTeX]Tex,%C++,
   morekeywords={PassOptionsToPackage,selectlanguage},
   keywordstyle=\color{RoyalBlue},%\bfseries,
@@ -227,22 +230,37 @@
   belowcaptionskip=.75\baselineskip
   %frame=L
 }
-\lstset{breaklines=true, columns=fullflexible, breakatwhitespace=true, basicstyle=\ttfamily\footnotesize}
+}
+\lstset{
+breaklines=true,
+columns=fullflexible,
+breakatwhitespace=true,
+showstringspaces=false,
+basicstyle=\ttfamily,
+keywordstyle=\color{RoyalBlue},
+commentstyle=\color{OliveGreen}\rmfamily,
+stringstyle=\color{OliveGreen},
+numbers=none,
+%basicstyle=\ttfamily\footnotesize
+}
 \lstdefinelanguage{JavaScript}{
-  keywords={break, case, catch, continue, debugger, default, delete, do, else,
+  keywords={break, case, catch, const, continue, debugger, default, delete, do, else,
   finally, for, function, if, in, instanceof, new, return, switch, this, throw,
-  try, typeof, var, void, while, with, let, false, true},
+  try, typeof, var, void, while, with, let, false, true, null, undefined},
   morecomment=[l]{//},
   morecomment=[s]{/*}{*/},
   morestring=[b]',
   morestring=[b]",
   sensitive=true
 }
-\lstset{
-  language=JavaScript,
-  numbers=none,
-  columns=fullflexible,
-  basicstyle=\ttfamily,
+\lstdefinelanguage{blasm}{
+  keywords={load, store, deref, index, js, dest},
+  otherkeywords={store-reg},
+  sensitive=true,
+  comment=[l]{//},
+}
+\lstdefinelanguage{blasmmini}[]{blasm}{
+  keywords={l, s, sr, d, i},
 }
 % ****************************************************************************************************
 

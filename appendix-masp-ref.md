@@ -28,7 +28,9 @@ By convention, single-argument functions like `quote` name the argument `to` in 
 
 As in Lisp, an individual function parameter can be "extensional" (evaluated before use) or "intensional" (used in its un-evaluated form). For example, the `if` function used as `(if cond then else)` has `cond` in extensional position; the behaviour of `if` depends entirely on whether `cond` evaluates to `true` or `false` and not on the make-up of the `cond` expression itself. Meanwhile, the `then` and `else` code are used *intensionally* because one of them should not be evaluated (otherwise, the "wrong" branch would still get to cause its side effects). For simplicity, functions in Masp are assumed all-extensional by default; this can be disabled by setting the `dont_eval_args` entry on the function closure, in which case it is up to the function itself to perform any evaluation.
 
-A Masp *closure* is a map with entries for the function `body`, local `env`, and optionally a `dont_eval_args` flag. If the `body` is a \ac{JS} function, the closure represents a primitive function run in the platform. Otherwise, the `body` is treated as a Masp expression to evaluate in the context of the local arguments.
+A Masp *closure* is a map with entries for the function `body`, local `env`, a list of `arg_names`, and optionally a `dont_eval_args` flag. If the `body` is a \ac{JS} function, the closure represents a primitive function run in the platform. Otherwise, the `body` is treated as a Masp expression to evaluate in the context of the local arguments.
+
+Interestingly, `arg_names` is never actually used by anything, not even the evaluator. It is necessary *in Lisp,* as it links the positional arguments passed to the internal names used in the body; in Masp, arguments are already passed with names, so no such linking is necessary.^[We kept `arg_names` to serve as an order map (see Section\ \ref{the-cutting-room-floor}) to enable positional parameters as a concise notation in the future. One addition suggested by the Lisp usage is an `arg_renames` to connect the preposition-like names used in calls (`to`, `is`, `as`, etc.) to more descriptive internal names, allowing function bodies to refer to `theValue` instead of `as` while retaining the natural-language-esque rhythm on the calling side.]
 
 ## Maps As Functions
 We find it useful to view maps abstractly as "extensional^[Extensional in the sense of "listing out the entries"; a different meaning to the "extensional" of "evaluates all arguments"! Both of these philosophical concepts are relevant to Masp and it is unfortunate that they share the same word.] functions": mathematical functions taking inputs to outputs, whose mappings are explicitly specified instead of via some computation. Therefore it is important that maps must be usable as functions in Masp; we must be able to "apply" a map to a value. This gives us a special case of pattern matching for free (\ie{} strict equality matching). It may be worth considering how augmenting the definition of maps-as-functions could support more advanced pattern matching (\eg{} inequalities, more complex conditions) but this is beyond the scope of Masp as-is. We retain the failsafe match named `_` from the substrate's `index` instruction (Section\ \ref{index-follow-key-in-map}).
@@ -64,16 +66,17 @@ A *local evaluation context,* or *context* for short, contains a local `env`, an
 We will walk through the process from the perspective of `masp_step`. If the `expr` is a string, we add a `value` obtained from looking up the `expr` in the local `env`. If `expr` is a map with no `apply` entry, \ie{} a "literal" map, we set the `value` to a special closure in which `literal` is set to the `expr` and the current env is included. Otherwise, if the `apply` node has not yet been evaluated, we wrap it in a new context and enter (\ie{} we make it the new `ctx`). Once there is a value for the function closure, evaluation proceeds to the arguments unless `dont_eval_args` is set on the closure. A tracking variable in the context, `arg_i`, helps us discover the next unevaluated argument, as determined by the order of map keys from \ac{JS}' `Object.keys()`.
 
 ### Protocol Between \ac{JS} Primitives and Masp
-After processing the arguments, we inspect the `body` of the function closure. If it is a \ac{JS} function, we call this "primitive" with the context and argument values. The protocol for Masp primitives is that returning `true` (on the \ac{JS} stack) means that it has returned a value (in Masp); otherwise, it is evaluating a subexpression and needs to be run again afterwards. For example, here is the \ac{JS} code for the `decr` (decrement) primitive:
+After processing the arguments, we inspect the `body` of the function closure. If it is a \ac{JS} function, we call this "primitive" with the context and argument values (for the full list of primitives, see Section\ \ref{list-of-primitives}). The protocol for Masp primitives is that returning `true` (on the \ac{JS} stack) means that it has returned a value (in Masp); otherwise, it is evaluating a subexpression and needs to be run again afterwards. For example, here is the \ac{JS} code for the `decr` (decrement) primitive:
 
-```
+\lstset{language=JavaScript}
+\begin{lstlisting}
 'decr': { body: (c, args) =>
     { upd(c, 'value', args.to-1); return true; }}
-```
+\end{lstlisting}
 
 It sets the value in the context and returns `true`, signalling that it has also returned in Masp. A more complicated *intensional* primitive is `define` (its usage reads "define *name:* $\ldots$ *as:* $\ldots$"):
 
-```
+\begin{lstlisting}
 'define': { body: (c, args) => {
     if (typeof args.as === 'object') {
       const val = map_get(args.as, 'value');
@@ -84,7 +87,7 @@ It sets the value in the context and returns `true`, signalling that it has also
     }
     masp_enter('as');
   }, dont_eval_args: true }
-```
+\end{lstlisting}
 
 Because `dont_eval_args` is set, `define` will receive the `name` argument as an unevaluated string. It needs to evaluate the `as` argument, and if it has already done so, it binds it to the `name` in the global `initial_env`, sets the Masp return value as `null` (\ie{} no return value, entirely side-effects) and returns `true` to return in Masp. Otherwise, it creates and enters a new context for `as`, and implicitly returns `undefined` in \ac{JS}, which is falsy, telling the evaluator that `define` has not finished evaluating.
 
@@ -95,7 +98,22 @@ At this point, we have a `body` made of Masp code to evaluate in an appropriate 
 
 Finally, if we have been through all the preceding conditions in `masp_step` but did not "do" anything, and the current context already has a value, we must have finished evaluating this subexpression and re-enter the parent context to continue there.
 
-# Masp Design Remarks
+## List Of Primitives
+Here, we will describe the primitives contained in the Masp `initial_env`. Be aware that this list is not yet "complete" owing to the in-progress state of Masp. For space, the `apply` before each function name is abbreviated to `ap`. The primitives are:
+
+- `ap: quote, to:`$V$ \enspace evaluates to $V$. It is most commonly used to represent a literal string value, since in many contexts a string will be treated as a variable reference and evaluated as such. It could also be used to represent a data map that contains an `apply` key, "protecting" it from evaluation.
+- `ap: mul, 1:`$x$`, 2:`$y$ \enspace multiplies the numbers $x$ and $y$. It is present to support the factorial example.
+- `ap: decr, to:`$x$ \enspace decrements $x$, \ie{} evaluates to $x-1$. We included it instead of a subtraction function to ease the number of evaluation steps when debugging the factorial example.
+- `ap: fun, arg_names:`$L$`, body:`$B$ \enspace creates a function closure with the list $L$ of argument names, the body code $B$, and the lexical env at the point of definition. Re-naming of Lisp `lambda`.
+- `ap: define, name:`$S$`, as:`$E$ \enspace sets the key $S$ in the `initial_env` to the result of evaluating $E$, imperatively setting a global variable.
+- `ap: local, name:`$S$`, is:`$E$ \enspace sets the key $S$ in the local env to the result of evaluating $E$, imperatively setting a local variable.
+- `ap: block, 1:`$E_1$`, 2:`$E_2$`, ...` \enspace imperatively executes the expressions $E_n$ and evaluates to the value of the last one.
+- `ap: get, map:`$M$`, key:`$S$ \enspace evaluates to the value of key $S$ in map $M$ (or `null` if undefined).
+- `ap: set, map:`$M$`, key:`$S$`, to:`$E$ \enspace updates key $S$ of map $M$ to the value of $E$ (updating any graphics, because it uses `upd` internally).
+- `null` is a variable bound to the \ac{JS} value `null`. Workaround for the fact that the tree editor can only input strings and numbers, not arbitrary \ac{JS} values.
+- `undefined`, `true`, and `false` are variables bound for the same reason as `null`.
+
+# Important Related Work
 *Procedural Reflection in Programming Languages*\ \parencite{ProcRefl} was of great inspiration while we designed Masp, and remains of serious interest. The work builds up to the design of a fully, elegantly *reflective* version of Lisp called 3-LISP. In order to do this, it explains the unique features and subtleties of ordinary "1-LISP" while critiquing inelegant aspects of its design, and applies philosophical rigour to address these issues. The intermediate 2-LISP is possessed of strong "Category Alignment" regarding the different types of data structures available (\eg{} splitting 1-LISP's overloaded "list" into the applicative "pair" and the data "rail"), and methodically refines 1-LISP's `eval`/`apply` into a philosophically rigorous `normalise`/`reduce`. For reasons of time and resource availability, we designed Masp mostly as an analogue of 1-LISP, inheriting its flaws. However, we would welcome efforts to "port"\ \citeauthor*{ProcRefl}'s methodology regarding 2-LISP and 3-LISP to map-based substrates.
 
 Another approach worth developing is found in \parencite{OECM}. *Open, Extensible Composition Models* inserts a level of indirection into the Lisp evaluator, such that user-defined *evaluators* and *applicators* can be supplied to support "novel composition mechanisms". These are also interesting ideas which, regrettably, we did not have the opportunity to try out. We welcome further work to port the ideas to maps and see if they are compatible with the 2-LISP or 3-LISP architectures.

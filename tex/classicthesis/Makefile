@@ -7,9 +7,11 @@ TEX_FILES = ../abstract.tex FrontBackmatter/Abstract.tex ../acks.tex FrontBackma
 
 ClassicThesis.pdf: $(TEX_FILES) OwnPublications.bib ../thesis.bib
 	lualatex ClassicThesis
+ifdef FULL
 	biber ClassicThesis
 	lualatex ClassicThesis
 	lualatex ClassicThesis
+endif
 	
 Chapters/%.tex: ../../%.md
 	pandoc $< --output $@

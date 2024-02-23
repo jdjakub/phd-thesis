@@ -33,19 +33,22 @@ Combinations of the instructions express the expected copying and jumping operat
 
 The `copy a.b.c to x.y.z` from earlier would decompose as follows:
 
-1. `l a`, `d`, `s map`, `l b`, `i`, `l c`, `i`, `l map`, `d`, `s source`
-2. `l x`, `d`, `s map`, `l y`, `i`
-3. `l z`, `s`
+\lstset{language=blasmmini}
+
+1. \lstinline!l a; d; s map; l b; i; l c; i; l map; d; s source!
+2. \lstinline!l x; d; s map; l y; i!
+3. \lstinline!l z; s!
+
 
 (Recall that `index` replaces `map` with the result of following its key named by `focus`, and `store` without any arguments copies from `source` to the `focus` key entry within `map`.)
 
-A jump is accomplished by overwriting the address in `next_instruction.ref` (a map containing a `map` field and a `key` field). The map or the key can be overwritten in a single instruction, but if an entirely new address is required, this needs to be built up separately and overwritten atomically. In other words, we cannot overwrite the `map` and then overwrite the `key`. The ugly reality is, after overwriting the `map`, it will have jumped to a different instruction somewhere else!
+A jump is accomplished by overwriting the address in the `ref` field of `next_instruction`. The `map` or the `key` of this address can be overwritten in a single instruction, but if an entirely new address is required, this needs to be built up separately and overwritten atomically. In other words, we cannot overwrite the `map` and then overwrite the `key`. The ugly reality is, after overwriting the `map`, it will have jumped to a different instruction somewhere else!
 
 A *conditional* jump is sneaked in by *indexing* into a map to obtain the new list of instructions (which is the map that will overwrite the `map` under `next_instruction.ref`). For example, in the following register snapshot:
 
 ```
 ...
-weather: 'stormy'
+weather: stormy
 map: {
     sunny: { ... sunny code sequence ... }
     rainy: { ... rainy code sequence ... }
@@ -58,7 +61,7 @@ One of the three code paths will be selected according to whatever happens to be
 This example proved that we can do strict equality matching, but what about comparisons? We may observe how conditional jumps are traditionally based on a relation to zero, \eg{} "jump if less than zero". A condition like $3 < 7$ is rearranged into $3 - 7 < 0$ and the "jump if less than zero" instruction is called with the value $-4$. In BootstrapLab, we go one step further: if we apply the mathematical `sign` instruction to the value $-4$, we get $-1$. We can then simply use the trick we already described and `index` into a map containing keys `-1`, `0` and `1`. All of the relevant conditions can be expressed this way: for example, "greater than or equal to zero" can be achieved by pointing the keys `0` and `1` to the same code sequence.
 
 ## A Meta-Circular Inelegance
-From the perspective of self-sustainable systems, it is worth checking that there are no hard barriers to implementing an ASM interpreter in itself. We noticed such a problem with the register `store` instruction.
+From the perspective of self-sustainable systems, it is worth checking that there are no hard barriers to implementing a \ac{BL-ASM} interpreter in itself. We noticed such a problem with the register `store` instruction.
 
 \begin{figure}[h]
 \centering\includegraphics[width=8cm]{../../fig/semantics/virtual-map.png}
@@ -66,16 +69,18 @@ From the perspective of self-sustainable systems, it is worth checking that ther
 \caption{Separate base and virtual registers.}
 \end{figure}
 
-Firstly, let us call our existing ASM the "base" level, where the hypothetical interpreter code lives. Next, we call the code being interpreted the "virtual" level. Suppose that the virtual register file is a map under the base-level user register `virtual` and the current virtual instruction lives in `instr` (Figure\ \ref{fig:virtual-map}). In this case, upon seeing `op: store` the following base-level code will do the trick (recall the ultra-concise notation from Section\ \ref{instruction-encoding-in-state-text-and-diagrams}):
+Firstly, let us call our existing \ac{BL-ASM} the "base" level, where the hypothetical interpreter code lives. Next, we call the code being interpreted the "virtual" level. Suppose that the virtual register file is a map under the base-level user register `virtual` and the current virtual instruction lives in `instr` (Figure\ \ref{fig:virtual-map}). In this case, upon seeing `op: store` the following base-level code will do the trick (recall the ultra-concise notation from Section\ \ref{instruction-encoding-in-state-text-and-diagrams}):
 
-```
-l virtual; d; s map; l focus; i; l map; d; s source;
+\begin{minipage}{\linewidth}
+\begin{lstlisting}
+l virtual; d; s map; l focus; i; l map; d; s source
 // now, source = virtual.focus
-l instr; d; s map; l register; i; l map; d; s tmp;
+l instr; d; s map; l register; i; l map; d; s tmp
 // now, tmp = instr.register ("foo")
 l virtual; d; s map; l tmp; d; s
 // now, virtual[instr.register] = virtual.focus
-```
+\end{lstlisting}
+\end{minipage}
 
 \begin{figure}[h]
 \centering\includegraphics[width=7.5cm]{../../fig/semantics/virtual-siblings.png}
@@ -85,21 +90,23 @@ l virtual; d; s map; l tmp; d; s
 
 So far, so good; however, the same is *not* possible if we choose the virtual registers to live *alongside* the base registers (whether or not this is a good idea); call this the "virtual sibling registers" model. We are now considering the picture in Figure\ \ref{fig:virtual-siblings} instead (assume for the sake of simplicity that virtual code plays nice and only names virtual registers). This time, we get stuck:
 
-```
-l instr; d; s map; l register; i; l map; d; s tmp;
+\begin{minipage}{\linewidth}
+\begin{lstlisting}
+l instr; d; s map; l register; i; l map; d; s tmp
 // now, tmp = instr.register ("v_foo")
 // goal: copy value of v_focus to register named by tmp
 ???
-```
+\end{lstlisting}
+\end{minipage}
 
 The obvious way this ought to work, via the `store` instruction, has the wrong "addressing mode": it takes a literal string from the instruction, instead of indirecting through something to get a dynamically determined destination, which is what we need. The only way we can achieve this is through self-modifying code, by copying `instr.register` to the `register` field of a new `store` instruction and performing the relevant jumps before and after. This is very inelegant.
 
 The essential \ac{JS} logic that implements these semantics is as follows:
 
-```
+\begin{lstlisting}[language=JavaScript]
 inst = ... // The current base-level instruction
 root[inst.register] = root.focus;
-```
+\end{lstlisting}
 
 It is natural to ask what instruction, if any, could perform this operation in-system. Under *Registers For Parameters* (Heuristic\ \ref{reg-for-param}), the `inst.register` value, which is being used "indirect", should be factored out into a new register. We refuse to call it the `register` register, but `destination` could work. Since we will be left with a parameterless `store`, we should rename it to `store-reg` to avoid conflict with the map-related `store`.
 
@@ -122,16 +129,15 @@ Ensure the platform interpreter can be translated into the substrate language.
 
 Under the new instruction set, we *can* implement virtual `dest` and `store-reg` (`sr`) under the "virtual sibling registers" model. For `dest`, we wish to fill `v_destination` with the value in `v_focus`:
 
-```
+\begin{lstlisting}
 l v_destination; dest; l v_focus; d; sr
-
-```
+\end{lstlisting}
 
 For `store-reg`, we wish to copy the value in `v_focus` to the register *named* by `v_destination`:
 
-```
+\begin{lstlisting}
 l v_destination; d; dest; l v_focus; d; sr
-```
+\end{lstlisting}
 
 Notice that this is identical to the implementation of `dest` except for the insertion of a `deref` after the first `load`.
 
@@ -149,7 +155,7 @@ On another note, our substrate is based on "maps" without a predefined ordering 
 Thus it might be nice to be able to set this on a per-map basis. A convenient way to expose this in-system would be via another map, or "order map" which would be a list map of key names:
 
 ```
-{ 1: 'red', 2: 'green', 3: 'blue' }
+{ 1: red, 2: green, 3: blue }
 ```
 
 A practical use of this is for enabling iteration through a map's keys or entries. If we wish to be rigorous, the order map itself would have an order map, which would (by default) be the same for all order maps:
