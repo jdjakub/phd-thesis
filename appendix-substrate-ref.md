@@ -25,20 +25,20 @@ Because values at the root level are accessible from only a single key, they are
 All other keys at the root level are general-purpose *user registers* available for programs to use.
 
 ## Graphics State: The `scene` Tree
-While state in general can be graph-structured, it is tree-structured^[See Section\ \ref{graphs-vs-trees} for how this was accomplished.] under the `scene` register. The `scene` itself is a list of *graphics maps*. The substrate recognises a map as a graphics map if it contains at least one *graphics property:* any of the keys `width`, `height`, `color`^[We comply with the fact that, for better or worse, American spelling conventions are the *de facto* standard for internal identifiers and code more generally.], `opacity`, `position`, `center`, `top_left`, `zoom`, `text`, or `children`. The presence of these keys causes the substrate to connect their values to shapes in the graphics window and maintain synchronisation. Any graphics map can have a list of `children` in the scene hierarchy.
+While state in general can be graph-structured, it is tree-structured^[See Section\ \ref{graphs-vs.-trees} for how this was accomplished.] under the `scene` register. The `scene` itself is a list of *graphics maps*. The substrate recognises a map as a graphics map if it contains at least one *graphics property:* any of the keys `width`, `height`, `color`^[We comply with the fact that, for better or worse, American spelling conventions are the *de facto* standard for internal identifiers and code more generally.], `opacity`, `position`, `center`, `top_left`, `zoom`, `text`, or `children`. The presence of these keys causes the substrate to connect their values to shapes in the graphics window and maintain synchronisation. Any graphics map can have a list of `children` in the scene hierarchy.
 
 At present, only crude graphics are possible via two shapes. A rectangle has a `center`, `color`, `width`, and `height` (Figure\ \ref{fig:rect-spec}), while a text label has a `top_left`, `text`, and `opacity` (Figure\ \ref{fig:text-spec}).
 
 \begin{figure}
 \centering\includegraphics[width=8cm]{../../fig/rect.png}
-\label{fig:rect-spec}
 \caption[Rectangle properties]{A rectangle inferred from the presence of \texttt{color}, \texttt{width}, \texttt{height}, and \texttt{center}. As can be seen, \texttt{color} expects a hex string.}
+\label{fig:rect-spec}
 \end{figure}
 
 \begin{figure}
 \centering\includegraphics[width=8cm]{../../fig/text.png}
-\label{fig:text-spec}
 \caption[Text label properties]{A text label inferred from the presence of \texttt{text} and \texttt{top\_left}. The \texttt{opacity} property, not shown, takes a number between 0 and 1.}
+\label{fig:text-spec}
 \end{figure}
 
 More interesting is the protocol of vector properties like `center` and `top_left`. Firstly, the naming of these properties themselves follows a design principle which could be called "Naïve Honesty".^[By analogy to Boxer's "Naïve Realism"\ \parencite{Boxer}.]
@@ -52,8 +52,8 @@ For example, the term "position", widely used in graphics APIs, is not very self
 
 \begin{figure}
 \centering\includegraphics[width=4cm]{../../fig/camera.png}
-\label{fig:camera-spec}
 \caption[Camera properties]{The camera `zoom` and `position` are bidirectionally synchronised between the state and the graphics window.}
+\label{fig:camera-spec}
 \end{figure}
 
 Third, a vector property may have a `basis` key naming a registered co-ordinate frame. This can be seen in the special *camera* graphics map (Figure\ \ref{fig:camera-spec}), linked to the zoomable/pannable view in the graphics window. If left unspecified, the basis is assumed to be that of the parent node in the tree. However, the user can set an explicit `basis` to express co-ordinates as most convenient to them, while the substrate will convert between frames under the hood.
@@ -87,7 +87,7 @@ In keeping with Alignment (Force\ \ref{alignment}), the smallest units of change
 
 The result is our instruction set, which we call \ac{BL-ASM}. We will elaborate on these shortly, but first we will specify how instructions are represented as state, and how we will notate them in shorthand and diagrams. We will mostly stick to reference material here; for more in-depth design rationale, see Section\ \ref{the-minimal-random-access-instruction-set-and-its-perils}.
 
-## Instruction Encoding In State, Text, and Diagrams
+## Instruction Encoding in State, Text, and Diagrams
 An instruction is a map with an `op` field serving as the opcode, along with any parameters as further entries. Some examples:
 
 ```
@@ -120,8 +120,8 @@ The `store` instruction, with no parameters, expects a map $M$ in the `map` regi
     \centering\includegraphics[width=10cm]{../../fig/semantics/store.png}
 \end{figure}
 
-### Index: Follow Key In Map
-The `index` instruction, like the `store` to which it is dual^[We mean this in an informal sense, but it points to some interesting analysis which we have not undertaken. Compare also `deref` and the register version of `store`, leaving `load` curiously on its own.], takes a map $M$ in `map` and a key string $K$ in `focus`. After execution, `map` contains the value $M.K$, unless this is `undefined`. In that case, it will try the special key `_` as failsafe and `map` will contain $M.$`_` instead, which could still be `undefined`.
+### Index: Follow Key in Map
+The `index` instruction, like the `store` to which it is dual^[We mean this in an informal sense, but it points to some interesting analysis which we have not undertaken. Compare also `deref` and the register version of `store`, leaving `load` curiously on its own.], takes a map $M$ in `map` and a key string $K$ in `focus`. After execution, `map` contains the value $M.K$, unless this is `undefined`. In that case, it will try the special key `_` as a failsafe and `map` will contain $M.$`_` instead, which could still be `undefined`.
 
 \begin{figure}[!h]
 \centering\includegraphics[width=10cm]{../../fig/semantics/index.png}
@@ -134,14 +134,14 @@ There are alternate semantics^[This "overloading" of an instruction is straightf
 \centering\includegraphics[width=10cm]{../../fig/semantics/store-reg.png}
 \end{figure}
 
-### Deref: Follow Key In Root
+### Deref: Follow Key in Root
 With a string $K$ in `focus` and register $K$ holding the value $V$, an execution of `deref` will place $V$ in `focus`.
 
 \begin{figure}[!h]
 \centering\includegraphics[width=10cm]{../../fig/semantics/deref.png}
 \end{figure}
 
-### Load: Instantiate A Literal
+### Load: Instantiate a Literal
 Finally, `load` takes a parameter `value` with a value $V$. After execution, the `focus` register contains $V$.
 
 \begin{figure}[!h]
@@ -191,7 +191,7 @@ We could argue in favour of such instructions in terms of Alignment (Force\ \ref
 Tentatively, we conjecture that instructions are either *intrinsic*, \ie{} necessary for Turing-completeness, or *gateways* to platform optimisations. Any instructions for accessing \eg{} video memory could be considered intrinsic if we subsume video memory as just a special part of the overall state. Furthermore, any special instructions that affect the outside world (\eg{} refresh the screen, or send network packets) could be re-interpreted as writing to special parts of state that have side effects; see also Self's behaviour-as-state\ \parencite{Self} or Plan 9's "control files"\ \parencite{Plan9}.
 
 ## The Fetch-Execute Cycle
-The `next_instruction` register holds a map with keys `ref` and `value`. The `value` entry hold the next instruction itself, while `ref` contains entries `map` and `key` as the address of the instruction, where `key` is an integer. During the fetch-execute cycle, `key` is incremented. In this way, a list of instructions can serve as a "basic block". Furthermore, if incrementing the `key` "runs off the end" of a list, the substrate will follow any `continue_to` entry in the list and continue execution at key `1` of the associated map.
+The `next_instruction` register holds a map with keys `ref` and `value`. The `value` entry holds the next instruction itself, while `ref` contains entries `map` and `key` as the address of the instruction, where `key` is an integer. During the fetch-execute cycle, `key` is incremented. In this way, a list of instructions can serve as a "basic block". Furthermore, if incrementing the `key` "runs off the end" of a list, the substrate will follow any `continue_to` entry in the list and continue execution at key `1` of the associated map.
 
 The fetch-execute cycle is activated via the \ac{JS} console function called `run_and_render(n)`, taking a number `n` of instructions to execute (warning: this takes place on the main \ac{JS} thread, so if there are many instructions, the UI will stall). If `n` is omitted, it defaults to 1, effectively acting as a single-step command. Finally, any instruction can have a `break` parameter; if set to a value \ac{JS} considers "truthy", the fetch-execute cycle will halt after executing the instruction.
 

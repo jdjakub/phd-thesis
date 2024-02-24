@@ -8,6 +8,8 @@ In this section, we will explain the design rationale that led us to the peculia
 
 We did this by breaking down higher-level instructions to their component operations until we felt we could go no further. This led to a sort of "microcode" level where each instruction's implementation corresponded to some single-line \ac{JS} operation. In other words, the platform itself blocked any further decomposition.
 
+## Deconstruction of a Path-to-Path Copy
+
 Our method for achieving this can be illustrated if we start with a hypothetical complex instruction, e.g. `copy a.b.c to x.y.z`. The actual *work* involved in executing this in \ac{JS} would involve three steps:
 
 1. Traverse the path `a`, `b`, `c` and save the value in a local variable
@@ -27,13 +29,13 @@ Factor out instruction ``parameters'' into special state registers where possibl
 
 The motivation for this is a vague intuition about sharing parameter values. Under a parameter scheme, copying the same thing to multiple destinations will duplicate the "source" parameter many times, even though the only thing that's changing is the destination. The converse is true for operations with the same destination---maybe not overwriting copies, but arithmetic or other accumulating operations. By breaking these parameters into state, we set a source or destination once only. This has a subjective aesthetic appeal from the point of view of minimality, and an even more dubious efficiency value. We emphasise that it was an experiment and advise against it for the purposes of implementing a system quickly.
 
-## Copying And Jumping
-
-Combinations of the instructions express the expected copying and jumping operations. For example, `load source-reg`, `deref`, `store dest-reg` copies the value in root-level `source-reg` to `dest-reg`. The first instruction loads the literal string `source-reg` into the `focus`; the second replaces `focus` with the contents of its named register; the third copies the `focus` to the named destination.^[It turns out that, if you extract the destination parameter from `store`, you meet an infinite regress and will be unable to store to any top-level register. For example, if we extract the parameter to `dest_reg`, we have to somehow give it the value it previously took in the instruction---but this is precisely a `store` operation and we're already in the middle of one.]
-
-The `copy a.b.c to x.y.z` from earlier would decompose as follows:
+## Copying and Jumping
 
 \lstset{language=blasmmini}
+
+Combinations of the instructions express the expected copying and jumping operations. For example, \lstinline!load source-reg; deref; store dest-reg! copies the value in root-level `source-reg` to `dest-reg`. The first instruction loads the literal string `source-reg` into the `focus`; the second replaces `focus` with the contents of its named register; the third copies the `focus` to the named destination.^[It turns out that, if you extract the destination parameter from `store`, you meet an infinite regress and will be unable to store to any top-level register. For example, if we extract the parameter to `dest-reg`, we have to somehow give it the value it previously took in the instruction---but this is precisely a `store` operation and we're already in the middle of one. However, see Section\ \ref{a-meta-circular-inelegance} for a way around this.]
+
+The `copy a.b.c to x.y.z` from earlier would decompose as follows (recall the ultra-concise notation from Section\ \ref{instruction-encoding-in-state-text-and-diagrams}):
 
 1. \lstinline!l a; d; s map; l b; i; l c; i; l map; d; s source!
 2. \lstinline!l x; d; s map; l y; i!
@@ -56,7 +58,7 @@ map: {
 }
 ```
 
-One of the three code paths will be selected according to whatever happens to be in the `weather` register via the following instructions: `load weather`, `deref`, `store focus`, `index`. The `map` register will hold the result, in this case the "other" code sequence (recall that the special key `_` is used as an "else" clause for lookups). What remains is then to copy this within `next_instruction.ref`.
+One of the three code paths will be selected according to whatever happens to be in the `weather` register via the following instructions: \lstinline!load weather; deref; store focus; index!. The `map` register will hold the result, in this case the "other" code sequence (recall that the special key `_` is used as an "else" clause for lookups). What remains is then to copy this within `next_instruction.ref`.
 
 This example proved that we can do strict equality matching, but what about comparisons? We may observe how conditional jumps are traditionally based on a relation to zero, \eg{} "jump if less than zero". A condition like $3 < 7$ is rearranged into $3 - 7 < 0$ and the "jump if less than zero" instruction is called with the value $-4$. In BootstrapLab, we go one step further: if we apply the mathematical `sign` instruction to the value $-4$, we get $-1$. We can then simply use the trick we already described and `index` into a map containing keys `-1`, `0` and `1`. All of the relevant conditions can be expressed this way: for example, "greater than or equal to zero" can be achieved by pointing the keys `0` and `1` to the same code sequence.
 
@@ -65,11 +67,11 @@ From the perspective of self-sustainable systems, it is worth checking that ther
 
 \begin{figure}[h]
 \centering\includegraphics[width=8cm]{../../fig/semantics/virtual-map.png}
-\label{fig:virtual-map}
 \caption{Separate base and virtual registers.}
+\label{fig:virtual-map}
 \end{figure}
 
-Firstly, let us call our existing \ac{BL-ASM} the "base" level, where the hypothetical interpreter code lives. Next, we call the code being interpreted the "virtual" level. Suppose that the virtual register file is a map under the base-level user register `virtual` and the current virtual instruction lives in `instr` (Figure\ \ref{fig:virtual-map}). In this case, upon seeing `op: store` the following base-level code will do the trick (recall the ultra-concise notation from Section\ \ref{instruction-encoding-in-state-text-and-diagrams}):
+Firstly, let us call our existing \ac{BL-ASM} the "base" level, where the hypothetical interpreter code lives. Next, we call the code being interpreted the "virtual" level. Suppose that the virtual register file is a map under the base-level user register `virtual` and the current virtual instruction lives in `instr` (Figure\ \ref{fig:virtual-map}). In this case, upon seeing `op: store` the following base-level code will do the trick:
 
 \begin{minipage}{\linewidth}
 \begin{lstlisting}
@@ -84,8 +86,8 @@ l virtual; d; s map; l tmp; d; s
 
 \begin{figure}[h]
 \centering\includegraphics[width=7.5cm]{../../fig/semantics/virtual-siblings.png}
-\label{fig:virtual-siblings}
 \caption{Sibling base and virtual registers.}
+\label{fig:virtual-siblings}
 \end{figure}
 
 So far, so good; however, the same is *not* possible if we choose the virtual registers to live *alongside* the base registers (whether or not this is a good idea); call this the "virtual sibling registers" model. We are now considering the picture in Figure\ \ref{fig:virtual-siblings} instead (assume for the sake of simplicity that virtual code plays nice and only names virtual registers). This time, we get stuck:
@@ -114,13 +116,15 @@ It is natural to ask what instruction, if any, could perform this operation in-s
 \centering\includegraphics[width=10cm]{../../fig/semantics/store-reg-mod.png}
 \end{figure}
 
-So far, where previously we had `store reg1`, we now have `load reg1` followed by some way of storing `focus` to `destination`. We add a `dest` instruction that does exactly this. Now, we can translate the old `load myValue`, `store reg1` to `load reg1`, `dest`, `load myValue`, `store-reg`.
+So far, where previously we had \lstinline!store reg1!, we now have \lstinline!load reg1! followed by some way of storing `focus` to `destination`. We add a `dest` instruction that does exactly this.
+
+\lstset{morekeywords={dest}}
 
 \begin{figure}[!h]
 \centering\includegraphics[width=10cm]{../../fig/semantics/dest.png}
 \end{figure}
 
-The inelegance that caused our re-design can be codified as a new heuristic:
+Now, we can translate the old \lstinline!load myValue; store reg1! to \lstinline!load reg1; dest; load myValue; store-reg!. The inelegance that caused our re-design can be codified as a new heuristic:
 
 \begin{heuristic}[Interpreter Alignment]
 Ensure the platform interpreter can be translated into the substrate language.
@@ -142,6 +146,8 @@ l v_destination; d; dest; l v_focus; d; sr
 Notice that this is identical to the implementation of `dest` except for the insertion of a `deref` after the first `load`.
 
 We can summarise the modified architecture, at the register level, as having a "read head" `focus` and a "write head" `destination`. The only way a value in the state gets to the register file is in through `focus` and out through `destination`, coupled by the `dest` instruction. Beyond the register level, we could analyse `map` as a combined read-write head. However, we will leave further analysis for subsequent work. Interested readers may consult\ \textcite{PrimInstrucs} for some further intuitions and design philosophy.
+
+\lstset{deletekeywords={dest}}
 
 # The Cutting Room Floor
 *Escape The Platform* (Force \ref{escape-plaf}) directed us to do without several advanced substrate features we were tempted to include. For example, it would be useful to attach state change listeners to keep parts of the state in sync with others. We could go even further and include constraint-based programming features.

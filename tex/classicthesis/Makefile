@@ -25,8 +25,17 @@ diff.pdf: diff.tex
 	lualatex diff
 	lualatex diff
 
+diff-bl.pdf: diff-bl.tex
+	lualatex diff-bl
+	biber diff-bl
+	lualatex diff-bl
+	lualatex diff-bl
+
 expanded-new.tex: $(TEX_FILES)
 	latexpand ClassicThesis.tex > $@
 	
 diff.tex: expanded-new.tex
 	latexdiff expanded-old.tex $< > $@
+
+diff-bl.tex: expanded-new.tex
+	latexdiff expanded-old-bl-only.tex $< > $@

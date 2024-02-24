@@ -5,7 +5,7 @@ The objective of *Masp* is to get all the benefits of a Lisp-like expression lan
 
 Lisp is built around the "linked list" data structure as implemented by "cons" cells. Expressions to be evaluated take the form of lists. However, lists can also represent "data" lists that are not meant to be evaluated. Similarly, Masp includes both "data" maps and maps representing an expression to evaluate. Accordingly, we will divide our description of Masp into *State* and *Change*.
 
-# State In Masp
+# State in Masp
 State is inherited from the substrate (see Section\ \ref{state-in-bootstraplab}); in particular, lists continue to exist as maps with numerical keys. However, there is one important Masp structure that needs encoding *within* this substrate: the variable binding environments (or *envs* for short). An env is basically a tree of dictionaries, where children delegate failed lookups to their parents. In Lisp this is traditionally encoded as a tree of linked list cells, where lookups are accomplished by linear search. In Masp, the map substrate already provides the dictionary structure for free, with lookup as a primitive operation (no linear scans!) and all that must be done is to add extra structure for delegation.
 
 Delegation could be as simple as adding a `parent` key to a map, but this "in-band" encoding would essentially reserve the word `parent` and preclude it from "user"-level Masp code. We could call it `__parent` or something equally strange and perhaps get away with it, but for elegance's sake we took the alternative route. An *env* is a map with two entries, called `parent` and `entries`. The latter holds the local entries (which can have whatever keys we want), while `parent` points to the parent env if it has one.
@@ -32,7 +32,7 @@ A Masp *closure* is a map with entries for the function `body`, local `env`, a l
 
 Interestingly, `arg_names` is never actually used by anything, not even the evaluator. It is necessary *in Lisp,* as it links the positional arguments passed to the internal names used in the body; in Masp, arguments are already passed with names, so no such linking is necessary.^[We kept `arg_names` to serve as an order map (see Section\ \ref{the-cutting-room-floor}) to enable positional parameters as a concise notation in the future. One addition suggested by the Lisp usage is an `arg_renames` to connect the preposition-like names used in calls (`to`, `is`, `as`, etc.) to more descriptive internal names, allowing function bodies to refer to `theValue` instead of `as` while retaining the natural-language-esque rhythm on the calling side.]
 
-## Maps As Functions
+## Maps as Functions
 We find it useful to view maps abstractly as "extensional^[Extensional in the sense of "listing out the entries"; a different meaning to the "extensional" of "evaluates all arguments"! Both of these philosophical concepts are relevant to Masp and it is unfortunate that they share the same word.] functions": mathematical functions taking inputs to outputs, whose mappings are explicitly specified instead of via some computation. Therefore it is important that maps must be usable as functions in Masp; we must be able to "apply" a map to a value. This gives us a special case of pattern matching for free (\ie{} strict equality matching). It may be worth considering how augmenting the definition of maps-as-functions could support more advanced pattern matching (\eg{} inequalities, more complex conditions) but this is beyond the scope of Masp as-is. We retain the failsafe match named `_` from the substrate's `index` instruction (Section\ \ref{index-follow-key-in-map}).
 
 For example, the pattern match in the Factorial definition (Figures\ \ref{fig:masp1-3} and\ \ref{fig:masp4-5}) could be extended like so (using `$...$` to denote syntactic sugar):
@@ -58,11 +58,11 @@ A *local evaluation context,* or *context* for short, contains a local `env`, an
 
 \begin{figure}
 \centering\includegraphics[width=8cm]{masp/masp.png}
-\label{fig:masp-tree}
 \caption[The Masp tree.]{The \texttt{masp} register contains an \texttt{initial\_env} with basic primitives, a \texttt{program}, and the current evaluation context \texttt{ctx}. When fully evaluated, the program has its tree structure expanded into a tree of local contexts, each with an \texttt{expr} and a \texttt{value} (\texttt{env}s have been omitted for brevity). Solid rectangles enclose ordinary maps; dashed rectangles draw attention to local contexts.}
+\label{fig:masp-tree}
 \end{figure}
 
-### Beginning The Walkthrough
+### Beginning the Walkthrough
 We will walk through the process from the perspective of `masp_step`. If the `expr` is a string, we add a `value` obtained from looking up the `expr` in the local `env`. If `expr` is a map with no `apply` entry, \ie{} a "literal" map, we set the `value` to a special closure in which `literal` is set to the `expr` and the current env is included. Otherwise, if the `apply` node has not yet been evaluated, we wrap it in a new context and enter (\ie{} we make it the new `ctx`). Once there is a value for the function closure, evaluation proceeds to the arguments unless `dont_eval_args` is set on the closure. A tracking variable in the context, `arg_i`, helps us discover the next unevaluated argument, as determined by the order of map keys from \ac{JS}' `Object.keys()`.
 
 ### Protocol Between \ac{JS} Primitives and Masp
@@ -91,14 +91,14 @@ It sets the value in the context and returns `true`, signalling that it has also
 
 Because `dont_eval_args` is set, `define` will receive the `name` argument as an unevaluated string. It needs to evaluate the `as` argument, and if it has already done so, it binds it to the `name` in the global `initial_env`, sets the Masp return value as `null` (\ie{} no return value, entirely side-effects) and returns `true` to return in Masp. Otherwise, it creates and enters a new context for `as`, and implicitly returns `undefined` in \ac{JS}, which is falsy, telling the evaluator that `define` has not finished evaluating.
 
-### Evaluating A Non-Primitive Body
+### Evaluating a Non-Primitive Body
 Back to inspecting the `body`. If a `body` is absent but we have a `literal` map instead, we push the single argument (named `to`) through the map and treat the result as the `body` (going via the `_` key if this fails). This facilitates pattern-matching for the purpose of obtaining *further code to execute* beyond obtaining just a value straight away.
 
 At this point, we have a `body` made of Masp code to evaluate in an appropriate context. We create a new context, duplicate the body code so we can destructively replace expressions with contexts down the line, and set that as the `value` of the `apply` context. We fill the local `env` with the processed arguments, and enter this new context (\ie{} set it as the `ctx`).
 
 Finally, if we have been through all the preceding conditions in `masp_step` but did not "do" anything, and the current context already has a value, we must have finished evaluating this subexpression and re-enter the parent context to continue there.
 
-## List Of Primitives
+## List of Primitives
 Here, we will describe the primitives contained in the Masp `initial_env`. Be aware that this list is not yet "complete" owing to the in-progress state of Masp. For space, the `apply` before each function name is abbreviated to `ap`. The primitives are:
 
 - `ap: quote, to:`$V$ \enspace evaluates to $V$. It is most commonly used to represent a literal string value, since in many contexts a string will be treated as a variable reference and evaluated as such. It could also be used to represent a data map that contains an `apply` key, "protecting" it from evaluation.
