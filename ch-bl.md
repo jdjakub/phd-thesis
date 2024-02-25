@@ -23,7 +23,11 @@ Our desire is to make an interactive, structured "port" of the \ac{COLA} approac
 
 Unlike \ac{COLA}, we do not write an initial object system in a language like C++. In order to support interactivity, structure, and graphics, we begin with a platform that already conveniently supports those features. This forms a suitable "blank slate" from which to gradually develop the system into a self-sustainable state. At each stage, we take stock of which changes can feasibly be achieved at the user level within the system, versus those that can only be achieved at the implementation level (recall Section\ \ref{user-vs.-implementation-levels}). We then ask ourselves: how can we imbue the user level with control over some of these aspects?
 
-The following sections propose key steps for evolving self-sustain\-ability in this way, informed by our actual experience applying them in BootstrapLab. We will point out the *forces* that shape the design and the *heuristics* by which we resolve competing forces. As we proceed through the development journey, we will reflect on the heuristics in light of actual practice and compare our choices for BootstrapLab with the corresponding stages of two other systems: \ac{COLA} and the Altair 8800 of the 1970s.
+The following sections propose key steps for evolving self-sustain\-ability in this way, informed by our actual experience applying them in BootstrapLab. We will point out the *forces* that shape the design and the *heuristics* by which we resolve competing forces. As we proceed through the development journey, we will reflect on the heuristics in light of actual practice and compare our choices for BootstrapLab with the corresponding stages of three other systems:
+
+- \ac{COLA}, since it is our main inspiration whose approach we are adapting
+- The Altair 8800 of the 1970s, to stand in for low-level or "hardware" platforms
+- Squeak Smalltalk, as a well-established and practical programming system developed in a similar way \parencite{SqueakDev}
 
 # Concepts and Terminology
 
@@ -87,9 +91,15 @@ In the Altair 8800, the *platform* comprised linear memory (state) and native CP
 
 In \ac{COLA}, the platform is C\ \parencite{OROM} or C++\ \parencite{COLAs} and the Unix command-line environment; in other words, it is the Unix programming system (Section\ \ref{the-unix-paradigm}).
 
-In BootstrapLab, we chose \ac{JS} and the Web platform. This provides us with built-in Web technologies and libraries (including graphics) and the browser developer tools. This platform provides a range of convenient tools to assist bootstrapping. Because of its large scope, we have to carefully choose primitives to expose to the product system.
+According to \textcite{SqueakDev}, the platform for Squeak was clearly Smalltalk, even though it was later compiled to C. We could make the distinction that Smalltalk was the *development platform* while C was the *deployment platform.* However, we will continue to use the term *platform* to mean the *development* platform, because our concern is how to *build* such systems in the first place. Also, despite our general characterisation of Smalltalk as self-sustainable, the versions available to the Squeak developers were not so, or not enough \parencite{SqueakDev}:
 
-*What can be changed at the user level?* At this point, there is no product system to speak of yet. This means that nothing can be changed in-system. The platform can, in principle, be modified, but by assumption this is so unfamiliar or uneconomical that the developer has opted to make a self-sustainable system instead.
+> While Smalltalk met the technical desiderata, none of the available implementations gave us the kind of control we wanted over graphics, sound, and the Smalltalk engine itself (\ldots) It became clear that the best way to get what we all wanted was to build a new Smalltalk with these goals and to share it with this wider community.
+
+Even had they been equipped with a sufficiently self-sustainable platform, other issues such as licensing and portability would have still prevented them from being content with it as a vehicle for their goals. This reminds us that one may have all sorts of reasons to create a *new* self-sustainable programming system even if one is already available.
+
+However, our work here proceeds from what we consider to be a more common premise: that the platforms that are available for us to use (incorporating factors like skills, familiarity, and preference) are *not* self-sustainable, and need to be made so by our own augmentation. Accordingly, in BootstrapLab, we chose \ac{JS} and the Web platform. This provides us with built-in Web technologies and libraries (including graphics) and the browser developer tools. This platform provides a range of convenient tools to assist bootstrapping. Because of its large scope, we have to carefully choose primitives to expose to the product system.
+
+*What can be changed at the user level?* At this point, there is no product system to speak of yet. This means that nothing can be changed in-system. The platform can, in principle, be modified, but by assumption this is so unfamiliar, uneconomical, or inappropriate that the developer has opted to make a (new) self-sustainable system instead.
 
 # Design a Substrate
 > The substrate defines the basic infrastructure supporting the product system: how the state is *represented* and *changed*. The design of a substrate re-uses parts of the platform where possible and extends it where necessary. We must decide which platform capabilities to use to represent the state and how to expose graphics and interaction. We design a minimal *instruction set,* \ac{BL-ASM}, which describes changes to the state, and can be represented using the state. We then use the platform to implement an engine that executes these instructions.
@@ -141,17 +151,23 @@ Change & UI Controls & Instructions \\
 \label{substr-tab}
 \end{table}
 
-While the foregoing model applies to programming systems generally, a special condition is required for those that are self-sustainable. We must represent instructions as pieces of state, as opposed to having "two types of things"---ordinary data, and code---which must be viewed and edited using completely different tools. This property, conventionally known as *homoiconicity*, means instructions can be generated and manipulated just like ordinary state, whether programmatically or manually. Only if this is possible can higher-level abstractions be built up, in-system, from the low level.
+While the foregoing model applies to programming systems generally, a special condition is required for those that are self-sustainable. We must represent instructions as pieces of state, as opposed to having "two types of things"---ordinary data, and code---which must be viewed and edited using completely different tools. This property of *Code As Data*^[In Lisp, this idea is called *homoiconicity;* elsewhere it is known as the *von Neumann* architecture. We are unsure of any essential differences between these three terms but use the more direct "code as data" to avoid quibbles.] means instructions can be generated and manipulated just like ordinary state, whether programmatically or manually. Only if this is possible can higher-level abstractions be built up, in-system, from the low level.
 
-\joel{Isn't homoiconicity basically just von Neumann instead of Harvard architecture? any difference?}
-\begin{requirement}[Homoiconicity]
+\begin{requirement}[Code As Data]
 Instructions must be readable and writeable as ordinary state.
 \end{requirement}
 
-## \acs{COLA}'s Low-Level Byte Arrays
-In \ac{COLA}, the substrate is quite minimal and the majority is inherited "for free" from the low-level runtime environment provided by Unix (Section\ \ref{the-low-level-binary-world}).
+The fact that we call this a *requirement* is more out of a desire to save trouble than as something that is *strictly* necessary from the beginning. If code is not ordinary data, Code As Data can be trivially, if inefficiently, bolted on after the fact. We would simply write an interpreter (for the same language, or a new one) in the existing code, which reads instructions from somewhere in the "data" memory and executes them. We would then forget all about the original interpreter and work entirely within the new language. In fact, as we will detail in Section\ \ref{designing-the-instruction-set} shortly, this is exactly what we should expect to have to do as a key part of designing a substrate. The point is that we should not *repeat* any such "mistake" of the platform and have to fix it a second time due to our own mis-design; we might as well avoid the overhead of an inner interpreter by simply having Code As Data from the beginning in our substrate.
 
-At the lowest level, state in \ac{COLA} consists of an array of bytes, addressed numerically. Some structure is imposed on this via C's standard memory allocation routines, refining the model of state to a graph of fixed-size memory blocks and the stack. Changes to this state are represented as machine instructions encoded as bytes. This is the basic state model of a C program; the sample code for \ac{COLA} embellishes this with little more than a way to associate objects to their vtables^[A *vtable* specifies object behaviour by supplying runnable code for a requested method name. It is separate from the object "instance" so that multiple objects can share the same behaviour.] and a cache for method lookups.
+## Substrates in Squeak and Altair
+The path laid out for Squeak in\ \textcite{SqueakDev} is very clear: the Virtual Machine (VM) is developed in Smalltalk (the development platform) and compiled to C (the deployment platform). In C, the VM conforms to our conception of a substrate: it is not modifiable from within Squeak. On the other hand, during development, it is unclear whether this is still the case, owing to the high self-sustainability of Smalltalk. However, we presume that it remains off-limits from within the system, on the basis that any VM-altering capabilities present in the Smalltalk implementation would break if straightforwardly compiled to C. Since Squeak is itself a version of Smalltalk, the substrate's conception of *state* is a graph of *objects* and its *change* takes the form of VM bytecode instructions; extensive details can be found in\ \textcite{SqueakDev}.
+
+As for the Altair 8800, we are using it as an example of a hardware platform; unlike our other example systems, the "programming system" it would support has been left open-ended. However, for most things one would want to achieve with such a machine, one would need basic software facilities like memory and time slice management, device interfacing, and so on. These are precisely the facilities of an Operating System (OS) and we would regard such a basic software layer as a substrate for such a system. Similarly, we would regard the Unix OS (or at least the kernel) as the substrate in Unix systems---even the Altair, supposing it had the requisite hardware resources and capabilities. As we pointed out in Section\ \ref{unix-as-a-programming-system}, the Unix substrate is cleaved into two layers: *inter-*process, in which state comprises the filesystem which is changed by system calls, and *intra-*process, in which state comprises raw memory changed by machine instructions (Section\ \ref{the-low-level-binary-world}). In the latter case, state and change are more or less inherited from the hardware platform, while the former is built as infrastructure on top of this. 
+
+## \acs{COLA}'s Low-Level Byte Arrays
+As an example of the intra-process notions of state and change, we can look at \ac{COLA}, a programming system conceived as a process within Unix. As such, its substrate is quite minimal and the majority is inherited "for free" from the low-level runtime environment that makes up a process.
+
+At the lowest level, state in \ac{COLA} consists of an array of bytes, addressed numerically. Some structure is imposed on this via C's standard memory allocation routines, refining the model of state to a graph of fixed-size memory blocks and the stack. Changes to this state are represented as machine instructions encoded as bytes. This is the basic state model of a C program; the sample code for \ac{COLA}'s object model\ \parencite[Appendix\ B]{OROM} embellishes this with little more than a way to associate objects to their vtables^[A *vtable* specifies object behaviour by supplying runnable code for a requested method name. It is separate from the object "instance" so that multiple objects can share the same behaviour.] and a cache for method lookups.
 
 This bare-bones, low-level substrate does not require much development on top of the platform and so it is quicker to complete. The ontology of state is copied from the platform, and in this case the machine instructions can be inherited too.^[In general, the internal representation of code in the platform will be unavailable to us when programming with it, so we expect not to be able to inherit it. This low-level platform is a special case, where we do have access to code if we are willing to write instructions using their numerical codes.] Completing the substrate more quickly means we can start working in-system sooner, but there is a downside: it may be cumbersome to work with such minimal functionality. The unfortunate effect would be that we speed through a primitive substrate, only to suffer slow progress at the beginning of in-system development.
 
@@ -207,8 +223,8 @@ Similarly, it would make no sense to represent instructions as numbers or string
 \begin{lstlisting}
 {
   operation: 'copy',
-  from: [ alice, 'age' ],
-  to: [ bob, 'age' ]
+       from: [ alice, 'age' ],
+         to: [   bob, 'age' ]
 }
 \end{lstlisting}
 
@@ -223,7 +239,9 @@ Everything should \emph{fit}: instructions, high-level expressions, and graphics
 \joel{Call this "preservation"?}
 \end{force}
 
-In the end, our substrate largely inherits the state model, only making simplifications. For example, \ac{JS} objects have prototypal inheritance, meaning that a simple "read" operation of a property requires potentially traversing a chain of objects. Our substrate here omits this, so reads are quite simple. Additionally, \ac{JS} includes a special `Array` object type. We omitted this, opting to represent lists as maps^[We refer to our substrate's basic dictionary structure as the *map* for brevity.] with numerical keys. This unification means that the state model only has one type of composite entity, a fact we will exploit later for the high-level language.
+It should be noted that while Alignment *constrains* the set of acceptable designs, it is not so powerful as to *determine* a single one. All it does is set a minimum "floor" of important functionality in the substrate, excluding designs that fall below it. We continue to face further choices in terms of how far to *augment* this bare minimum.
+
+In the end, our substrate for BootstrapLab largely *inherits* its state model, only making simplifications. For example, \ac{JS} objects have prototypal inheritance, meaning that a simple "read" operation of a property requires potentially traversing a chain of objects. Our substrate here omits this, so reads are quite simple. Additionally, \ac{JS} includes a special `Array` object type. We omitted this, opting to represent lists as maps^[We refer to our substrate's basic dictionary structure as the *map* for brevity.] with numerical keys. This unification means that the state model only has one type of composite entity, the *map;* a fact we will exploit later for the high-level language.
 
 We also noticed that we would not get very far if all our progress in-system could be wiped clean by losing our browser tab. Our platform, sitting within the Unix paradigm (Section\ \ref{the-unix-paradigm}), does not provide *persistence* out of the box, so we had to implement a mechanism in the substrate. We walk the state graph from the root node and discover a spanning tree, specially marking cyclic or double-parent references. We then serialise this into a JSON file which we can load by undoing the process. This is reminiscent of the image-based persistence in Smalltalk, though it is frustratingly manual. Nevertheless, it was critical to patch this unfortunate aspect of the platform and this was enough to do so.
 
@@ -252,6 +270,7 @@ Right away, we know there will have to be a special piece of state for the *inst
 
 The value of this "register" is determined by how exactly we fetch the next instruction. Perhaps each one has a `next` field which we can simply follow. In this case, the `next_instruction` will simply be the instruction itself. This also gives us convenient conditionals (\eg{} fields called `if_true` and `if_false`) but means that instruction *sequences* will have a nesting structure. This latter consequence may be inconvenient for presentation in a tree view. For BootstrapLab, we chose the alternative of numerically indexed lists of instructions which easily display in a column. This choice determined `next_instruction` to instead hold an *address*, called `ref`, made of container map and key name:
 
+\begin{minipage}
 \begin{lstlisting}
 next_instruction: {
   ref: {
@@ -261,6 +280,7 @@ next_instruction: {
   value: // the fetched instruction itself
 }
 \end{lstlisting}
+\end{minipage}
 
 Here, the "fetch" step involves dereferencing the address, incrementing the key name, and updating the `value` key to the instruction itself.
 
@@ -364,12 +384,18 @@ Computer state is a graph of maps; lists are just maps with numerical keys. Inst
 
 In most cases, the base platform will provide some way of viewing and modifying state, but this is typically inconvenient to use. The next step in bootstrapping a self-sustainable system involves implementing temporary infrastructure that lets us work with state more conveniently.
 
-## Early Computing and \acs{COLA}
+## Early Computing, Squeak, and \acs{COLA}
 Temporary infrastructure to support in-system development can be found in many developments of self-sustainable systems. A historical example is the Teletype loader for the Altair 8800. Here, the base platform was the Altair hardware with its memory and native CPU instructions. The only way to modify state through the platform was through the use of hardware switches at the front of the computer (Figure\ \ref{fig:altair}), which could be used to read and set values in a given range of memory.
 
-Programming _in-system_ looked like the tedious setting of switches to poke numerical instructions to memory. To make entering programs easier, the recommended first step when using the Altair 8800 was to manually input instructions for a *boot loader* that communicated over the serial port. When finished, this could be run to load instructions from a paper tape. From here, programmers could write instructions more conveniently using a Teletype terminal and have them loaded into the Altair memory.
+Here, programming _in-system_ looked like the tedious setting of switches to poke numerical instructions to memory. To make entering programs easier, the recommended first step when using the Altair 8800 was to manually input instructions for a *boot loader* that communicated over the serial port. When finished, this could be run to load instructions from a paper tape. From here, programmers could write instructions more conveniently using a Teletype terminal and have them loaded into the Altair memory.
 
-In the \ac{COLA} architecture\ \parencite[Section\ 6.1 "Bootstrapping"]{COLAs}, there is a four-step process, the first three of which appear to be throwaway. This includes a compiler for their state model in C++. This is aptly "jettisoned without remorse" once it has been re-implemented in itself, though it is unclear how a state model can perform computation (only after this do they implement the "behavioural layer"). Regardless, this clearly echoes the bootstrapping process for programming languages (Section\ \ref{concepts-and-terminology}).
+The history of Squeak \parencite{SqueakDev} mentions temporary infrastructure via Smalltalk, such as a throwaway memory allocator:
+
+> By following this plan, facilities became available just as they were needed. For example, the interpreter and object memory were debugged using a temporary memory allocator that had no way to reclaim garbage. However, since the system only executed a few byte codes, it never got far enough to run out of memory, Likewise, while the translator was being prepared, most of the bugs in the interpreter and object memory were found and fixed by running them in Smalltalk.
+
+Furthermore, Smalltalk is a programming *system,* famous for its interface including its class/method browser. Thus it is likely that the Squeak developers did not need to invest as much work in viewing/debugging infrastructure as we would expect for most platforms.
+
+In the \ac{COLA} architecture, there is a four-step process, the first three of which appear to be throwaway \ \parencite[Section\ 6.1 "Bootstrapping"]{COLAs}. This includes a compiler for their state model in C++. This is aptly "jettisoned without remorse" once it has been re-implemented in itself, though it is unclear how a state model can perform computation (only after this do they implement the "behavioural layer"). Regardless, this clearly echoes the bootstrapping process for programming languages (Section\ \ref{concepts-and-terminology}).
 
 The problem with these steps is that they are hard to port to a context involving structured, graphical notation and interactive system evolution. Our task is to get the system into a state where the platform, in a sense, can be "jettisoned" in terms of our attention, even though the platform-implemented substrate will be running in the background.
 
@@ -397,7 +423,7 @@ Ideally, we would have actually supported interactive state *editing* in the tem
 
 Another example of temporary infrastructure is zoom-and-pan in the graphics window. Working within a small box is very restrictive if we want to use it for viewing and editing the entirety of the system state. The finite region can be opened up into an infinite workspace by adding the ability to pan and zoom the camera with the mouse. This was important to have early on for BootstrapLab, so once again "Avoid Boilerplate" (Force\ \ref{avoid-bp}) overrode "Escape The Platform" (Force\ \ref{escape-plaf}) and we implemented this in \ac{JS}.
 
-*What can be changed at the user level?* The basic activities of viewing or editing state should be made easier by the temporary infrastructure. For the Altair 8800, instruction entry was improved. For \ac{COLA}, the basic state model was made available in the first place. For BootstrapLab, we targeted state visibility.
+*What can be changed at the user level?* The basic activities of viewing or editing state should be made easier by the temporary infrastructure. For the Altair 8800, instruction entry was improved. In Squeak, debugging was made possible by a throwaway allocator. For \ac{COLA}, the basic state model was made available in the first place. For BootstrapLab, we targeted state visibility.
 
 # Implement a High-Level Language
 
@@ -410,7 +436,17 @@ To make programming in-system pleasant enough, we need a high-level programming 
 ## Shortcuts for Low-Level Substrates
 For a programming system built atop a limited platform (\eg{} hardware), the temporary infrastructure may be the best tool that is available for programming. In that case, we would write the compiler or interpreter directly using the instruction set. However, as long as the platform has higher capabilities or one has access to alternative platforms, this may not be optimal. When Paul Allen and Bill Gates wrote the famous BASIC programming language for the Altair 8800, they did not do this *on* the Altair, but instead used an Intel 8080 CPU emulator written and running on Harvard's PDP-10. The high-level language was thus developed *outside the system.*
 
-In \ac{COLA}, it is unclear how the Lisp-like programming language is built beyond the broad outlines. What is clear is that the bootstrapping process is carried out by means of source code files written in some text editor. In other words, it wisely takes advantage of the affordances of its Unix platform, avoiding the Turing Tarpit failure mode described in Section\ \ref{the-major-design-conflict}.
+For Squeak, there was no need to write the Smalltalk interpreter in low-level VM bytecode when the language was already available \parencite{SqueakDev}:
+
+> The interpreter is structured as a single class that gets translated to C along with the Object Memory and BitBlt classes. In addition, a subclass (Interpreter Simulator) runs all the same code from within a Smalltalk environment by supporting basic mouse, file, and display operations. This subclass was the basis for debugging the Squeak system into existence. (\ldots) Having an interpreter that runs within Smalltalk is invaluable for studying the virtual machine. Any operation can be stopped and inspected, or it can be instrumented to gather timing profiles, exact method counts, and other statistics.
+
+Having an existing platform that already does everything one wants is certainly the optimal situation to be in:
+
+> We attribute the speed with which this initial work was accomplished to the Squeak philosophy: do everything in Smalltalk so that each improvement makes everything smaller, faster, and better. It has been a pleasant revelation to work on such low-level system facilities as real-time garbage collection and FM music synthesis from within the comfort and convenience of the Smalltalk- language and environment.
+
+However, we must bear in mind that the platform from which Squeak begins is our *end-goal.* In our project we deliberately target the much more difficult task of achieving our dream programming system from a lesser starting point, and in the process uncover the general story one can expect to re-trace in any similar project.
+
+In \ac{COLA}, it is unclear how the Lisp-like programming language is built beyond the broad outlines. What is clear is that the bootstrapping process is carried out by means of source code files written in some text editor. In other words, it wisely takes advantage of the affordances of its Unix platform (at its *inter-*process layer), avoiding the Turing Tarpit failure mode described in Section\ \ref{the-major-design-conflict}.
 
 ## High-Level Language for BootstrapLab
 If we take \ac{JS}, and strip away the concrete syntax, we get a resulting tree structure of function definitions, object literals, and imperative statements. A similar structure with similar semantics would be obtained from other dynamic languages. In fact, this would largely resemble Lisp S-expressions under Lisp semantics; hardly surprising considering Lisp's famously minimal syntax of expression trees. Furthermore, the evaluation procedure for Lisp is simple and well-established. For these reasons, we designed a Lisp-like tree language in the substrate. This way, we provide high-level constructs (if/else, loops, functions, recursion, and so on) for in-system programming.
@@ -528,8 +564,28 @@ Lisp evaluation is done by walking over the expression tree. At any point, we ar
 
 If we had developed both the state editor and the high-level programming language in-system, we would already have an elementary self-sustainable system at this point. This would have been our only option if we had been somehow stuck with only a primitive platform, as was the case at the dawn of computing in the 1940s. With a richer platform available, one can choose to implement a state viewer, editor and high-level programming language on it following Heuristic\ \ref{plaf-ed}. Since these will now run outside of the product system, they will be functionally part of the substrate---yet they do not belong there. This *substrate debt*, incurred due to "Escape The Platform" (Force\ \ref{escape-plaf}), now needs to be paid off.
 
+## Substrate Debt in Squeak
+The closest analogue of this concept that we can see in Squeak is in the difference between its development and deployment platforms. Unlike our BootstrapLab, Squeak was not developed in its deployment platform; all the "hard" work was done taking advantage of Smalltalk. Thus, the main "debt" to pay off was to port it all to C, which was accommplished by automatic translation \parencite{SqueakDev}:
+
+\begin{quote}
+Compile the interpreter to make it practical:
+\begin{itemize}
+\item Design a translator from a subset of Smalltalk-80 to C.
+\item Implement this translator.
+\item Translate the virtual machine to C and compile it.
+\item Write a small C interface to the Mac OS.
+\item Run the compiled interpreter with the new image.
+\end{itemize}
+\end{quote}
+
+In our case, unlike Squeak, there is no need for any such compilation to \ac{JS}; our development and deployment platforms are the same. However, \ac{JS} was not nearly as full-featured as Smalltalk, which meant we accumulated a different type of substrate debt via the temporary infrastructure we had to build.
+
+Squeak exemplifies the ideal development journey, where they quickly and straightforwardly ended up with a self-sustainable system:
+
+> It was easy to stay motivated, because the virtual machine, running inside Apple Smalltalk, was actually simulating the byte codes of the transformed image just five weeks into the project. A week later, we could type "3 + 4" on the screen, compile it, and print the result, and the week after that the entire user interface was working, albeit in slow motion. We were writing the C translator in parallel on a commercial Smalltalk, and by the eighth week, the first translated interpreter displayed a window on the screen. Ten weeks into the project, we "crossed the bridge" and were able to use Squeak to evolve itself, no longer needing to port images forward from Apple Smalltalk. About six weeks later, Squeak’s performance had improved to the point that it could simulate its own interpreter and run the C translator, and Squeak became entirely self-supporting.
+
 ## Substrate Debt in BootstrapLab
-In the ideal development journey, we would have a high-level programming language and a basic state editor in-system by now. This did not happen for BootstrapLab.
+In the aforementioned ideal development journey, we would have a high-level programming language and a basic state editor in-system by now. This did not happen for BootstrapLab.
 
 The Masp interpreter we developed used in-system state, but controlled it from \ac{JS}. Our state viewer was also fully implemented in \ac{JS}. Editing took place through the browser development console. The alternative, creating a Masp interpreter and state editor in-system using the low-level \ac{BL-ASM} instructions, had been technically possible but prohibitively tedious. The in-system tooling was far from supplanting the existing platform interface of \ac{JS} in the text editor. Continuing to use the latter was, therefore, the only sensible choice to make progress.
 
