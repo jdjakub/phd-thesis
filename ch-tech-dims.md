@@ -84,7 +84,7 @@ In Section\ \ref{notational-freedom} we mentioned the salient stages prior to no
 
 Therefore, our dimensions (all penalties) are as follows. They are minimised if a custom syntax, language, or notation can be "slotted in" once it exists, with no resistance from the system:
 
-\paragraph{Custom Syntax Effort.} The work required to use a custom syntax, not counting that required to specify the syntax itself (\eg{} as a grammar). \ac{COLA}\ \parencite{COLAs} and OMeta\ \parencite{OMeta} score low on this, since they are specifically designed for this purpose. Most programming languages have *infinite* custom syntax effort, because their parsers are separate programs that adhere to a fixed grammar that cannot be changed by statements in the language. This includes \ac{JS} despite its inclusion of a regex sub-syntax, HTML despite its inclusion of \ac{JS} and CSS, and C# despite its LINQ sub-language for queries; these examples may exhibit syntactic *diversity*, but there is no way to include a user-supplied syntax for use in the source code.
+\paragraph{Custom Syntax Effort.} The work required to use a custom syntax, not counting that required to specify the syntax itself (\eg{} as a grammar). \ac{COLA}\ \parencite{COLAs} and OMeta\ \parencite{OMeta} score low on this, since they are specifically designed for this purpose. Most programming languages have *infinite* custom syntax effort, because their parsers are separate programs that adhere to a fixed grammar that cannot be changed by statements in the language. This includes \ac{JS} despite its inclusion of a regex sub-syntax, HTML despite its inclusion of \ac{JS} and CSS, and C# despite its LINQ sub-language for queries; these examples may exhibit syntactic *plurality*, but there is no way to include a user-supplied syntax for use in the source code.
 
 \paragraph{Custom Language Effort.} The work required to use custom language-like notation beyond syntax, not counting that required to implement the rendering and interaction. Most programming languages, \ac{COLA}, and OMeta get an infinite score here, while MPS\ \parencite{MPS} and Eco score low.
 
@@ -116,10 +116,9 @@ So if Implicit Structure is not about the interface, or how the data is really s
 
 \paragraph{String wrangling effort.} How much code has to be written to convert between Implicit and Explicit Structure? Explicit Structure implies a minimal value for this and would look something like the following:
 
-```
+\begin{lstlisting}[language=JavaScript]
 data = load('filename')
-data.foo.bar = 'baz';
-```
+\end{lstlisting}
 
 Here, there are zero lines of string wrangling. Only one line, translating between the filesystem and the internal system namespaces, is required to prepare the data structure for use.
 

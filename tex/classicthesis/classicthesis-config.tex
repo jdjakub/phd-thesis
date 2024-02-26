@@ -86,7 +86,8 @@
 \newcommand{\criterion}{\paragraph}
 % Thanks https://tex.stackexchange.com/a/32687
 \NewDocumentCommand{\rot}{O{45} O{1em} m}{\makebox[#2][l]{\rotatebox{#1}{#3}}}%
-\newcommand{\mybox}[1]{\noindent\fbox{\parbox{\textwidth}{#1}}}
+%\newcommand{\mybox}[1]{\noindent\fbox{\parbox{\textwidth}{#1}}}
+\newcommand{\mybox}[1]{\begin{quote}#1\end{quote}}
 \providecommand{\tightlist}{}% Don't want Pandoc's tight lists
 % Nor do we want long tables by default
 \newenvironment{longtable}[2]{\begin{tabular}}{\end{tabular}}
