@@ -224,8 +224,8 @@ If the software is a programming system, then this can get confusing: both level
 
 In this dissertation, we are interested in *building* programming systems with the Three Properties: Self-Sustainability, Notational Freedom and Explicit Structure. This means we occupy the third viewpoint, where we are detached from any particular end-user program that might get created. We see our situation as follows:
 
-* We are using some already-existing programming system (\eg{} C). We did not create it and we do not expect to be able to change it. We call this the *platform*.
-* The programming system we create using the platform is called the *product system* or simply "the system" (\eg{} Python).
+* We are using some already-existing programming system (in our example above, this was C). We did not create it and we do not expect to be able to change it. We call this the *platform*.
+* The programming system we create using the platform is called the *product system* or simply "the system" (Python, in our example).
 
 ### Platforms and Substrates
 Because we seek to build a product system that is Self-Sustainable, the picture becomes more complicated. The point of Self-Sustainability is to blur the distinction between the implementation and user levels. Not only can the system be used to create ordinary programs, but it can also be used to change itself. We use the term *in-system* to refer to changes made within the product system, by using it as a programming system at its user level.

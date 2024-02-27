@@ -128,7 +128,14 @@ Before the Web, "hypertext" was regularly created and distributed by people in t
 These aspects of HyperCard's design encouraged a community of producer-consumers for hypertext content. The web's higher cost of authoring led to a lower producer-to-consumer ratio, restricting the kind of medium that it would become. Note that the naïve pokeability of the element inspector does not amount to *authoring* a web page; such an interface is designed for fine-grained *change* rather than coarse-grained creation. It is also oriented towards programmers, being part of the "developer tools", compared to HyperCard's presentation of authoring as a primary use of the software.
 
 ## Smalltalk and \acs{COLA}
-Smalltalk provides for behaviour editing at a finer granularity than the Web developer tools. Behaviour is separated first by class and then by method; only then is a text editor presented for the code (Figure\ \ref{fig:pharo}). More importantly, changes to this code take effect once committed, with no "restarting" of the system taking place. The state of the system is persisted by default to an "image" file. In short, Smalltalk provides persistent naïve pokeability for both code and data.
+Smalltalk provides for behaviour editing at a finer granularity than the Web developer tools. Behaviour is separated first by class and then by method; only then is a text editor presented for the code (Figures\ \ref{fig:st80} and\ \ref{fig:pharo}). More importantly, changes to this code take effect once committed, with no "restarting" of the system taking place. The state of the system is persisted by default to an "image" file. In short, Smalltalk provides persistent naïve pokeability for both code and data.
+
+\begin{figure}
+\centering
+\includegraphics[width=\linewidth]{st80.png}
+\caption[Smalltalk-80]{The interface of Smalltalk-80, which introduced the *class browser* visible at the top.}
+\label{fig:st80}
+\end{figure}
 
 \begin{figure}
 \centering

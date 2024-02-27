@@ -63,6 +63,15 @@ Smalltalk appeared in the 1970s with a distinct ambition of providing "dynamic m
 
 Similarly to Lisp systems, Smalltalk adopts the persistent address space model of programming where data remains in memory, but based on *objects* and *message passing* instead of *lists*. Any changes made to the system state by programming or execution are preserved when the computer is turned off (this is *persistence* again, Definition\ \ref{def:persistent}). Lastly, the fact that much of the Smalltalk environment is implemented in itself makes it possible to extensively modify the system from within: Smalltalk exhibits Self-Sustainability.
 
+An important descendant of Smalltalk is *ThingLab*\ \parencite[Figure\ \ref{fig:thinglab}]{ThingLab}---later improved as ThingLab II\ \parencite{ThingLab2}---which augments the class browser with a *picture pane.* ThingLab was a *constraint-based* programming system in the vein of Sketchpad\ \parencite{Sketchpad}. ThingLab provided not only a library of pre-existing constraints and objects for use in electrical and geometric simulations, but was designed as a "kit-building kit" with the ability to create new types of objects and constraints via the Smalltalk language. The extent to which ThingLab and Sketchpad can define new graphical constructs, and give them semantics (as opposed to merely drawing a picture) qualifies for *Notational Freedom* as well as Self-Sustainability.
+
+\begin{figure}
+\centering
+\includegraphics[width=\linewidth]{thinglab.png}
+\caption[ThingLab screeenshot.]{ThingLab could be used to explore constraint-based simulations such as electrical circuits, but could also leverage Smalltalk to create new objects and constraints that could be graphically specified and instantiated.}
+\label{fig:thinglab}
+\end{figure}
+
 We include Lisp and Smalltalk in the OS-likes because they function as operating systems in many ways. On specialised machines, like the Xerox Alto and Lisp machines, the user started their machine directly in the Lisp or Smalltalk environment and was able to do everything they needed from *within* the system. Nowadays, however, this experience is associated with Unix and its descendants on a vast range of commodity machines.
 
 \paragraph{Unix.}
@@ -76,7 +85,7 @@ In the "modern web", multiple programming languages treat \ac{JS} as a compilati
 \paragraph{COLAs.}
 The one system that directly influenced our work is the \Acl{COLA}, or \ac{COLA}\ \parencite{COLAs}: a small, expressive starting system designed for open evolution by its user. It is described as a mutually self-implementing pair of abstractions: a structural object model (the "Object" in the name) and a behavioural Lisp-like language (the "Lambda"). \ac{COLA} aims for maximal openness to modification, down to the basic semantics of object messaging and Lisp expressions.
 
-The two remarkable features we see in the \ac{COLA} idea are *self-sustain\-ability* and a hint at *notational freedom*, which we will say more about in Section\ \ref{precursors-of-the-three-properties}. \ac{COLA} inherits self-sustainability from the Smalltalk tradition and attempts to amplify it. This provides for what the authors refer to as *internal evolution* as a means for implementing *\acp{MSL}:*
+The two remarkable features we see in the \ac{COLA} idea are *self-sustain\-ability* and a hint at *notational freedom*, which we will exhibit presently. \ac{COLA} inherits self-sustainability from the Smalltalk tradition and attempts to amplify it. This provides for what the authors refer to as *internal evolution* as a means for implementing *\acp{MSL}:*
 
 > Applying \[internal evolution\] locally provides scoped, domain-specific languages in which to express arbitrarily small parts of an application (these might be better called *mood-specific* languages). Implementing new syntax and semantics should be (and is) as simple as defining a new function or macro in a traditional language.
 
@@ -84,13 +93,14 @@ An example of a \ac{MSL} is the one reported in\ \textcite[p.\ 4]{Steps08} for c
 
 > The header formats are parsed from the diagrams in the original specification documents, converting "ascii art" into code to manipulate the packet headers.
 
-A representative diagram and the grammar for parsing it (itself written in a grammar-definition DSL) can be found in\ \textcite[p.\ 44]{Steps07} (Figures\ \ref{fig:packet-format} and\ \ref{fig:packet-grammar}). They note:
+A representative diagram and the grammar for parsing it (itself written in a grammar-definition DSL) can be found in\ \textcite[p.\ 44, Figures\ \ref{fig:packet-format} and\ \ref{fig:packet-grammar}]{Steps07}. They note:
 
 > We can now define accessors for the fields of an IP packet header simply by drawing its structure. The following looks like documentation, but it's a valid *program.*
 
 \begin{figure}
-\raggedright
-\begin{lstlisting}[basicstyle=\footnotesize\ttfamily,keepspaces=true]
+% tyvm https://tex.stackexchange.com/questions/220707/using-scalebox-to-decrease-the-size-of-listings-code
+\begin{lrbox}{\mywidebox}%
+\begin{lstlisting}[language=,basicstyle=\footnotesize\ttfamily,keepspaces=true,columns=flexible,breaklines=false]
 +-------------+-------------+-------------------------+----------+----------------------------------------+
 | 00 01 02 03 | 04 05 06 07 | 08 09 10 11 12 13 14 15 | 16 17 18 | 19 20 21 22 23 24 25 26 27 28 29 30 31 |
 +-------------+-------------+-------------------------+----------+----------------------------------------+
@@ -105,13 +115,19 @@ A representative diagram and the grammar for parsing it (itself written in a gra
 |                                             destinationAddress                                          |
 +---------------------------------------------------------------------------------------------------------+
 \end{lstlisting}
+\end{lrbox}
+\scalebox{0.8}{\usebox{\mywidebox}}
 \caption[TCP packet \ac{MSL}.]{ASCII art diagram for an IP packet, in principle both human-readable and machine-parseable.}
 \label{fig:packet-format}
 \end{figure}
 
+\lstdefinelanguage{packets}{
+  morekeywords={self, let},
+  morestring=[b]",
+}
+
 \begin{figure}
-\raggedright
-\begin{lstlisting}[basicstyle=\footnotesize\ttfamily,keepspaces=true]
+\begin{lstlisting}[language=packets,basicstyle=\footnotesize\ttfamily,keepspaces=true,columns=flexible,breaklines=false]
     structure :=
          error  = ->[self error: ['"structure syntax error near: " , [self contents]]]
            eol  = '\r''\n'* | '\n''\r'*
@@ -124,11 +140,15 @@ A representative diagram and the grammar for parsing it (itself written in a gra
     identifier  = id:$(letter (letter | digit)*) _  -> [id asSymbol]
         number  =                    num:$digit+ _  -> [Integer fromString: num base: '10]
        columns  =       '|'                         -> (structure-begin self)
-                         ( _ num:number             -> [bitmap at: column put: (set bitpos num)]
+                         ( _ num:number             -> [bitmap at: column
+                                                              put: (set bitpos num)]
                              (num:number)* '|'      -> (let ()
                                                          (set bitpos num)
-                                                         (set column [[self readPosition] - anchor]))
-                         )+ eol ws                  -> [bitmap at: column put: (set width [bitpos + '1])]
+                                                         (set column [
+                                                            [self readPosition] - anchor
+                                                          ]))
+                         )+ eol ws                  -> [bitmap at: column
+                                                              put: (set width [bitpos + '1])]
            row  =        ( n:number                 -> (set row n)
                            ) ? '|'                  -> (let ()
                                                          (set anchor [self readPosition])
@@ -138,11 +158,20 @@ A representative diagram and the grammar for parsing it (itself written in a gra
           name  =      id:identifier (!eol .)* eol  -> (structure-end id)
        diagram  =     ws columns row+ name | error
 \end{lstlisting}
-\caption{Grammar for parsing the ASCII art into a data structure definition\ \parencite[p.\ 44]{Steps07}.}
+\caption{Grammar for parsing the ASCII art into a data structure definition\ \parencite[p.\ 44]{Steps07}. Message sends in square brackets \texttt{[]} and Lisp-like expressions in parentheses \texttt{()} are visible; these respectively relate to the "Object" and "Lambda" halves of the underlying \ac{COLA}.}
 \label{fig:packet-grammar}
 \end{figure}
 
 We see this as the extreme end of what a \ac{MSL} is capable of. The ability for a programmer to express arbitrarily small parts of an application in a form they deem suitable is, in its fully *general* form, what we call Notational Freedom. With such a capability, code could be synthesised from *real* tabular diagrams^[We are thinking of vector graphics formats here, but computer vision techiques would allow someone to use raster screenshots if they so desired.] of packet headers, not just those rendered with ASCII characters.
+
+We mentioned how these \acp{MSL} were supported by \ac{COLA}'s *internal evolution,* which we interpret as another term for Self-Sustainability (or, more precisely, its practice). This is provided for by the \ac{COLA} architecture composed of an object model for structure\ \parencite{OROM} and a Lisp-like language for behaviour\ \parencite{OECM}.
+
+The object model is a late-bound, Smalltalk-style objects and messaging environment called "Id", and we will describe it briefly here. An Id *object* is a block of state which can change as a result of messages received by it. Messaging (analogous to *method invocation* in Java-style OOP) works as follows:
+
+* A message is sent by first *bind*-ing its name to its *method implementation*, which is specific code that gets run in the context of the receiver $R$. This binding is a dynamic operation that can use runtime conditions to make its decision---even create a method implementation on the fly. This *late binding* contrasts with *early binding* where the name is bound to the implementation statically and thus holds for the entire running lifetime of the system.
+* This "bind" step is accomplished by sending a further message; this time, to the receiver's *vtable* $V(R)$. A vtable is another object that maps "message name" to "implementation code"---analogous to a "class" in Java-style OOP.
+* Because this initial "bind" message is itself a message send, it triggers a similar "bind" to *its* vtable $V(V(R))$, and so on: recursing up the vtable-chain, and terminating at a base case.
+* The higher levels of the vtable chain mean that different kinds of vtables can be supported (as well as different kinds of "kinds of vtables", and so on). Each kind of vtable may implement the "bind" operation in its own way. For example, one kind of vtable could employ a simple dictionary mapping names to implementations. A different kind might build the code for the implementation just-in-time, without looking anything up in a data structure.
 
 ## Application-Focused Systems
 The previously discussed programming systems were either universal, not focusing on any particular kind of application, or targeted at broad fields, such as Artificial Intelligence and symbolic data manipulation in Lisp's case. In contrast, the following examples focus on narrower application domains. Many support programming based on rich interactions with specialised visual and textual notations.

@@ -92,6 +92,8 @@
 % Nor do we want long tables by default
 \newenvironment{longtable}[2]{\begin{tabular}}{\end{tabular}}
 \newenvironment{head}{}{}
+\newsavebox{\mywidebox} % to shrink the wide ascii art listing >.>
+
 %\newcommand{\hypertarget}[1]{}
 
 % Doesn't work, I just corrected them manually
@@ -135,6 +137,10 @@
   %bibstyle=authoryear,dashed=false, % dashed: substitute rep. author with ---
   sorting=nyt, % name, year, title
   maxbibnames=10, % default: 3, et al.
+  mincitenames=1,
+  maxcitenames=2,
+  uniquename=false,
+  uniquelist=false,
   %backref=true,%
   natbib=false % natbib compatibility mode (\citep and \citet still work)
 }{biblatex}
