@@ -61,9 +61,9 @@ Both MacLisp and Interlisp adopted the idea of *persistent address space*. Both 
 \paragraph{Smalltalk.}
 Smalltalk appeared in the 1970s with a distinct ambition of providing "dynamic media which can be used by human beings of all ages"\ \parencite{PersonalDynMedia}. The authors saw computers as *meta-media* that could become a range of other media for education, discourse, creative arts, simulation and other applications not yet invented. Smalltalk was designed for single-user workstations with a graphical display, and pioneered this display not just for applications but also for programming itself. In Smalltalk 72, one wrote code in the bottom half of the screen using a structure editor controlled by a mouse, and menus to edit definitions. In Smalltalk-76 and later, this had switched to text editing embedded in a *class browser* for navigating through classes and their methods.
 
-Similarly to Lisp systems, Smalltalk adopts the persistent address space model of programming where data remains in memory, but based on *objects* and *message passing* instead of *lists*. Any changes made to the system state by programming or execution are preserved when the computer is turned off (this is *persistence* again, Definition\ \ref{def:persistent}). Lastly, the fact that much of the Smalltalk environment is implemented in itself makes it possible to extensively modify the system from within: Smalltalk exhibits Self-Sustainability.
+Similarly to Lisp, Smalltalk adopts the persistent address space model of programming where data remains in memory, but based on *objects* and *message passing* instead of *lists*. Any changes made to the system state by programming or execution are preserved when the computer is turned off (this is *persistence* again, Definition\ \ref{def:persistent}). Lastly, the fact that much of the Smalltalk environment is implemented in itself makes it possible to extensively modify the system from within: Smalltalk exhibits Self-Sustainability.
 
-An important descendant of Smalltalk is *ThingLab*\ \parencite[Figure\ \ref{fig:thinglab}]{ThingLab}---later improved as ThingLab II\ \parencite{ThingLab2}---which augments the class browser with a *picture pane.* ThingLab was a *constraint-based* programming system in the vein of Sketchpad\ \parencite{Sketchpad}. ThingLab provided not only a library of pre-existing constraints and objects for use in electrical and geometric simulations, but was designed as a "kit-building kit" with the ability to create new types of objects and constraints via the Smalltalk language. The extent to which ThingLab and Sketchpad can define new graphical constructs, and give them semantics (as opposed to merely drawing a picture) qualifies for *Notational Freedom* as well as Self-Sustainability.
+An important descendant of Smalltalk is *ThingLab*\ \parencite[Figure\ \ref{fig:thinglab}]{ThingLab}---later succeeded by ThingLab II\ \parencite{ThingLab2}---which augments the class browser with a *picture pane.* ThingLab was a *constraint-based* programming system in the vein of Sketchpad\ \parencite{Sketchpad}. ThingLab provided not only a library of pre-existing constraints and objects for use in electrical and geometric simulations, but was designed as a "kit-building kit" with the ability to create new types of objects and constraints via the Smalltalk language. The extent to which ThingLab and Sketchpad can define new graphical constructs, and give them semantics (as opposed to merely drawing a picture) qualifies for *Notational Freedom* as well as Self-Sustainability.
 
 \begin{figure}
 \centering
@@ -116,8 +116,8 @@ A representative diagram and the grammar for parsing it (itself written in a gra
 +---------------------------------------------------------------------------------------------------------+
 \end{lstlisting}
 \end{lrbox}
-\scalebox{0.8}{\usebox{\mywidebox}}
-\caption[TCP packet \ac{MSL}.]{ASCII art diagram for an IP packet, in principle both human-readable and machine-parseable.}
+\scalebox{0.6}{\usebox{\mywidebox}}
+\caption[TCP packet \ac{MSL}.]{ASCII art diagram for an IP packet, in principle both human-readable and machine-parseable\ \parencite[p.\ 44]{Steps07}.}
 \label{fig:packet-format}
 \end{figure}
 
@@ -164,7 +164,7 @@ A representative diagram and the grammar for parsing it (itself written in a gra
 
 We see this as the extreme end of what a \ac{MSL} is capable of. The ability for a programmer to express arbitrarily small parts of an application in a form they deem suitable is, in its fully *general* form, what we call Notational Freedom. With such a capability, code could be synthesised from *real* tabular diagrams^[We are thinking of vector graphics formats here, but computer vision techiques would allow someone to use raster screenshots if they so desired.] of packet headers, not just those rendered with ASCII characters.
 
-We mentioned how these \acp{MSL} were supported by \ac{COLA}'s *internal evolution,* which we interpret as another term for Self-Sustainability (or, more precisely, its practice). This is provided for by the \ac{COLA} architecture composed of an object model for structure\ \parencite{OROM} and a Lisp-like language for behaviour\ \parencite{OECM}.
+We mentioned how these \acp{MSL} were supported by \ac{COLA}'s *internal evolution,* which we interpret as another term for Self-Sustainability (or, more precisely, its practice). This is provided for by the \ac{COLA} architecture, composed of an object model for structure\ \parencite{OROM} and a Lisp-like language for behaviour\ \parencite{OECM}.
 
 The object model is a late-bound, Smalltalk-style objects and messaging environment called "Id", and we will describe it briefly here. An Id *object* is a block of state which can change as a result of messages received by it. Messaging (analogous to *method invocation* in Java-style OOP) works as follows:
 
@@ -177,7 +177,7 @@ The object model is a late-bound, Smalltalk-style objects and messaging environm
 The previously discussed programming systems were either universal, not focusing on any particular kind of application, or targeted at broad fields, such as Artificial Intelligence and symbolic data manipulation in Lisp's case. In contrast, the following examples focus on narrower application domains. Many support programming based on rich interactions with specialised visual and textual notations.
 
 \paragraph{Spreadsheets.}
-The first spreadsheets became available in 1979 in VisiCalc\ \parencite{VisiCalc, VisiCalc2} and helped analysts perform budget calculations. As programming systems, spreadsheets are notable for their two-dimensional grid substrate and their model of automatic re-evaluation. The programmability of spreadsheets developed over time, acquiring features that made them into powerful programming systems in a way VisiCalc was not. A major step was the 1993 inclusion of *macros* in Excel, later further extended with *Visual Basic for Applications* and more recently with *lambda functions.*
+The first spreadsheets became available in 1979 in VisiCalc\ \parencite{VisiCalc, VisiCalc2} and helped analysts perform budget calculations. As programming systems, spreadsheets are notable for their two-dimensional grid substrate and their model of automatic re-evaluation. The programmability of spreadsheets developed over time, acquiring features that made them into powerful programming systems in a way VisiCalc was not. A major step was the 1993 inclusion of *macros* in Excel, later further extended with *Visual Basic for Applications* and more recently with *lambda functions*\ \parencite{Lambda}.
 
 \paragraph{HyperCard.}
 While spreadsheets were designed to solve problems in a specific application area, HyperCard\ \parencite{HyperCard} was designed around a particular application format. Programs are "stacks of cards" containing multimedia components and controls such as buttons. These controls can be programmed with pre-defined operations like "navigate to another card", or via the HyperTalk scripting language for anything more sophisticated.
@@ -185,7 +185,7 @@ While spreadsheets were designed to solve problems in a specific application are
 As a programming system, HyperCard is interesting for a couple of reasons. It effectively combines visual and textual notation. Programs appear the same way during editing as they do during execution. Most notably, HyperCard supports gradual progression from the "user" role to "developer": a user may first use stacks, then go on to edit the visual aspects or choose pre-defined logic until, eventually, they learn to program in HyperTalk.
 
 \paragraph{Graphical languages.}
-Efforts to support programming without relying on textual code are "languages" in a more metaphorical sense. In the "boxes-and-wires" style of LabView\ \parencite{LabView} programs are made out of graphical structures. There is also the Programming-By-Example\ \parencite{YWIMC} subset in which a general program is automatically generated by the user supplying sample behaviours and hints.
+Efforts to support programming without relying on textual code are "languages" in a more metaphorical sense. In the "boxes-and-wires" style of LabView\ \parencite{LabView} programs are made out of graphical structures. There are also the Programming-By-Example/Demonstration subgenres\ \parencite{YWIMC,WWID} in which a general program is automatically generated by the user supplying sample behaviours and hints.^[Although there is nothing inherently graphical about programming by example or demonstration, the two definitive books cited show a strong graphical orientation.]
 
 # Precursors of the Three Properties
 In the next chapter, we will go on to develop the Three Properties in detail. However, they do not leap out of a vacuum, but are rather developments of concepts that already exist in programming. For each of the Three Properties, we will give a "glossary" of these existing concepts and finish with a "Conclusion" entry. In short:
@@ -199,7 +199,7 @@ In the next chapter, we will go on to develop the Three Properties in detail. Ho
 This describes a compiler that can compile its own source code into a functionally identical compiler program. We can then change the language understood by the compiler by changing the source code, compiling it with the current version, and discarding this version in favour of the new one. We can then rewrite the compiler's source code to make use of the new language feature. In this way, a programming language can be evolved using itself. We can call the language "self-hosting" as a proxy for its compiler.
 
 ### Bootstrapping
-This is the process of getting a language into a self-hosting state\ \parencite{Bootfrom0}. Suppose we design a novel language *NovLang* and we are happy to use C++ to build its compiler. Bootstrapping it consists of the following steps:
+This is the process of getting a language into a self-hosting state\ \parencite{Bootfrom0}. Suppose we design a novel language *NovLang* and we are happy to use C++ to build its compiler. Bootstrapping it consists of the following steps; see Figure\ \ref{fig:bootstrap} for a *tombstone diagram*\ \parencite{Tombstone}:
 
 1. We write a NovLang compiler in NovLang, but we cannot run it yet.
 2. We translate this by hand to C++ and build a temporary NovLang compiler.
@@ -207,11 +207,18 @@ This is the process of getting a language into a self-hosting state\ \parencite{
 4. We obtain a runnable compiler for NovLang, which was written in NovLang and is now self-hosting.
 5. We can now discard the C++ code.
 
+\begin{figure}
+\centering
+\includegraphics[width=\linewidth]{bootstrapping.png}
+\caption[Bootstrapping Tombstone Diagrams.]{C++ is used to implement a temporary compiler for NovLang, which then compiles a self-hosted compiler to a runnable binary. This binary, plus its original NovLang source code, can then be mutually used to evolve NovLang in the manner shown.}
+\label{fig:bootstrap}
+\end{figure}
+
 ### Meta-Circular
 This describes an interpreter that is written in its own language\ \parencite{Metac}. This was first introduced in Lisp, in which one can write Lisp code to walk nodes in a data structure and treat them as Lisp expressions. If such code is compiled, it results in an ordinary Lisp interpreter. Alternatively, if we feed such code into an existing Lisp interpreter, this new inner interpreter is now meta-circular. We could change the code to add a new language feature, in which case the inner interpreter would understand this slightly improved language. However, this approach does not scale, as each improvement would nest a further interpreter within the previous ones, multiplying the overhead to impractical levels.
 
 ### Reflection
-This is the capacity for a system to display, explain or affect its own computational behaviour during run time\ \parencite{CompRefl}. It is sometimes explained with the word "aboutness": an ordinary program is "about" its domain (say, calculations), while a reflective program is also "about" its own computation. One test of this is the ability to make the tacit explicit\ \parencite{ProcRefl}: entities that are normally implicit and unaddressable (such as the stack frame or variable binding environment) can be made so by an explicit command to reflect. An ordinary meta-circular interpreter cannot name its outer interpreter's data structures, but a reflective one can (and may be able to change how its outer interpreter works, and thus how it itself works). This is developed exhaustively for Lisp-like languages in\ \parencite{ProcRefl}. While reflection originates as a property of languages, the Self environment\ \parencite{Self} provides an example in an interactive context. Any object on screen can call up an "outliner" object with a description of its prototype, private state and methods. This outliner is an object and can have the same operation applied to it.
+This is the capacity for a system to display, explain or affect its own computational behaviour during run time\ \parencite{CompRefl}. It is sometimes explained with the word "aboutness": an ordinary program is "about" its domain (say, calculations), while a reflective program is also "about" its own computation. One test of this is the ability to make the tacit explicit\ \parencite{ProcRefl}: entities that are normally implicit and unaddressable (such as the stack frame or variable binding environment) can be made so by an explicit command to reflect. An ordinary meta-circular interpreter cannot name its outer interpreter's data structures, but a reflective one can (and may be able to change how its outer interpreter works, and thus how it itself works). This is developed exhaustively for Lisp-like languages in\ \textcite{ProcRefl}. While reflection originates as a property of languages, the Self environment\ \parencite{Self} provides an example in an interactive context. Any object on screen can call up an "outliner" object with a description of its prototype, private state and methods. This outliner is an object and can have the same operation applied to it.
 
 ### Conclusion
 These concepts (self-hosting, bootstrapping, meta-circularity, and reflection) seem related but it is not obvious how. We interpret all of these as different manifestations of self-sustainability in special contexts, such as compilers or interpreters. In Chapter\ \ref{analysis} we will make this more precise by delving into the differences between compilers, interpreters, and interactive programming systems.
@@ -250,7 +257,7 @@ This is a very general term referring to any file that cannot be treated as plai
 In programming, this refers to the "look and feel" of a language's textual source code. Formally, syntax is the set of rules defining legal and illegal symbol sequences. This idea can be metaphorically extended to non-sequential structures. For example, we can think of C `struct` definitions as setting out the valid "shape" of the parts of a data structure. The same applies to binary file formats.
 
 ### Quantitative Syntax
-This is a term introduced by\ \parencite[p.\ 13]{Infra} for the pattern of prefixing a block with its length and using numerical pointers to link structures. A simple example is the Pascal String which begins with a length byte and continues for that many characters. Binary files rely primarily on quantitative syntax.
+This is a term introduced by\ \textcite[p.\ 13]{Infra} for the pattern of prefixing a block with its length and using numerical pointers to link structures. A simple example is the Pascal String which begins with a length byte and continues for that many characters. Binary files rely primarily on quantitative syntax.
 
 ### Qualitative Syntax
 This, in contrast to Quantitative Syntax, relies on special delimiters. For example, the C String begins right away with its characters, relying on a null byte to show up at some point and signal the end.

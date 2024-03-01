@@ -70,7 +70,7 @@ Another option is to construct abstractions *from concrete cases*. Here, the pro
 
 *Jupyter notebook.* In Jupyter notebooks, one is inclined to work with concrete things, because one sees previews after individual cells. This discourages creating abstractions, because then one would not be able to look inside at such a fine grained level.
 
-*Spreadsheets.* Up until the recent introduction of lambda expressions into Excel, spreadsheets have been relentlessly concrete, without any way to abstract and reuse patterns of computation other than copy-and-paste.
+*Spreadsheets.* Up until the recent introduction of lambda expressions into Excel\ \parencite{Lambda}, spreadsheets have been relentlessly concrete, without any way to abstract and reuse patterns of computation other than copy-and-paste.
 
 ## Concept: implicit vs. explicit Structure
 Explicit Structure refers to the sense of working with data *directly* rather than through some other medium. It is a property of the interaction between users, interfaces, and underlying data structures. We split the life-cycle of a data structure into two halves:
