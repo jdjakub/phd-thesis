@@ -44,7 +44,7 @@ If only there were some way to have the program supply its *own* debugger, and p
 
 # How Should Things Work?
 
-Imagine a world where the average computer user can patch or improve their software the same way they might change a lightbulb or perform DIY in their home. This clearly relies on the ability to make small *piecemeal* changes to their home, without having to demolish the place and re-build it anew. We will call this *naïve pokeability*:^[By analogy to the "Naïve Realism" principle found in Boxer\ \parencite{BoxerDesign}.]
+Imagine a world where the average computer user can patch or improve their software the same way they might change a lightbulb or perform DIY in their home. This clearly relies on the ability to make small *piecemeal* changes to their home, without having to demolish the place and re-build it anew. We will call this *naïve pokeability*:^[By analogy to the "Naïve Realism" principle found in Boxer\ \parencite{Boxer-design}.]
 
 \begin{defn}[Naïve pokeability]
 \label{def:naive-pokeability}
@@ -107,7 +107,7 @@ The *web browser* has a powerful set of *developer tools* (Figure\ \ref{fig:web-
 \begin{figure}
 \centering
 \includegraphics[width=\linewidth]{web-dev-tools.png}
-\caption[Web Developer Tools]{The Developer Tools available for any Web page or app in a modern browser.}
+\caption[Web Developer Tools.]{The Developer Tools available for any Web page or app in a modern browser.}
 \label{fig:web-dev-tools}
 \end{figure}
 
@@ -125,7 +125,7 @@ Before the Web, "hypertext" was regularly created and distributed by people in t
 \begin{figure}
 \centering
 \includegraphics[width=\linewidth]{hypercard.jpg}
-\caption[HyperCard]{HyperCard, a pre-Web Hypertext system, included a direct authoring tool to complement the browser.}
+\caption[HyperCard screenshot.]{HyperCard, a pre-Web Hypertext system, included a direct authoring tool to complement the browser.}
 \label{fig:hypercard}
 \end{figure}
 
@@ -137,14 +137,14 @@ Smalltalk provides for behaviour editing at a finer granularity than the Web dev
 \begin{figure}
 \centering
 \includegraphics[width=\linewidth]{st80.jpg}
-\caption[Smalltalk-80]{The interface of Smalltalk-80, which introduced the \emph{class browser} visible at the top.}
+\caption[Smalltalk-80 screenshot.]{The interface of Smalltalk-80, which introduced the \emph{class browser} visible at the top.}
 \label{fig:st80}
 \end{figure}
 
 \begin{figure}
 \centering
 \includegraphics[width=\linewidth]{pharo.png}
-\caption[Pharo class browser]{The class browser in the modern \emph{Pharo} distribution of Smalltalk.}
+\caption[Pharo class browser.]{The class browser in the modern \emph{Pharo} distribution of Smalltalk.}
 \label{fig:pharo}
 \end{figure}
 
@@ -176,7 +176,7 @@ It is important not to conflate "coding" in a programming language with programm
 \begin{figure}
 \centering
 \includegraphics[width=\linewidth]{spreadsheet.png}
-\caption[Spreadsheet interface]{A spreadsheet contains text, but is not a \emph{syntax} or a \emph{language}; the grid lines are intrinsically graphical.}
+\caption[Spreadsheet interface.]{A spreadsheet contains text, but is not a \emph{syntax} or a \emph{language}; the grid lines are intrinsically graphical.}
 \label{fig:spreadsheet}
 \end{figure}
 

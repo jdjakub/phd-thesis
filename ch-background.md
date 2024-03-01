@@ -11,6 +11,8 @@ The classic essay by \textcite{PLrev} distinguishes the *languages* and *systems
 The topic of this thesis, and many of the examples we will use to illustrate concepts, rely on understanding this distinction and only make sense within the systems paradigm.
 Therefore we shift our attention from *programming languages* to the more general notion of "software that enables programming"---in other words, *programming systems*.
 
+\pagebreak
+
 \begin{defn}[Programming System]
 \label{def:programming-system}
 A \emph{programming system} is an integrated and complete set of tools sufficient for creating, modifying, and executing programs. These will include notations for structuring programs and data, facilities for running and debugging programs, and interfaces for performing all of these tasks. Facilities for testing, analysis, packaging, or version control may also be present. Notations include programming languages and interfaces include text editors, but are not limited to these.
@@ -68,7 +70,7 @@ An important descendant of Smalltalk is *ThingLab*\ \parencite[Figure\ \ref{fig:
 \begin{figure}
 \centering
 \includegraphics[width=\linewidth]{thinglab.png}
-\caption[ThingLab screeenshot.]{ThingLab could be used to explore constraint-based simulations such as electrical circuits, but could also leverage Smalltalk to create new objects and constraints that could be graphically specified and instantiated.}
+\caption[ThingLab screenshot.]{ThingLab could be used to explore constraint-based simulations such as electrical circuits, but could also leverage Smalltalk to create new objects and constraints that could be graphically specified and instantiated.}
 \label{fig:thinglab}
 \end{figure}
 
@@ -116,7 +118,7 @@ A representative diagram and the grammar for parsing it (itself written in a gra
 +---------------------------------------------------------------------------------------------------------+
 \end{lstlisting}
 \end{lrbox}
-\scalebox{0.6}{\usebox{\mywidebox}}
+\scalebox{0.7}{\usebox{\mywidebox}}
 \caption[TCP packet \ac{MSL}.]{ASCII art diagram for an IP packet, in principle both human-readable and machine-parseable\ \parencite[p.\ 44]{Steps07}.}
 \label{fig:packet-format}
 \end{figure}
@@ -158,7 +160,7 @@ A representative diagram and the grammar for parsing it (itself written in a gra
           name  =      id:identifier (!eol .)* eol  -> (structure-end id)
        diagram  =     ws columns row+ name | error
 \end{lstlisting}
-\caption{Grammar for parsing the ASCII art into a data structure definition\ \parencite[p.\ 44]{Steps07}. Message sends in square brackets \texttt{[]} and Lisp-like expressions in parentheses \texttt{()} are visible; these respectively relate to the "Object" and "Lambda" halves of the underlying \ac{COLA}.}
+\caption[ASCII Packet diagram parser]{Grammar for parsing the ASCII art into a data structure definition\ \parencite[p.\ 44]{Steps07}. Message sends in square brackets \texttt{[]} and Lisp-like expressions in parentheses \texttt{()} are visible; these respectively relate to the "Object" and "Lambda" halves of the underlying \ac{COLA}.}
 \label{fig:packet-grammar}
 \end{figure}
 
@@ -218,7 +220,7 @@ This is the process of getting a language into a self-hosting state\ \parencite{
 This describes an interpreter that is written in its own language\ \parencite{Metac}. This was first introduced in Lisp, in which one can write Lisp code to walk nodes in a data structure and treat them as Lisp expressions. If such code is compiled, it results in an ordinary Lisp interpreter. Alternatively, if we feed such code into an existing Lisp interpreter, this new inner interpreter is now meta-circular. We could change the code to add a new language feature, in which case the inner interpreter would understand this slightly improved language. However, this approach does not scale, as each improvement would nest a further interpreter within the previous ones, multiplying the overhead to impractical levels.
 
 ### Reflection
-This is the capacity for a system to display, explain or affect its own computational behaviour during run time\ \parencite{CompRefl}. It is sometimes explained with the word "aboutness": an ordinary program is "about" its domain (say, calculations), while a reflective program is also "about" its own computation. One test of this is the ability to make the tacit explicit\ \parencite{ProcRefl}: entities that are normally implicit and unaddressable (such as the stack frame or variable binding environment) can be made so by an explicit command to reflect. An ordinary meta-circular interpreter cannot name its outer interpreter's data structures, but a reflective one can (and may be able to change how its outer interpreter works, and thus how it itself works). This is developed exhaustively for Lisp-like languages in\ \textcite{ProcRefl}. While reflection originates as a property of languages, the Self environment\ \parencite{Self} provides an example in an interactive context. Any object on screen can call up an "outliner" object with a description of its prototype, private state and methods. This outliner is an object and can have the same operation applied to it.
+This is the capacity for a system to display, explain or affect its own computational behaviour during run time\ \parencite{CompRefl}. It is sometimes explained with the word "aboutness": an ordinary program is "about" its domain (say, calculations), while a reflective program is also "about" its own computation. One test of this is the ability to make the tacit explicit\ \parencite{ProcRefl}: entities that are normally implicit and unaddressable (such as the stack frame or variable binding environment) can be made so by an explicit command to reflect. An ordinary meta-circular interpreter cannot name its outer interpreter's data structures, but a reflective one can (and may be able to change how its outer interpreter works, and thus how it itself works). This is developed exhaustively for Lisp-like languages in\ \textcite{ProcRefl}. While reflection originates as a property of languages, the Self environment\ \parencite{Self} provides an example in an interactive context. Any object on screen can call up an "outliner" object with a description of its prototype, private state and methods. This outliner is an object and can have the same operation applied to it\ \parencite{SelfOutliner}.
 
 ### Conclusion
 These concepts (self-hosting, bootstrapping, meta-circularity, and reflection) seem related but it is not obvious how. We interpret all of these as different manifestations of self-sustainability in special contexts, such as compilers or interpreters. In Chapter\ \ref{analysis} we will make this more precise by delving into the differences between compilers, interpreters, and interactive programming systems.
@@ -276,7 +278,7 @@ This is a part of a data structure that violates a decidable expectation of its 
 \scalebox{0.85}{
   \input{../../fig/format-errors.tex}
 }
-\caption[Format errors, syntax errors, and type errors]{Format errors include syntax errors, type errors and some ``semantic'' errors as long as they are decideable.}
+\caption[Format errors, syntax errors, and type errors.]{Format errors include syntax errors, type errors and some ``semantic'' errors as long as they are decideable.}
 \label{fig:format-errors}
 \end{figure}
 

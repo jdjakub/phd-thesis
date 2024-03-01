@@ -85,7 +85,7 @@ In the Altair 8800, the *platform* comprised linear memory (state) and native CP
 \begin{figure}
 \centering
 \includegraphics[width=8cm]{Altair-8800.jpg}
-\caption[The Altair 8800 microcomputer]{The Altair 8800 microcomputer and its front panel of switches. \emph{Image credit: \parencite{Altair}.}}
+\caption[The Altair 8800 microcomputer.]{The Altair 8800 microcomputer and its front panel of switches. \emph{Image credit: \parencite{Altair}.}}
 \label{fig:altair}
 \end{figure}
 
@@ -326,7 +326,7 @@ An instruction is represented as a map with an `op` field for its name and other
 { op: 'store', register: 'source' }
 \end{lstlisting}
 
-It is remarkable that these few operations really are sufficient even for conditional and unconditional jumps. A jump is achieved by overwriting `next_instruction`, and this can be conditionalised by `index`ing a map of code paths based on a selector. We made the decision that `index`, if accessing a key not present in the map, will try and retrieve the special key `_` instead. This supports a generic "else" or "otherwise" clause for conditionals. We provide a worked example in Section\ \ref{copying-and-jumping} and also show how an arbitrary path-to-path copy reduces to these primitive operations. This lends support to the Turing-completeness suspicion: since we can effect the basic operations^[See the discussion in Section\ \ref{inheritance-of--level-change} for why we do not consider arithmetic as among these basic operations.] found in real-world, practical, non-minimal instruction sets, our set is at least as Turing-complete as they are.
+It is remarkable that these few operations really are sufficient even for conditional and unconditional jumps. A jump is achieved by overwriting `next_instruction`, and this can be conditionalised by `index`ing a map of code paths based on a selector. We made the decision that `index`, if accessing a key not present in the map, will try and retrieve the special key `_` instead. This supports a generic "else" or "otherwise" clause for conditionals. We provide a worked example in Section\ \ref{copying-and-jumping} and also show how an arbitrary path-to-path copy reduces to these primitive operations. This lends support to the Turing-completeness suspicion: since we can effect the basic operations^[See the discussion in Section\ \ref{inheritance-of-js-level-change} for why we do not consider arithmetic as among these basic operations.] found in real-world, practical, non-minimal instruction sets, our set is at least as Turing-complete as they are.
 
 The minimal, microcode-like instruction set here was an experiment in extreme parsimony; see Section\ \ref{the-minimal-random-access-instruction-set-and-its-perils} for the gory details. Although it was interesting, certain basic operations (such as jumps) are extremely verbose, taking many instructions. Although it was quick to implement these instructions in \ac{JS}, it was too tedious to work with them in-system. In retrospect, it looks like we went too far with "Escape The Platform" (Force\ \ref{escape-plaf}) here and fell into its associated Turing Tarpit trap. We thus consider an *extreme* interpretation of "Simple Assembler" (Heuristic\ \ref{simple-asm}) refuted for the purposes of working in-system sooner. We recommend achieving a better balance by including direct path arguments in instructions (\eg{} "copy `a.b.c` to `x.y.z`" as a single instruction), as well as separate (un)conditional jump instructions.
 
@@ -353,7 +353,7 @@ In BootstrapLab, this is a sub*tree* of the state under the top-level name `scen
 \begin{figure}
 \centering
 \includegraphics[width=8cm]{scene-tree-example.png}
-\caption[BootstrapLab scene tree]{Example of how nested tree fields are represented (right) vs. the rendered output (left). The right-hand half is the temporary state view discussed in Section\ \ref{implement-temporary-infrastructure}, where curly braces and commas have been dropped from the notation. The \texttt{+}/\texttt{-} signs are UI controls for expanding and collapsing tree nodes, respectively.}
+\caption[BootstrapLab scene tree.]{Example of how nested tree fields are represented (right) vs. the rendered output (left). The right-hand half is the temporary state view discussed in Section\ \ref{implement-temporary-infrastructure}, where curly braces and commas have been dropped from the notation. The \texttt{+}/\texttt{-} signs are UI controls for expanding and collapsing tree nodes, respectively.}
 \label{fig:scene-tree}
 \end{figure}
 
@@ -373,7 +373,7 @@ window.onkeydown = e => {
   restore_context();
 };
 \end{lstlisting}
-\caption[BootstrapLab ``device driver'' for \acs{DOM} events]{Sketch of a ``Device driver'' triggering a generic event handler sequence in-system. We have experimented with running in-system code in response to input, but as of the time of writing, BootstrapLab's event handlers are less sophisticated than this sketch (see Section\ \ref{input-handling}).}
+\caption[BootstrapLab ``device driver'' for \acs{DOM} events.]{Sketch of a ``Device driver'' triggering a generic event handler sequence in-system. We have experimented with running in-system code in response to input, but as of the time of writing, BootstrapLab's event handlers are less sophisticated than this sketch (see Section\ \ref{input-handling}).}
 \label{lst:devdrv}
 \end{figure}
 
@@ -418,7 +418,7 @@ The \ac{JS} tree view is a complex set of functionality set to work and display 
 \begin{figure}
 \centering
 \includegraphics[width=\linewidth]{three-columns.png}
-\caption[BootstrapLab interface]{The full BootstrapLab interface. From the left: graphics window, temporary HTML state viewer, and browser developer tools. The \texttt{+}/\texttt{-} signs in the state viewer are UI controls for expanding and collapsing tree nodes, respectively.}
+\caption[BootstrapLab interface.]{The full BootstrapLab interface. From the left: graphics window, temporary HTML state viewer, and browser developer tools. The \texttt{+}/\texttt{-} signs in the state viewer are UI controls for expanding and collapsing tree nodes, respectively.}
 \label{fig:three-cols}
 \end{figure}
 
@@ -534,28 +534,28 @@ Lisp evaluation is done by walking over the expression tree. At any point, we ar
 \begin{figure}
 \centering
 \includegraphics{masp/1-apply-fac.png}
-\caption[Masp Factorial evaluation step 1]{The \texttt{expr} part of the Masp context contains the current expression being evaluated. This represents the initial state for applying the factorial function with parameter \texttt{n} bound to 1.}
+\caption[Masp Factorial evaluation step 1.]{The \texttt{expr} part of the Masp context contains the current expression being evaluated. This represents the initial state for applying the factorial function with parameter \texttt{n} bound to 1.}
 \label{fig:masp-1}
 \end{figure}
 
 \begin{figure}
 \centering
 \includegraphics[width=8cm]{masp/2-eval-fac-n.png}
-\caption[Masp Factorial evaluation step 2]{After some evaluation steps, both the original expression (the name \texttt{fac}) and its value (its function closure) are visible. Similarly, the literal expression \texttt{1} has evaluated to itself. Part of Figure\ \ref{fig:masp1-3} has been included to help deceipher the verbose notation displayed by the state view.}
+\caption[Masp Factorial evaluation step 2.]{After some evaluation steps, both the original expression (the name \texttt{fac}) and its value (its function closure) are visible. Similarly, the literal expression \texttt{1} has evaluated to itself. Part of Figure\ \ref{fig:masp1-3} has been included to help deceipher the verbose notation displayed by the state view.}
 \label{fig:masp-2}
 \end{figure}
 
 \begin{figure}
 \centering
 \includegraphics[width=8cm]{masp/3-expand-fac.png}
-\caption[Masp Factorial evaluation step 3]{The next step of evaluation, read as: ``To the value \texttt{1} (which came from the expression \texttt{n}), apply this function literal in an environment where \texttt{n} is bound to \texttt{1}''.}
+\caption[Masp Factorial evaluation step 3.]{The next step of evaluation, read as: ``To the value \texttt{1} (which came from the expression \texttt{n}), apply this function literal in an environment where \texttt{n} is bound to \texttt{1}''.}
 \label{fig:masp-3}
 \end{figure}
 
 \begin{figure}
 \centering
 \includegraphics[width=8cm]{masp/4-apply-mul.png}
-\caption[Masp Factorial evaluation step 4]{Some steps later, we have an application of a built-in multiplication function whose \ac{JS} code is visible (see Section\ \ref{protocol-between-js-primitives-and-masp} for how \ac{JS} primitives work). The second operand is an as-yet unevaluated recursive application of \texttt{fac}.}
+\caption[Masp Factorial evaluation step 4.]{Some steps later, we have an application of a built-in multiplication function whose \ac{JS} code is visible (see Section\ \ref{protocol-between-js-primitives-and-masp} for how \ac{JS} primitives work). The second operand is an as-yet unevaluated recursive application of \texttt{fac}.}
 \label{fig:masp-n}
 \end{figure}
 
@@ -594,7 +594,7 @@ In such an ideal development journey, we would have a high-level programming lan
 
 The Masp interpreter we developed used in-system state, but controlled it from \ac{JS}. Our state viewer was also fully implemented in \ac{JS}. Editing took place through the browser development console. The alternative, creating a Masp interpreter and state editor in-system using the low-level \ac{BL-ASM} instructions, had been technically possible but prohibitively tedious. The in-system tooling was far from supplanting the existing platform interface of \ac{JS} in the text editor. Continuing to use the latter was, therefore, the only sensible choice to make progress.
 
-Nevertheless, to make the high-level language and editor a part of self-sustainable programming system, they ultimately need to be implemented in-system. Thus we incurred a *substrate debt* which we owe to "Escape The Platform" (Force\ \ref{escape-plaf}) and now need to pay off. The advantage of delaying this work and ending up with Masp is that we can at least port \ac{JS} to Masp, which is more convenient than using \ac{BL-ASM} (recall Figure\ \ref{fig:tombstones}). Generally, such substrate debt should be paid off as soon as the indebted implementation is complete. In total, we had three parts of it to pay off:
+Nevertheless, to make the high-level language and editor a part of self-sustainable programming system, they ultimately need to be implemented in-system. Thus we incurred a *substrate debt* which we owe to "Escape The Platform" (Force\ \ref{escape-plaf}) and now need to pay off. The advantage of delaying this work and ending up with Masp is that we can at least port \ac{JS} to Masp, which is more convenient than using \ac{BL-ASM} (recall Figure\ \ref{fig:tombstone}). Generally, such substrate debt should be paid off as soon as the indebted implementation is complete. In total, we had three parts of it to pay off:
 
 1. The temporary state viewer, to be superseded by an in-system editor
 2. Its replacement state editor, to be ported from \ac{JS} to Masp
@@ -607,8 +607,9 @@ Once we could run Masp programs in the substrate, we needed a better way of ente
 
 To edit state in \ac{JS}, we needed to either address its parent with a full path from the top level, or to use a reference previously obtained this way. To set a primitive value, we would type a \ac{JS} command including the key name and the value. For example, the following console command could be issued to make a shape red:
 
-\begin{lstlisting}[basicstyle=\small]
-upd(ctx, 'scene', 'shapes', 'children', 'yellow_shape', 'color', '0xff0000')
+\begin{lstlisting}
+upd(ctx, 'scene', 'shapes', 'children',
+         'yellow_shape', 'color', '0xff0000')
 \end{lstlisting}
 
  This was not a high bar to clear. Evidently, we could greatly improve the experience by simply *clicking* on the relevant key name and typing.
@@ -616,7 +617,7 @@ upd(ctx, 'scene', 'shapes', 'children', 'yellow_shape', 'color', '0xff0000')
 \begin{figure}
 \centering
 \includegraphics[width=9cm]{editor.png}
-\caption[In-system tree editor vs. HTML state viewer]{Left: tree editor in graphics window. Right: temporary state viewer in the \acs{DOM}. The \texttt{+}/\texttt{-} controls for expanding and collapsing nodes are not present in the editor, but these operations can still be performed by double-clicking.}
+\caption[In-system tree editor vs. HTML state viewer.]{Left: tree editor in graphics window. Right: temporary state viewer in the \acs{DOM}. The \texttt{+}/\texttt{-} controls for expanding and collapsing nodes are not present in the editor, but these operations can still be performed by double-clicking.}
 \label{fig:editor}
 \end{figure}
 
@@ -716,21 +717,21 @@ to: key_name,  apply:
 \end{lstlisting}
 }
 \centering\includegraphics[width=14cm]{masp/render-map-entry.png}
-\caption[Masp code for local colour preview]{This Masp code checks if a map entry is named ``color''. If so, it returns an appropriately coloured box with a grey border. Otherwise, it returns the string \texttt{unhandled}. The left is how we would prefer to read it; the right is slightly tidier than what is actually visible in the state viewer.}
+\caption[Masp code for local colour preview.]{This Masp code checks if a map entry is named ``color''. If so, it returns an appropriately coloured box with a grey border. Otherwise, it returns the string \texttt{unhandled}. The left is how we would prefer to read it; the right is slightly tidier than what is actually visible in the state viewer.}
 \label{lst:rendermapentry}
 \end{figure}
 
 \begin{figure}
 \centering
 \includegraphics[width=8cm]{hex-strings-vs-coloured-boxes.png}
-\caption[Local colour preview in BootstrapLab]{Before (left) and after (right) activating the Masp rendering hook.}
+\caption[Local colour preview in BootstrapLab.]{Before (left) and after (right) activating the Masp rendering hook.}
 \label{fig:hex-vs-boxes}
 \end{figure}
 
 \begin{figure}
 \centering
 \includegraphics[width=12cm]{grey-box.png}
-\caption[Innovation Feedback in BootstrapLab]{The grey colour constant displays as the hex string \texttt{0xaaaaaa} in the right-hand HTML tree view. However, in the left-hand tree editor, this code runs on its own source representation, turning the colour constant into a grey box instead. This is a minimal example of Innovation Feedback.}
+\caption[Innovation Feedback in BootstrapLab.]{The grey colour constant displays as the hex string \texttt{0xaaaaaa} in the right-hand HTML tree view. However, in the left-hand tree editor, this code runs on its own source representation, turning the colour constant into a grey box instead. This is a minimal example of Innovation Feedback.}
 \label{fig:grey-box}
 \end{figure}
 

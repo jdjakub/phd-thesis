@@ -31,13 +31,13 @@ At present, only crude graphics are possible via two shapes. A rectangle has a `
 
 \begin{figure}
 \centering\includegraphics[width=8cm]{../../fig/rect.png}
-\caption[Rectangle properties]{A rectangle inferred from the presence of \texttt{color}, \texttt{width}, \texttt{height}, and \texttt{center}. As can be seen, \texttt{color} expects a hex string.}
+\caption[Rectangle properties.]{A rectangle inferred from the presence of \texttt{color}, \texttt{width}, \texttt{height}, and \texttt{center}. As can be seen, \texttt{color} expects a hex string.}
 \label{fig:rect-spec}
 \end{figure}
 
 \begin{figure}
 \centering\includegraphics[width=8cm]{../../fig/text.png}
-\caption[Text label properties]{A text label inferred from the presence of \texttt{text} and \texttt{top\_left}. The \texttt{opacity} property, not shown, takes a number between 0 and 1.}
+\caption[Text label properties.]{A text label inferred from the presence of \texttt{text} and \texttt{top\_left}. The \texttt{opacity} property, not shown, takes a number between 0 and 1.}
 \label{fig:text-spec}
 \end{figure}
 
@@ -52,7 +52,7 @@ For example, the term "position", widely used in graphics APIs, is not very self
 
 \begin{figure}
 \centering\includegraphics[width=4cm]{../../fig/camera.png}
-\caption[Camera properties]{The camera `zoom` and `position` are bidirectionally synchronised between the state and the graphics window.}
+\caption[Camera properties.]{The camera `zoom` and `position` are bidirectionally synchronised between the state and the graphics window.}
 \label{fig:camera-spec}
 \end{figure}
 
@@ -72,8 +72,18 @@ A reasonable reply to No Guessing might be to just write better documentation. H
 ## Manually Updating State
 In order to update a piece of state *and ensure* that all relevant UI updates to reflect this, the `upd()` function is used in \ac{JS} code and the console. For example, to change the colour of the shape in Figure\ \ref{fig:rect-spec} to red, one would issue the following command in the console:
 
-\begin{lstlisting}[language=JavaScript,basicstyle=\small]
-upd(ctx, 'scene', 'shapes', 'children', 'yellow_shape', 'color', '0xff0000')
+\begin{lstlisting}[language=JavaScript]
+upd(ctx, 'scene', 'shapes', 'children',
+         'yellow_shape', 'color', '0xff0000')
+\end{lstlisting}
+
+## Persisting State
+Calling the function `export_state(map, filename)` in the console will walk the state graph from the given `map` and download it as a JSON file with the `filename`; if unspecified, it will default to `bl-state.json`. Calling `import_state(filename)` in the console or the code will yield a \ac{JS} `Promise` that will resolve to the same map, which can then be slotted in via `upd()`. For example, the following is how we load the Masp code in Section\ \ref{real-example-colour-preview} during initialisation:
+
+\begin{lstlisting}[language=JavaScript]
+import_state('misc/render.json').then(x => {
+  upd(ctx, 'render_map_entry', x);
+});
 \end{lstlisting}
 
 # Change in BootstrapLab
@@ -127,6 +137,8 @@ The `index` instruction, like the `store` to which it is dual^[We mean this in a
 \centering\includegraphics[width=10cm]{../../fig/semantics/index.png}
 \end{figure}
 
+\pagebreak
+
 ### Store To Register: Change Root Entry
 There are alternate semantics^[This "overloading" of an instruction is straightforward in a map substrate, as compared to a flat binary one (Section\ \ref{let-us-avoid-the-low-level-binary-world}), although an argument could be made for it to be a separate instruction called `store-reg`.] when `store` is executed with a parameter `register` of string value $K$. In this case, given a value $V$ in `focus`, the root-level entry $K$ will have value $V$.
 
@@ -148,6 +160,8 @@ Finally, `load` takes a parameter `value` with a value $V$. After execution, the
 \centering\includegraphics[width=10cm]{../../fig/semantics/load.png}
 \end{figure}
 
+\pagebreak
+
 Actually, there is a subtlety if $V$ is a map: the `focus` register then contains a *copy* of $V$. This is to preserve the intended use of the `value` parameter as a "literal"^[We use "literal" by analogy to "string literal", "number literal", etc. In other words, an entity presented in its entirety in the source code, rather than loaded from an external source at run time or built up from separate pieces.], especially when the map is empty (see Section\ \ref{create-new-map} shortly).
 
 \begin{figure}[!h]
@@ -165,7 +179,9 @@ At the time of writing, the copy performed is a deep copy, but this is almost ce
 ## Create New Map
 Because of the fact that `load` makes a copy of its `value`, creating a new map is simple: `load` $M$, where $M$ is an empty map. After execution, `focus` contains a new empty map that can be written to, *without* affecting the empty map in the instruction itself, which will stay empty (unless, of course, the instruction is deliberately modified "as data" by separate code). If `load` did not perform a copy, it would be necessary to use a *different* `load` instruction each time one wanted to create a new map.^[This situation is the same Python's notorious "mutable default arguments" for functions\ \parencite{PythonNotorious}. Default arguments are evaluated the one time a function gets *defined*, instead of per call, so subsequent calls to the function will see any successive changes to the same default argument object.] However, arguments could be made to the effect that `load` should just have special semantics for the empty map, or that there should be a `load-new` instruction, and so on.
 
-## Inheritance of \ac{JS}-level Change
+\hypertarget{inheritance-of-js-level-change}{%
+\subsection{\texorpdfstring{Inheritance of \acs{JS}-level
+Change}{Inheritance of JS-level Change}}\label{inheritance-of-js-level-change}}
 The `js` instruction takes a `func` parameter and calls it as a \ac{JS} function. This functions as an all-purpose "escape hatch" into the \ac{JS} platform, analogous to `asm` blocks in C code.
 
 \begin{minipage}{\linewidth}

@@ -7,7 +7,7 @@ Here, we present our proposed technical dimensions in detail. While they do cont
 * Notational Freedom (Section\ \ref{notational-freedom}) came from some aspects of the *Notation* dimensions (Section\ \ref{notation}), particularly *uniformity of notations*.
 * Our description of Self-Sustainability (Section\ \ref{self-sustainability}) is a fully developed version of the old dimension of the same name.
 
-Therefore, in order to make this reference catalogue self-contained, we have rewritten the relevant sections here with adaptations of the material in Chapters\ \ref{ch-analysis} and\ \ref{ch-tech-dims}.
+Therefore, in order to make this reference catalogue self-contained, we have rewritten the relevant sections here with adaptations of the material in Chapters\ \ref{analysis} and\ \ref{tech-dims}.
 
 The intention of this catalogue is to provide a *reference* to be looked up and *used* as needed, not something that should be read from start to finish. We recommend skimming through the catalogue for anything particularly interesting before proceeding to Section\ \ref{evaluating-the-dark-programming-system}. There, we will reference several dimensions in the context of a specific example, at which point it may be helpful to come back for more detail. For a quick overview, we include a concise reference sheet on the next page, though it may make more sense after reading the relevant sections.
 
@@ -27,7 +27,7 @@ Dark is a programming system for building "serverless backends", i.e. services t
 \begin{figure}
   \centering
   \includegraphics[width=1\linewidth]{dark-annotated.png}
-  \caption[A simple Web service in Dark]{A simple web service in Dark consisting of two HTTP endpoints (1, 2), a database (3), and a worker (4).\label{fig:dark}}
+  \caption[A simple Web service in Dark.]{A simple web service in Dark consisting of two HTTP endpoints (1, 2), a database (3), and a worker (4).\label{fig:dark}}
   \note{FROM https://medium.com/@wilk/dark-lang-an-uncommon-step-towards-the-future-of-programming-921cf7f38baf}
 \end{figure}
 
@@ -42,7 +42,7 @@ With technical dimensions, we can go beyond the "sales pitch", look behind the s
 
 \begin{table}
 \centering
-\caption[Dark dimensions summary]{Summary of where Dark lies on some of the dimensions.}
+\caption[Dark dimensions summary.]{Summary of where Dark lies on some of the dimensions.}
 \begin{tabular}{ >{\raggedleft\arraybackslash}p{3.6cm} p{5.6cm}}
 \hline
 Dimension \cluster{(CLUSTER)} & Summary \\ 
@@ -69,7 +69,7 @@ Learnability & \wrap{High-level concepts will be immediately familiar to the tar
 
 \begin{table}
 \centering
-\caption[Dark dimensions summary]{Summary of where Dark lies on some of the dimensions.}
+\caption[Dark dimensions summary.]{Summary of where Dark lies on some of the dimensions.}
 \begin{tabular}{ >{\raggedleft\arraybackslash}p{3.6cm} p{5.6cm}}
 \hline
 Dimension \cluster{(CLUSTER)} & Summary \\ 

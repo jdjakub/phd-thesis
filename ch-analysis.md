@@ -95,7 +95,7 @@ In Batch Mode, the programmer writes code in a high-level language and passes th
 \begin{figure}
 \centering
 \input{../../fig/change-by-re-creation.tex}
-\caption[Change By Re-Creation]{Change By Re-Creation: source code $S$ is compiled into a program $P$ which is run on some inputs to produce a result $R$ signifying the observable ``behaviour'' of a program in the Batch-Mode paradigm. To change this behaviour under the same inputs, we must trace up the arrows to the source code and edit it into $S'$. From this, a new program $P'$ is compiled, which is run to produce a new result $R'$, and so on.}
+\caption[Change By Re-Creation.]{Change By Re-Creation: source code $S$ is compiled into a program $P$ which is run on some inputs to produce a result $R$ signifying the observable ``behaviour'' of a program in the Batch-Mode paradigm. To change this behaviour under the same inputs, we must trace up the arrows to the source code and edit it into $S'$. From this, a new program $P'$ is compiled, which is run to produce a new result $R'$, and so on.}
 \label{fig:change-by-re-creation}
 \end{figure}
 
@@ -214,7 +214,7 @@ If the software is a programming system, then this can get confusing: both level
 \scalebox{0.85}{
   \input{../../fig/user-impl.tex}
 }
-\caption[Relativity of user vs. implementation levels]{Relativity of user versus implementation level depending on one's role.}
+\caption[Relativity of user vs. implementation levels.]{Relativity of user versus implementation level depending on one's role.}
 \label{fig:user-impl-examples}
 \end{figure}
 
@@ -241,7 +241,7 @@ To summarise the picture in the self-sustainable case (Figure\ \ref{fig:plaf-sub
 \begin{figure}
 \centering
 \input{../../fig/plaf-substr-prod.tex}
-\caption[Smalltalk analysed as platform/substrate/product]{Example platform (C) supporting a substrate (Smalltalk VM) for a self-sustainable product system (Smalltalk). Because the product is self-sustainable, the user and implementation levels are no longer disjoint, so the platform/substrate/product distinction is a more helpful alternative.}
+\caption[Smalltalk analysed as platform/substrate/product.]{Example platform (C) supporting a substrate (Smalltalk VM) for a self-sustainable product system (Smalltalk). Because the product is self-sustainable, the user and implementation levels are no longer disjoint, so the platform/substrate/product distinction is a more helpful alternative.}
 \label{fig:plaf-substr-prod}
 \end{figure}
 
@@ -257,7 +257,7 @@ For example, at the inter-process scope of Unix, a text editor may be used to im
 \scalebox{0.88}{
   \input{../../fig/innovation-feedback.tex}
 }
-\caption[Innovation feedback at the inter-process vs. intra-process scope]{Software innovations within a Unix system (left) cannot feed back into its hardware platform. However, the software innovations can feed into each other: a text editor $TE$ edits its source code $S_{TE}$. This new source $S_{TE'}$ is put through the compiler $C$ to create an improved text editor $TE'$, which can edit not only the source code $S$ of other programs but also its own. In a Python system (right), Python innovations can assist in the Python world but cannot feed back to assist with the C implementation of Python.}
+\caption[Innovation feedback at the inter-process vs. intra-process scope.]{Software innovations within a Unix system (left) cannot feed back into its hardware platform. However, the software innovations can feed into each other: a text editor $TE$ edits its source code $S_{TE}$. This new source $S_{TE'}$ is put through the compiler $C$ to create an improved text editor $TE'$, which can edit not only the source code $S$ of other programs but also its own. In a Python system (right), Python innovations can assist in the Python world but cannot feed back to assist with the C implementation of Python.}
 \label{fig:innovation-feedback}
 \end{figure}
 
@@ -324,11 +324,15 @@ We are only aware of two programming systems that embody full Notational Freedom
 \begin{figure}
 \centering
 \includegraphics[width=\textwidth]{gtoolkit-nf.png}
-\caption[Notational Freedom in the Glamorous Toolkit.]{The Pharo Smalltalk-based Glamorous Toolkit supports Notational Freedom in a deliberate manner, as evidenced by this picture from its documentation.^[\url{https://book.gtoolkit.com/graphical-stack-ejn67l1cykgfjrl9aklgriubv}, retrieved 02/2024.]}
+\caption[Notational Freedom in the Glamorous Toolkit.]{The Pharo Smalltalk-based Glamorous Toolkit supports Notational Freedom in a deliberate manner, as evidenced by this picture from its documentation.\protect\footnotemark}
 \label{fig:gtnf}
 \end{figure}
 
 The key point is that this property is called Notational *Freedom*, rather than something like "Optimal Notation". We recognise that different notations suit different purposes and respect the art of developing them as a separate area of expertise, which we do not claim for ourselves. The idea is to support the *subjective* productivity of the programmer, who we assume is best equipped to judge the appropriateness of notations for herself. This property is about *supporting* the usage of different notations for different contexts.
+
+\footnotetext{\url{https://book.gtoolkit.com/graphical-stack-ejn67l1cykgfjrl9aklgriubv}
+
+Retrieved 02/2024.}
 
 ### What It Means to "Support" Local Notations
 It is true that there is no such thing as a free lunch; we do not go so far as to suggest that the system should turn a natural language description into a working interface (recent advances in AI notwithstanding). So long as the programmer is willing to do the necessary work to program a new notation---such as writing a grammar, specifying the layout of symbols, or implementing the rendering and input handling for an interface---this should suffice to use it in harmony with all the other available notations.

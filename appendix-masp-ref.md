@@ -65,7 +65,9 @@ A *local evaluation context,* or *context* for short, contains a local `env`, an
 ### Beginning the Walkthrough
 We will walk through the process from the perspective of `masp_step`. If the `expr` is a string, we add a `value` obtained from looking up the `expr` in the local `env`. If `expr` is a map with no `apply` entry, \ie{} a "literal" map, we set the `value` to a special closure in which `literal` is set to the `expr` and the current env is included. Otherwise, if the `apply` node has not yet been evaluated, we wrap it in a new context and enter (\ie{} we make it the new `ctx`). Once there is a value for the function closure, evaluation proceeds to the arguments unless `dont_eval_args` is set on the closure. A tracking variable in the context, `arg_i`, helps us discover the next unevaluated argument, as determined by the order of map keys from \ac{JS}' `Object.keys()`.
 
-### Protocol Between \ac{JS} Primitives and Masp
+\hypertarget{protocol-between-js-primitives-and-masp}{%
+\subsubsection{\texorpdfstring{Protocol Between \acs{JS} Primitives and
+Masp}{Protocol Between JS Primitives and Masp}}\label{protocol-between-js-primitives-and-masp}}
 After processing the arguments, we inspect the `body` of the function closure. If it is a \ac{JS} function, we call this "primitive" with the context and argument values (for the full list of primitives, see Section\ \ref{list-of-primitives}). The protocol for Masp primitives is that returning `true` (on the \ac{JS} stack) means that it has returned a value (in Masp); otherwise, it is evaluating a subexpression and needs to be run again afterwards. For example, here is the \ac{JS} code for the `decr` (decrement) primitive:
 
 \lstset{language=JavaScript}

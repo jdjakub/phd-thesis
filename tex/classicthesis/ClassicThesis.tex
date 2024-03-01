@@ -67,57 +67,45 @@
 %********************************************************************
 % Frontmatter
 %*******************************************************
-\joel{
-
 \include{FrontBackmatter/DirtyTitlepage}
 \include{FrontBackmatter/Titlepage}
 \include{FrontBackmatter/Titleback}
-%\cleardoublepage\include{FrontBackmatter/Dedication}
+%%\cleardoublepage\include{FrontBackmatter/Dedication}
 %\cleardoublepage\include{FrontBackmatter/Foreword}
 \cleardoublepage\include{FrontBackmatter/Abstract}
 \cleardoublepage\include{FrontBackmatter/Publications}
 \cleardoublepage\include{FrontBackmatter/Acknowledgments}
-}
 \cleardoublepage\include{FrontBackmatter/Contents}
-\joel{
 
 %********************************************************************
 % Mainmatter
 %*******************************************************
 \cleardoublepage
 \pagestyle{scrheadings}
+
+
 \pagenumbering{arabic}
 %\setcounter{page}{90}
 % use \cleardoublepage here to avoid problems with pdfbookmark
-\cleardoublepage
-\include{Chapters/ch-intro}
-\cleardoublepage
-\include{Chapters/ch-background}
-\cleardoublepage
-\include{Chapters/ch-analysis}
-\cleardoublepage
-\include{Chapters/ch-bl}
-\cleardoublepage
-\include{Chapters/ch-tech-dims}
-\cleardoublepage
-\include{Chapters/ch-related-work}
-\cleardoublepage
-\include{Chapters/ch-conclusion}
+\cleardoublepage\include{Chapters/ch-intro}
+\cleardoublepage\include{Chapters/ch-background}
+\cleardoublepage\include{Chapters/ch-analysis}
+\cleardoublepage\include{Chapters/ch-bl}
+\cleardoublepage\include{Chapters/ch-tech-dims}
+\cleardoublepage\include{Chapters/ch-related-work}
+\cleardoublepage\include{Chapters/ch-conclusion}
 
-}
 %\include{multiToC} % <--- just debug stuff, ignore for your documents
 % ********************************************************************
 % Backmatter
 %*******************************************************
 \appendix
 %\renewcommand{\thechapter}{\alph{chapter}}
-\cleardoublepage
-\include{Chapters/appendix-substrate-ref}
-\include{Chapters/appendix-bl}
-\joel{
-
-\cleardoublepage
-\include{Chapters/appendix-all-dims}
+\cleardoublepage\include{Chapters/appendix-bl-steps}
+\cleardoublepage\include{Chapters/appendix-substrate-ref}
+\cleardoublepage\include{Chapters/appendix-bl}
+\cleardoublepage\include{Chapters/appendix-masp-ref}
+\cleardoublepage\include{Chapters/appendix-all-dims}
 %********************************************************************
 % Other Stuff in the Back
 %*******************************************************
@@ -125,7 +113,6 @@
 %\cleardoublepage\include{FrontBackmatter/Declaration}
 \cleardoublepage\include{FrontBackmatter/Colophon}
 
-}
 % ********************************************************************
 % Game Over: Restore, Restart, or Quit?
 %*******************************************************

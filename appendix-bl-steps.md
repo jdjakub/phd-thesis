@@ -1,7 +1,7 @@
 \hypertarget{bl-steps}{%
 \chapter{BootstrapLab Journey Summary}\label{bl-steps}}
 
-Here, we provide a succinct reference for the major journey steps in Chapter\ \ref{ch-bl}, along with the requirements, forces and heuristics that we encountered in our experience.
+Here, we provide a succinct reference for the major journey steps in Chapter\ \ref{bl}, along with the requirements, forces and heuristics that we encountered in our experience.
 
 \paragraph{Choose A Starting Platform.} Select an existing programming system on which to build.
 

@@ -16,8 +16,8 @@ A system must contain at least one such feedback loop, but may contain several a
 
 \begin{figure}
   \centering
-  \includegraphics[width=0.5\linewidth]{feedback-loops.png}
-  \caption[Feedback Loops in a statically-checked language]{The nested feedback loops of a statically-checked programming language.\label{fig:feedback-loops}}
+  \includegraphics[width=0.7\linewidth]{feedback-loops.png}
+  \caption[Feedback Loops in a statically-checked language.]{The nested feedback loops of a statically-checked programming language.\label{fig:feedback-loops}}
 \end{figure}
 
 For example, we can analyse statically checked *programming languages* (e.g. Java, Haskell) into several feedback loops (Figure \ref{fig:feedback-loops}):
@@ -183,9 +183,9 @@ $$\cos\left(\frac{b}{2}\right)\mathbf{a} + \cos\left(\frac{a}{2}\right)\mathbf{b
 
 Syntactic/linguistic/notational *plurality* is where different notations of the respective class are available to the programmer, but only as a *pre-determined* set of options; the programmer does not have *freedom* to define his own and use them wherever he wants. Examples are the inclusion of *regex* syntax in Perl and JavaScript; the three-way collaboration of HTML, JavaScript and CSS in web development; LINQ in C#.
 
-Full *Notational* Freedom includes syntactic and linguistic freedom (which themselves include plurality) but goes beyond, allowing arbitrary graphical notations. An example of what one could do with this freedom is replace a hex string with a colour picker interface.
+Full *Notational* Freedom includes syntactic and linguistic freedom (which themselves include plurality) but goes beyond, allowing arbitrary graphical notations. An example of what one could do with this freedom is to replace a hex string with a colour picker interface.
 
-The way we measure Notational Freedom is as the minimisation of several *penalty* dimensions which we turn to presently. The work involved in creating the syntax, language or notation is excluded; the dimensions only measure the amount of *extra* work it takes to get the programming system to accept them in the contexts they are intended for. This is minimised if the custom syntax, language, or notation can be "slotted in" once it exists, with no resistance from the system. 
+The way we measure Notational Freedom is as the minimisation of several *penalty* dimensions which we turn to presently. The work involved in creating the syntax, language or notation is excluded; the dimensions only measure the amount of *extra* work it takes to get the programming system to accept them in the contexts they are intended for. They are minimised if the custom syntax, language, or notation can be "slotted in" once it exists, with no resistance from the system. 
 
 ## Dimension: custom syntax effort
 The work required to use a custom syntax, not counting that required to specify the syntax itself (\eg{} as a grammar). \ac{COLA}\ \parencite{COLAs} and OMeta\ \parencite{OMeta} score low on this, since they are specifically designed for this purpose. Most programming languages have *infinite* custom syntax effort, because their parsers are separate programs that adhere to a fixed grammar that cannot be changed by statements in the language. This includes \ac{JS} despite its inclusion of a regex sub-syntax, HTML despite its inclusion of \ac{JS} and CSS, and C# despite its LINQ sub-language for queries; these examples may exhibit syntactic *plurality*, but there is no way to include a user-supplied syntax for use in the source code.
@@ -194,7 +194,7 @@ The work required to use a custom syntax, not counting that required to specify 
 The work required to use custom language-like notation beyond syntax, not counting that required to implement the rendering and interaction. Most programming languages, \ac{COLA}, and OMeta get an infinite score here, while MPS\ \parencite{MPS} and Eco\ \parencite{Eco} score low.
 
 ## Dimension: custom notation effort
-The work required to use custom graphical notation beyond what we called "language-like" notations, not counting that required to implement the rendering and interaction. Only Eco, owing to a screenshot showing inclusion of a picture, scores non-infinite on this dimension. From their discussion in Section\ 9.2 of \ \textcite{Eco}, it is likely to score High or Moderate rather than Low because arbitrary graphical notations are a novel unexplored use case for the system for which it has not been optimised.
+The work required to use custom graphical notation beyond what we called "language-like" notations, not counting that required to implement the rendering and interaction. Eco, owing to a screenshot showing inclusion of a picture, scores non-infinite on this dimension. From their discussion in Section\ 9.2 of \ \textcite{Eco}, it is likely to score High or Moderate rather than Low because arbitrary graphical notations are a novel unexplored use case for the system for which it has not been optimised. On the other hand, the Glamorous Toolkit\ \parencite{GToolkit} appears built to support arbitrary graphics in its text editor interfaces, suggesting a lower value on this dimension.
 
 ## References
 *Cognitive Dimensions of Notations* \parencite{CogDims} provide a comprehensive framework for analysing individual notations, while our focus here is on how multiple notations are related and how they are structured. It is worth noting that the Cognitive Dimensions also define _secondary notation_, but in a different sense to ours. For them, secondary notation refers to whether a notation allows including redundant information such as colour or comments for readability purposes.
@@ -402,7 +402,7 @@ Any system with an `eval` function has this property, such as Lisp. In the low-l
 In addition to the examples discussed above, the proceedings of self-sustaining systems workshops \parencite{SSS-08,SSS-10} provide numerous examples of systems and languages that are able to bootstrap, implement, modify, and maintain themselves; Gabriel's analysis of programming language revolutions \parencite{PLrev} uses _advising_ in PILOT, related Lisp mechanisms, and "mixins" in OOP to illustrate the difference between the "languages" and "systems" paradigms.
 
 ## Relations
-- *Flattening and factoring* (Section \ref{examples-flattening-and-factoring}): related in that "customizability" is a form of creating new programs from existing ones; factoring repetitive aspects into a reusable standard component library facilitates the same thing.
+- *Flattening and factoring* (Section \ref{examples-flattening-and-factoring-of-commonality}): related in that "customizability" is a form of creating new programs from existing ones; factoring repetitive aspects into a reusable standard component library facilitates the same thing.
 - *Interaction* (Section \ref{interaction}): this determines whether there are separate stages for running and writing programs and may thus influence what kind of customisation is possible.
 
 # Complexity
@@ -413,7 +413,7 @@ There is a massive gap between the level of detail required by a computer, which
 
 Ever since the 1940s, programmers have envisioned that "automatic programming" would allow higher-level programming. This did not necessarily mean full automation. In fact, the first "automatic programming" systems referred to higher-level programming languages with a compiler (or an interpreter) that expanded the high-level code into detailed instructions.
 
-Most programming systems use _factoring of complexity_ and encapsulate some of the details that need to be specified into components that can be reused by the programmer. The details may be encapsulated in a library, or filled in by a compiler or interpreter. Such factoring may also be reflected in the conceptual structure of the system (Section \ref{examples-flattening-and-factoring}). However, a system may also fully _automate_ some aspects of programming. In those cases, a general-purpose algorithm solves a whole class of problems, which then do not need to be coded explicitly. Think of planning the execution of SQL queries, or of the inference engine supporting a logic programming language like Prolog.
+Most programming systems use _factoring of complexity_ and encapsulate some of the details that need to be specified into components that can be reused by the programmer. The details may be encapsulated in a library, or filled in by a compiler or interpreter. Such factoring may also be reflected in the conceptual structure of the system (Section \ref{examples-flattening-and-factoring-of-commonality}). However, a system may also fully _automate_ some aspects of programming. In those cases, a general-purpose algorithm solves a whole class of problems, which then do not need to be coded explicitly. Think of planning the execution of SQL queries, or of the inference engine supporting a logic programming language like Prolog.
 
 ## Remark: notations
 Even when working at a high level, programming involves manipulating some program notation. In high-level functional or imperative programming languages, the programmer writes code that typically has clear operational meaning, even when some of the complexity is relegated to a library implementation or a runtime. When using declarative programming systems like SQL, Prolog or Datalog, the meaning of a program is still unambiguous, but it is not defined operationally---there is a (more or less deterministic) inference engine that solves the problem based on the provided description. Finally, systems based on *programming by example* step even further away from having clear operational meaning---the program may be simply a collection of sample inputs and outputs, from which a (possibly non-deterministic) engine infers the concrete steps of execution.
@@ -455,7 +455,7 @@ We may speculate whether Deep Learning will enable the next step of automation. 
 
 ## Relations
 - *Conceptual structure* (Section\ \ref{conceptual-structure}): In many cases, the factoring of complexity follows the conceptual structure of the programming system.
-- *Flattening and factoring* (Section\ \ref{examples-flattening-and-factoring}): One typically automates the thing at the lowest level in one's factoring (by making the lowest level a thing that exists outside of the program---in a system or a library)
+- *Flattening and factoring* (Section\ \ref{examples-flattening-and-factoring-of-commonality}): One typically automates the thing at the lowest level in one's factoring (by making the lowest level a thing that exists outside of the program---in a system or a library)
 
 # Errors
 
