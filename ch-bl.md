@@ -97,7 +97,7 @@ According to \textcite{SqueakDev}, the platform for Squeak was clearly Smalltalk
 
 Even had they been equipped with a sufficiently self-sustainable platform, other issues such as licensing and portability would have still prevented them from being content with it as a vehicle for their goals. This reminds us that one may have all sorts of reasons to create a *new* self-sustainable programming system, even if one is already available.
 
-However, our work here proceeds from what we consider to be a more common premise: that the platforms that are available for us to use (incorporating factors like skills, familiarity, and preference) are *not* self-sustainable, and need to be made so by our own augmentation. Accordingly, in BootstrapLab, we chose \ac{JS} and the Web platform. This provides us with built-in Web technologies and libraries (including graphics) and the browser developer tools. This platform provides a range of convenient tools to assist bootstrapping. Because of its large scope, we have to carefully choose primitives to expose to the product system.
+However, our work here proceeds from what we consider to be a more common premise: that the platforms that are available for us to use (incorporating factors like skills, familiarity, and preference) are *not* self-sustainable, and need to be made so by our own augmentation. Accordingly, for BootstrapLab, we chose \ac{JS} and the Web platform. This programming system is the one we are most familiar and comfortable with, and it also provides us with built-in Web technologies, libraries (including graphics), and the browser developer tools. In other words, such a platform provides a range of convenient tools to assist bootstrapping. However, because of their large scope, we will only be able to expose a carefully selected subset of such features as primitives to the product system.
 
 *What can be changed at the user level?* At this point, there is no product system to speak of yet. This means that nothing can be changed in-system. The platform can, in principle, be modified, but by assumption this is so unfamiliar, uneconomical, or inappropriate that the developer has opted to make a (new) self-sustainable system instead.
 
@@ -215,7 +215,7 @@ We can unpack the rationale behind this heuristic as a consequence of an assumpt
 Clearly, our conception of a *substrate* has much in common with that of a VM; however, we wish to avoid the established connotations of such a term and allow for degrees of freedom that might not be associated with a "virtual machine"; for example, to base the design on names and dictionary structures (which we will discuss presently), or to embed a high-level language in the substrate (an approach which we reject).
 
 ## BootstrapLab's Simple, Structured State Model
-For the design of BootstrapLab, we chose the Web platform and \ac{JS} for personal preference reasons. This imposed a number of design decisions on the substrate, due to a tendency for earlier choices to determine which later ones will feel "natural" or "fitting".
+For the design of BootstrapLab, we chose the Web platform and \ac{JS}, out of a combination of personal preference and conveniences like graphics. This imposed a number of design decisions on the substrate, due to a tendency for earlier choices to determine which later ones will feel "natural" or "fitting".
 
 In our high-level platform language \ac{JS}, state is a graph of plain \ac{JS} objects acting as property dictionaries. Suppose we *still* chose a low-level binary substrate like that of \ac{COLA}. This would no doubt be possible: declare one giant \ac{JS} array called `state`, design numerical instruction encodings which overwrite numbers at certain indexes, etc. Yet this would feel like a perverse *waste* of something the platform was giving us for free. 
 
@@ -225,7 +225,7 @@ Similarly, it would make no sense to represent instructions as numbers or string
 
 \lstset{language=JavaScript}
 
-\begin{lstlisting}[columns=flexible]
+\begin{lstlisting}[columns=fixed]
 {
   operation: 'copy',
        from: [ alice, 'age' ],
@@ -600,7 +600,16 @@ Nevertheless, to make the high-level language and editor a part of self-sustaina
 2. Its replacement state editor, to be ported from \ac{JS} to Masp
 3. The Masp interpreter, to be ported from \ac{JS} to \ac{BL-ASM}
 
-In BootstrapLab, we split the task of supplanting the temporary state viewer into two halves. We first replaced the temporary viewer, which exists fully outside of the system, with an editor that uses in-system state and graphics, but is controlled from \ac{JS} (recall Heuristic\ \ref{in-state-op}). We then started to port the editor code from the platform to in-system Masp, which is where we are at the time of writing.
+In BootstrapLab, we split the task of supplanting the temporary state viewer into two halves. We first replaced the temporary viewer, which exists fully outside of the system, with an editor that uses in-system state and graphics, but is controlled from \ac{JS} (recall Heuristic\ \ref{in-state-op}). We then started to port the editor code from the platform to in-system Masp, which is where we are at the time of writing. Figure\ \ref{substrate-debt} shows the situation in terms of platform/substrate/product.
+
+\begin{figure}
+\centering
+\scalebox{0.7}{
+  \input{../../fig/current-vs-ideal.tex}
+}
+\caption[BootstrapLab substrate debt.]{The Masp interpreter and state editor currently live in the substrate, but they belong in the product system. This is \emph{substrate debt.}}
+\label{fig:substrate-debt}
+\end{figure}
 
 ## Supplanting the Temporary State Viewer
 Once we could run Masp programs in the substrate, we needed a better way of entering and editing them. We desired a state editor in the graphics window to make the existing state view obsolete. Considering the proof-of-concept nature of this work, we created a rudimentary tree editor that nevertheless surpassed the existing practice of issuing commands in the \ac{JS} console.
@@ -675,7 +684,7 @@ The underscores represent unfilled fields right after this structure gets create
 To reprogram the editor to work like this, we would do the following from within the editor. Navigate to the Masp code structures for the editor that synthesise the graphics structures to display a given state node. Enter Masp code that checks for the key `apply` in the given node and, if present, only renders the value of the key instead of the key itself.^[Admittedly, this will display all structures with an `apply` key this way, but further discretion is just as achievable with further programming. The point is that this can be changed at the user level.] Then, navigate to the code that handles key input. Add code that, when `a` is pressed, will insert a new map containing the `apply` key, render this to the graphics, and send text input to its value text box. Finally, navigate to the code that commits an entry on a `Tab` keypress. Change this to detect if it is for an `apply` key and, if so, to look up the symbol in the value node and treat it as a Masp function closure. For each entry in the `arg_names` field, add an entry to the map with a dummy value, render this to graphics, and then proceed with the default behaviour (highlight the next entry in the map). Depending on the precise implementation, it may be the case that only subsequent edits will be rendered this way. Otherwise, care may be necessary to refresh and re-render the entire editor state.
 
 ## A More Ambitious Novel Interface
-The above "taster" is a simple example of an interface that could be plausibly implemented early in BootstrapLab's self-sustaining lifetime. Beyond this, it points to a more general class of extensions which would support *projectional editing.* Projectional editors are a class of programming interfaces that provide domain-specific interfaces for certain program subexpressions, such as \LaTeX-style mathematical expressions to replace ASCII renderings (recall Section\ \ref{linguistic-freedom}). We would do well to import such ideas into BootstrapLab. We proceed to sketch how such an interface would be added to the system, and how its ramifications are different from ordinary non-self-sustainable projectional editors.
+The above "taster" is a simple example of an interface that could be plausibly implemented early in BootstrapLab's self-sustaining lifetime. Beyond this, it points to a more general class of extensions which would support *projectional editing.* Projectional editors\ \parencite{ProjEdit} are a class of programming interfaces that provide domain-specific interfaces for certain program subexpressions, such as \LaTeX-style mathematical expressions to replace ASCII renderings (recall Section\ \ref{linguistic-freedom}). We would do well to import such ideas into BootstrapLab. We proceed to sketch how such an interface would be added to the system, and how its ramifications are different from ordinary non-self-sustainable projectional editors.
 
 As an example, suppose we want to program some fancy graphics. Fancy graphics require sophisticated vector mathematical formulae. In textual programming languages, these are expressed as ASCII with limited infix notation. The Gezira/Nile project\ \parencite{Gezira,Nile} attempted to improve on this with Unicode mathematical syntax. An extreme endpoint would be \LaTeX. All we have at the moment is something worse than all of these: verbose, explicit tree views spanning multiple lines.
 
