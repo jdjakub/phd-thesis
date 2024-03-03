@@ -72,7 +72,7 @@ Another option is to construct abstractions *from concrete cases*. Here, the pro
 
 *Spreadsheets.* Up until the recent introduction of lambda expressions into Excel\ \parencite{Lambda}, spreadsheets have been relentlessly concrete, without any way to abstract and reuse patterns of computation other than copy-and-paste.
 
-## Concept: implicit vs. explicit Structure
+## Concept: implicit vs. explicit structure
 Explicit Structure refers to the sense of working with data *directly* rather than through some other medium. It is a property of the interaction between users, interfaces, and underlying data structures. We split the life-cycle of a data structure into two halves:
 
 * On the *producer side*, the data structure is created or edited using some interface.
@@ -196,6 +196,8 @@ The work required to use custom language-like notation beyond syntax, not counti
 ## Dimension: custom notation effort
 The work required to use custom graphical notation beyond what we called "language-like" notations, not counting that required to implement the rendering and interaction. Eco, owing to a screenshot showing inclusion of a picture, scores non-infinite on this dimension. From their discussion in Section\ 9.2 of \ \textcite{Eco}, it is likely to score High or Moderate rather than Low because arbitrary graphical notations are a novel unexplored use case for the system for which it has not been optimised. On the other hand, the Glamorous Toolkit\ \parencite{GToolkit} appears built to support arbitrary graphics in its text editor interfaces, suggesting a lower value on this dimension.
 
+\todo{UPDATE}
+
 ## References
 *Cognitive Dimensions of Notations* \parencite{CogDims} provide a comprehensive framework for analysing individual notations, while our focus here is on how multiple notations are related and how they are structured. It is worth noting that the Cognitive Dimensions also define _secondary notation_, but in a different sense to ours. For them, secondary notation refers to whether a notation allows including redundant information such as colour or comments for readability purposes.
 
@@ -203,7 +205,7 @@ The importance of notations in the practice of science, more generally, has been
 
 ## Relations
 - *Interaction* (Section \ref{interaction}): The feedback loops that exist in a programming system are typically associated with individual notations. Different notations may also have different feedback loops.
-- *Adoptability* (Section \ref{adoptability}): Notational structure can affect learnability. In particular, complementing notations may require (possibly different) users to master multiple notations. Overlapping notations may improve learnability by allowing the user to edit the program in one way (perhaps visually) and see the effect in the other notation (such as code.)
+- *Adoptability* (Section \ref{adoptability}): Notational structure can affect learnability. In particular, complementing notations may require (possibly different) users to master multiple notations. Overlapping notations may improve learnability by allowing the user to edit the program in one way (perhaps visually) and see the effect in the other notation (such as code).
 - *Errors* (Section \ref{errors}). A process that merely records user actions in a sequence (such as text editing) will, in particular, record any *errors* the user makes and defer their handling to later use of the data, keeping the errors *latent*. A process which instead treats user actions as edits to a structure, with constraints and correctness rules, will be able to catch errors at the moment they are introduced and ensure the data coming out is error-free.
 
 # Conceptual Structure
@@ -481,7 +483,7 @@ In statically typed programming languages like Haskell and Java, types are used 
 
 Whereas static typing aims to detect errors without executing code, approaches based on immediate feedback typically aim to execute (a portion of) the code and let the programmer see the error immediately. This can be done in a variety of ways.
 
-In case of *test-driven development*, tests play the role of a specification (much like types) against which the implementation is checked. Such systems may provide more or less immediate feedback, depending on when tests are executed (automatically in the background, or manually). Systems equipped with a read-eval-print loop (REPL) let programmers run code on-the-fly and inspect results. For successful error detection, the results need to be easily observable: a printed output is more helpful than a hidden change of system state. Finally, in live coding systems, code is executed immediately and the programmer's ability to recognise errors depends on the extent to which the system state is observable. For example, in live-coded music,\ \parencite{SonicPi} you _hear_ that your code is not what you wanted, providing an easy-to-use immediate error detection mechanism.
+In case of *test-driven development*, tests play the role of a specification (much like types) against which the implementation is checked. Such systems may provide more or less immediate feedback, depending on when tests are executed (automatically in the background, or manually). Systems equipped with a read-eval-print loop (REPL) let programmers run code on-the-fly and inspect results. For successful error detection, the results need to be easily observable: a printed output is more helpful than a hidden change of system state. Finally, in live coding systems, code is executed immediately and the programmer's ability to recognise errors depends on the extent to which the system state is observable. For example, in live-coded music\ \parencite{SonicPi}, you _hear_ that your code is not what you wanted, providing an easy-to-use immediate error detection mechanism.
 
 
 ## Remark: eliminating latent errors

@@ -6,7 +6,9 @@ APPENDICES = Chapters/appendix-bl.tex Chapters/appendix-all-dims.tex Chapters/ap
 TEX_FILES = ../abstract.tex FrontBackmatter/Abstract.tex ../acks.tex FrontBackmatter/Acknowledgments.tex Chapters/ch-intro.tex Chapters/ch-background.tex  Chapters/ch-analysis.tex Chapters/ch-tech-dims.tex Chapters/ch-bl.tex Chapters/ch-related-work.tex Chapters/ch-conclusion.tex  ClassicThesis.tex classicthesis-config.tex $(TIKZ_FILES) $(IMG_FILES) $(APPENDICES)
 
 ClassicThesis.pdf: $(TEX_FILES) OwnPublications.bib ../thesis.bib
+ifndef RESUME
 	lualatex ClassicThesis
+endif
 ifdef FULL
 	biber ClassicThesis
 	lualatex ClassicThesis

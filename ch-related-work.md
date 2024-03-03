@@ -78,7 +78,8 @@ There are several existing projects identifying characteristics of programming s
 
 The latter two directly influence our Technical Dimensions framework. Firstly, the Cognitive Dimensions are a set of qualitative properties which can be used to analyse *notations*. We are extending this approach to the "rest" of a system, beyond its notation, with *Technical* Dimensions. Secondly, our individual dimensions naturally fall under larger *clusters* that we present in a regular format, similar to the presentation of the classic Design Patterns. As for characteristics identified by others, part of our contribution is to integrate them under a common umbrella: the existing concepts of liveness, pluralism, and uniformity metaphors ("everything is an X") become dimensions in our framework.
 
-### Methodology
+\hypertarget{rw-methodology}{%
+\subsubsection{Methodology}\label{rw-methodology}}
 We follow the attitude of *Evaluating Programming Systems*\ \parencite{EvProgSys} in distinguishing our work from HCI methods and empirical evaluation. We are generally concerned with characteristics that are not obviously amenable to statistical analysis (\eg{} mining software repositories) or experimental methods like controlled user studies, so numerical quantities are generally not featured.
 
 Similar development seems to be taking place in HCI research focused on user interfaces. The UIST guidelines\ \parencite{UISTAuthor} instruct authors to evaluate system contributions holistically, and the community has developed heuristics for such evaluation, such as *Evaluating User Interface Systems Research*\ \parencite{EvUISR}. Our set of dimensions offers similar heuristics for identifying interesting aspects of programming systems, though they focus more on underlying technical properties than the surface interface.

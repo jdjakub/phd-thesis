@@ -13,7 +13,8 @@ What is presented here is not necessarily a chronologically accurate account, bu
 1. It tells the development story of a concrete system. BootstrapLab is a novel programming system, based on explicit structure and built on top of the web platform, which exhibits a minimal demonstration of Self-Sustainability and Notational Freedom.
 2. It presents a rational reconstruction of the logical steps needed to bootstrap a *general* self-sustainable programming system (by taking BootstrapLab to be representative of the important parts of such a task). It highlights design *forces* and *heuristics* for resolving them which can be used by designers of future self-sustainable systems.
 
-# Methodology
+\hypertarget{bl-methodology}{%
+\section{Methodology}\label{bl-methodology}}
 
 We follow in the spirit of \ac{COLA}, but we aim to bootstrap a graphical and interactive self-sustainable system instead of a textual one based on batch-mode transformations. The system should not have barriers in the way of using custom notations. We also want to work with an *interactive* system, meaning that the user should be able to modify the state of the running system through manual gestures and not just programmatically. 
 
@@ -165,7 +166,9 @@ The path laid out for Squeak in\ \textcite{SqueakDev} is very clear: the Virtual
 
 As for the Altair 8800, we are using it as an example of a hardware platform; unlike our other example systems, the "programming system" it would support has been left open-ended. However, for most things one would want to achieve with such a machine, one would need basic software facilities like memory and time slice management, device interfacing, and so on. These are precisely the facilities of an Operating System (OS) and we would regard such a basic software layer as a substrate for such a system. Similarly, we would regard the Unix OS (or at least the kernel) as the substrate in Unix systems---even the Altair, supposing it had the requisite hardware resources and capabilities. As we pointed out in Section\ \ref{unix-as-a-programming-system}, the Unix substrate is cleaved into two layers: *inter-*process, in which state comprises the filesystem which is changed by system calls, and *intra-*process, in which state comprises raw memory changed by machine instructions (Section\ \ref{the-low-level-binary-world}). In the latter case, state and change are more or less inherited from the hardware platform, while the former is built as infrastructure on top of this. 
 
-## \acs{COLA}'s Low-Level Byte Arrays
+\hypertarget{colas-low-level-byte-arrays}{%
+\subsection{\texorpdfstring{\acs{COLA}'s Low-Level Byte
+Arrays}{COLA's Low-Level Byte Arrays}}\label{colas-low-level-byte-arrays}}
 As an example of the intra-process notions of state and change, we can look at \ac{COLA}, a programming system conceived as a process within Unix. As such, its substrate is quite minimal and the majority is inherited "for free" from the low-level runtime environment that makes up a process.
 
 At the lowest level, state in \ac{COLA} consists of an array of bytes, addressed numerically. Some structure is imposed on this via C's standard memory allocation routines, refining the model of state to a graph of fixed-size memory blocks and the stack. Changes to this state are represented as machine instructions encoded as bytes. This is the basic state model of a C program; the sample code for \ac{COLA}'s object model\ \parencite[Appendix\ B]{OROM} embellishes this with little more than a way to associate objects to their vtables^[A *vtable* specifies object behaviour by supplying runnable code for a requested method name. It is separate from the object "instance" so that multiple objects can share the same behaviour. In the sample code, an object is an arbitrary memory block preceded by a vtable pointer.] and a cache for method lookups.
@@ -389,7 +392,8 @@ Computer state is a graph of maps; lists are just maps with numerical keys. Inst
 
 In most cases, the base platform will provide some way of viewing and modifying state, but this is typically inconvenient to use. The next step in bootstrapping a self-sustainable system involves implementing temporary infrastructure that lets us work with state more conveniently.
 
-## Early Computing, Squeak, and \acs{COLA}
+\hypertarget{early-computing-squeak-and-cola}{%
+\subsection{\texorpdfstring{Early Computing, Squeak, and \acs{COLA}}{Early Computing, Squeak, and COLA}}\label{early-computing-squeak-and-cola}}
 Temporary infrastructure to support in-system development can be found in many developments of self-sustainable systems. A historical example is the Teletype loader for the Altair 8800. Here, the base platform was the Altair hardware with its memory and native CPU instructions. The only way to modify state through the platform was through the use of hardware switches at the front of the computer (Figure\ \ref{fig:altair}), which could be used to read and set values in a given range of memory.
 
 Here, programming _in-system_ looked like the tedious setting of switches to poke numerical instructions to memory. To make entering programs easier, the recommended first step when using the Altair 8800 was to manually input instructions for a *boot loader* that communicated over the serial port. When finished, this could be run to load instructions from a paper tape. From here, programmers could write instructions more conveniently using a Teletype terminal and have them loaded into the Altair memory.
@@ -600,7 +604,7 @@ Nevertheless, to make the high-level language and editor a part of self-sustaina
 2. Its replacement state editor, to be ported from \ac{JS} to Masp
 3. The Masp interpreter, to be ported from \ac{JS} to \ac{BL-ASM}
 
-In BootstrapLab, we split the task of supplanting the temporary state viewer into two halves. We first replaced the temporary viewer, which exists fully outside of the system, with an editor that uses in-system state and graphics, but is controlled from \ac{JS} (recall Heuristic\ \ref{in-state-op}). We then started to port the editor code from the platform to in-system Masp, which is where we are at the time of writing. Figure\ \ref{substrate-debt} shows the situation in terms of platform/substrate/product.
+In BootstrapLab, we split the task of supplanting the temporary state viewer into two halves. We first replaced the temporary viewer, which exists fully outside of the system, with an editor that uses in-system state and graphics, but is controlled from \ac{JS} (recall Heuristic\ \ref{in-state-op}). We then started to port the editor code from the platform to in-system Masp, which is where we are at the time of writing. Figure\ \ref{fig:substrate-debt} shows the situation in terms of platform/substrate/product.
 
 \begin{figure}
 \centering

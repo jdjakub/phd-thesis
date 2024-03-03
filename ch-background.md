@@ -222,7 +222,8 @@ This describes an interpreter that is written in its own language\ \parencite{Me
 ### Reflection
 This is the capacity for a system to display, explain or affect its own computational behaviour during run time\ \parencite{CompRefl}. It is sometimes explained with the word "aboutness": an ordinary program is "about" its domain (say, calculations), while a reflective program is also "about" its own computation. One test of this is the ability to make the tacit explicit\ \parencite{ProcRefl}: entities that are normally implicit and unaddressable (such as the stack frame or variable binding environment) can be made so by an explicit command to reflect. An ordinary meta-circular interpreter cannot name its outer interpreter's data structures, but a reflective one can (and may be able to change how its outer interpreter works, and thus how it itself works). This is developed exhaustively for Lisp-like languages in\ \textcite{ProcRefl}. While reflection originates as a property of languages, the Self environment\ \parencite{Self} provides an example in an interactive context. Any object on screen can call up an "outliner" object with a description of its prototype, private state and methods. This outliner is an object and can have the same operation applied to it\ \parencite{SelfOutliner}.
 
-### Conclusion
+\hypertarget{ss-precursor-conclusion}{%
+\subsubsection{Conclusion}\label{ss-precursor-conclusion}}
 These concepts (self-hosting, bootstrapping, meta-circularity, and reflection) seem related but it is not obvious how. We interpret all of these as different manifestations of self-sustainability in special contexts, such as compilers or interpreters. In Chapter\ \ref{analysis} we will make this more precise by delving into the differences between compilers, interpreters, and interactive programming systems.
 
 ## Precursors of Notational Freedom
@@ -245,7 +246,8 @@ This is the practice of using multiple languages in a single project\ \parencite
 ### \Aclp{DSL}
 These go beyond Polyglot Programming by encouraging *custom* languages designed by the programmer for their problem domain. Where Polyglot Programming is about making the best use of *existing* languages designed by someone else, \acp{DSL} come closer to a *freedom* to use what one subjectively determines to be the best tool for one's job. JetBrains' MPS\ \parencite{MPS} is an interactive programming system that encourages \acp{DSL}. "Reader Macros" in Lisp allow a programmer to use custom syntax for parts of the code. The \ac{COLA} design\ \parencite{COLAs} supports "\aclp{MSL}" intended to span a range of scopes down to individual expressions, and the related OMeta\ \parencite{OMeta} project is a platform for custom \acp{DSL}. The Eco editor\ \parencite{Eco} also supports \acp{MSL}, as does JetBrains' MPS\ \parencite{MPS}.
 
-### Conclusion
+\hypertarget{nf-precursor-conclusion}{%
+\subsubsection{Conclusion}\label{nf-precursor-conclusion}}
 "\URTFJ" is the basic intuition behind Notational Freedom. In practice, we see a restricted version: use the right *pre-existing* tool for the job, as long as the job is no smaller than a single file. Occasionally, a pre-approved set of different languages are available within a single file. In the rare cases that support the use of custom "tools" within a file, we risk being restricted to *languages* rather than general *notations.* We will list the rare examples that provide for the latter when we give a full definition of Notational Freedom in the next chapter (Section\ \ref{notational-freedom}). 
 
 ## Precursors of Explicit Structure
@@ -291,7 +293,8 @@ These are programs for creating various data structures in the form of files. Ed
 ### Text Editors
 These are a type of editor for plain text files. However, they are widely used to write code in programming languages, which have extra syntax rules beyond the plain text format. Unlike most editors, text editors *can* save files that are invalid from the perspective of their consumers under realistic use-cases. These syntax errors are then discovered at the point of consumption.
 
-### Conclusion
+\hypertarget{es-precursor-conclusion}{%
+\subsubsection{Conclusion}\label{es-precursor-conclusion}}
 The basic intuition behind Explicit Structure is the *directness* experienced in creation and programming. Almost every data structure in computing has an editor with which one can manipulate the structure directly, and when programming we can act as if data structures have named parts that we can simply reference. This directness is interrupted by the standalone exception of text editors (on the creation side) and strings with machine-readable^[We are unconcerned with strings that contain natural language simply to be echoed out to the user (\eg{} error messages). However, our ideas about Explicit Structure could be applicable to cases where software must parse and interpret natural language too.] implicit content (on the programming side).
 
 # Review and Next Steps
