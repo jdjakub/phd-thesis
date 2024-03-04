@@ -4,9 +4,9 @@
 This chapter serves as a more complete description of the BootstrapLab substrate than the one given in Section\ \ref{design-a-substrate}. Following Section\ \ref{two-fundamentals-state-and-change}, we divide it into a discussion of *State* and *Change*.
 
 # State in BootstrapLab
-State is a graph of *maps* (key-value dictionaries) pointing to each other, along with \ac{JS} *primitives:* numbers, booleans, strings, `null`, `undefined`, and ordinary \ac{JS} objects. A *list* is a map with numerical keys. Like in \ac{JS}, this does not prevent it from having non-numerical keys at the same time.
+State is a graph of *maps* (key-value dictionaries) pointing to each other, along with \ac{JS} *primitives:* numbers, booleans, strings, `null`, `undefined`, and ordinary \ac{JS} objects.
 
-Maps contain *entries* or *fields* consisting of a *key* and a *value*. We also refer to maps and primitives together as *values*. Starting from a given map `m`, we write a *path* `m.foo.bar.baz` to denote the value arrived at by following the keys `foo`, `bar`, and `baz`. For this to be defined, `m.foo` and `m.foo.bar` must be maps.
+Maps contain *entries* or *fields* consisting of a *key* and a *value*. We also refer to maps and primitives together as *values*. Starting from a given map `m`, we write a *path* `m.foo.bar.baz` to denote the value arrived at by following the keys `foo`, `bar`, and `baz`. For this to be defined, `m.foo` and `m.foo.bar` must be maps. A *list* is just a map with numerical keys, but as in \ac{JS}, it may have additional non-numerical keys if convenient.^[In other words, the "list" concept is contained within the "map" concept, but where the system expects a list (\eg{} when fetching instructions) it will ignore any extra user-defined keys.]
 
 The substrate inherits the reference semantics of \ac{JS}; if one wants to insulate a map from side effects originating from other references, one must perform a copy to some level of depth and operate on the copy. Other \ac{JS} semantics, such as prototype chains, were considered but postponed for the sake of practicality; see Section\ \ref{the-cutting-room-floor} for an outline of what was left out of the substrate.
 
@@ -14,6 +14,8 @@ There is a *root* for the state, from which everything is discoverable; all abso
 
 ## Registers
 Because values at the root level are accessible from only a single key, they are the "first port of call" for instructions and are known as *registers*. Some specific *substrate* registers are reserved for use by instructions. The main substrate registers are:
+
+\pagebreak
 
 - `focus`: an "accumulator" register used by most instructions.
 - `map`: holds the map to be updated or navigated by map instructions.
@@ -25,15 +27,16 @@ Because values at the root level are accessible from only a single key, they are
 All other keys at the root level are general-purpose *user registers* available for programs to use.
 
 ## Graphics State: The `scene` Tree
-While state in general can be graph-structured, it is tree-structured^[See Section\ \ref{graphs-vs.-trees} for how this was accomplished.] under the `scene` register. The `scene` itself is a list of *graphics maps*. The substrate recognises a map as a graphics map if it contains at least one *graphics property:* any of the keys `width`, `height`, `color`^[We comply with the fact that, for better or worse, American spelling conventions are the *de facto* standard for internal identifiers and code more generally.], `opacity`, `position`, `center`, `top_left`, `zoom`, `text`, or `children`. The presence of these keys causes the substrate to connect their values to shapes in the graphics window and maintain synchronisation. Any graphics map can have a list of `children` in the scene hierarchy.
 
-At present, only crude graphics are possible via two shapes. A rectangle has a `center`, `color`, `width`, and `height` (Figure\ \ref{fig:rect-spec}), while a text label has a `top_left`, `text`, and `opacity` (Figure\ \ref{fig:text-spec}).
-
-\begin{figure}
+\begin{figure}[!h]
 \centering\includegraphics[width=8cm]{../../fig/rect.png}
 \caption[Rectangle properties.]{A rectangle inferred from the presence of \texttt{color}, \texttt{width}, \texttt{height}, and \texttt{center}. As can be seen, \texttt{color} expects a hex string.}
 \label{fig:rect-spec}
 \end{figure}
+
+While state in general can be graph-structured, it is tree-structured^[See Section\ \ref{graphs-vs.-trees} for how this was accomplished.] under the `scene` register. The `scene` itself is a list of *graphics maps*. The substrate recognises a map as a graphics map if it contains at least one *graphics property:* any of the keys `width`, `height`, `color`^[We comply with the fact that, for better or worse, American spelling conventions are the *de facto* standard for internal identifiers and code more generally.], `opacity`, `position`, `center`, `top_left`, `zoom`, `text`, or `children`. The presence of these keys causes the substrate to connect their values to shapes in the graphics window and maintain synchronisation. Any graphics map can have a list of `children` in the scene hierarchy.
+
+At present, only crude graphics are possible via two shapes. A rectangle has a `center`, `color`, `width`, and `height` (Figure\ \ref{fig:rect-spec}), while a text label has a `top_left`, `text`, and `opacity` (Figure\ \ref{fig:text-spec}).
 
 \begin{figure}
 \centering\includegraphics[width=8cm]{../../fig/text.png}
@@ -56,9 +59,9 @@ For example, the term "position", widely used in graphics APIs, is not very self
 \label{fig:camera-spec}
 \end{figure}
 
-Third, a vector property may have a `basis` key naming a registered co-ordinate frame. This can be seen in the special *camera* graphics map (Figure\ \ref{fig:camera-spec}), linked to the zoomable/pannable view in the graphics window. If left unspecified, the basis is assumed to be that of the parent node in the tree. However, the user can set an explicit `basis` to express co-ordinates as most convenient to them, while the substrate will convert between frames under the hood.
+Third, a vector property may have a `basis` key naming a registered co-ordinate frame; built-in examples are `world` (the root THREE.js basis) and `screen` (pixel co-ordinates from the top left). This key can be seen in the special *camera* graphics map (Figure\ \ref{fig:camera-spec}), linked to the zoomable/pannable view in the graphics window. If left unspecified, the basis is assumed to be that of the parent node in the tree. However, the user can set an explicit `basis` to express co-ordinates as most convenient to them, while the substrate will convert between frames under the hood.
 
-This is another application of Naïve Honesty in regard to our frustrations about graphics programming: the co-ordinate basis of a vector is often left as *implicit* information for the programmer to carry around in his head, who must also have a notebook handy to write the relevant matrix equations to transform things properly. We believe this tedium is exactly what should be handled automatically by the substrate (on this theme, see \textcite{Gator}). As it stands, bases are registered by the key name of the graphics map into a flat list, and are thus vulnerable to name collisions and synchronisation issues. However, what we have is a promising start.
+This is another application of Naïve Honesty in regard to our frustrations about graphics programming: the co-ordinate basis of a vector is often left as *implicit* information for the programmer to carry around in his head, who must also have a notebook handy to write the relevant matrix equations to transform things properly. We believe this tedium is exactly what should be handled automatically by the substrate (on this theme, see \textcite{Gator}). As it stands, basis frames are registered by the key name of the graphics map into a flat list, and are thus vulnerable to name collisions and synchronisation issues. However, what we have is a promising start.
 
 Naïve Honesty can be seen as a response to a design requirement called "No Guessing":
 
@@ -67,10 +70,10 @@ The user of an API should never have to uncover the meaning of a concept through
 \label{no-guessing}
 \end{requirement}
 
-A reasonable reply to No Guessing might be to just write better documentation. However, this is not a solution to implicit bases in user code, and Naïve Honesty attacks the root of the problem in the poor conventions themselves.
+A reasonable reply to No Guessing might be to just write better documentation. However, this is still not a solution to implicit basis frames in user code, and Naïve Honesty attacks the root of the problem in the poor conventions themselves.
 
 ## Manually Updating State
-In order to update a piece of state *and ensure* that all relevant UI updates to reflect this, the `upd()` function is used in \ac{JS} code and the console. For example, to change the colour of the shape in Figure\ \ref{fig:rect-spec} to red, one would issue the following command in the console:
+In order to update a piece of state *and ensure* that all relevant UI also updates to reflect this, the `upd()` function is used in \ac{JS} code and the console. For example, to change the colour of the shape in Figure\ \ref{fig:rect-spec} to red, one would issue the following command in the console:
 
 \begin{lstlisting}[language=JavaScript]
 upd(ctx, 'scene', 'shapes', 'children',
@@ -118,7 +121,13 @@ In circumstances where there are many instructions and we need to be even more c
 l my_reg ; d ; s my_dest
 \end{lstlisting}
 
-In the next section, we will specify the semantics of the instructions. In line with the spirit of *Notational Freedom* (Section\ \ref{notational-freedom}), we will use box-and-arrow diagrams, since we judge this more suitable for our substrate than traditional formal semantics notations. However, we will take some cues from the latter; for example, we show the state before and after the instruction. We also use symbols to stand for abstract values. Specifically, $K$ denotes any string (or "key"), $M$ denotes a map, and $V$ denotes an arbitrary value. We additionally employ a grey spot to highlight the part of the state that was mutated.
+In the next section, we will specify the semantics of the instructions. In line with the spirit of *Notational Freedom* (Section\ \ref{notational-freedom}), we will use box-and-arrow diagrams, since we judge this more suitable for our substrate than traditional formal semantics notations. However, we will take some cues from the latter; for example, we show the state before and after the instruction. We also use symbols to stand for abstract values. Specifically, $K$ denotes any string (or "key"), $M$ denotes a map, and $V$ denotes an arbitrary value. We additionally employ a grey spot to highlight the part of the state that was mutated. Figure\ \ref{fig:semantics} shows the general form.
+
+\begin{figure}
+\centering\includegraphics[width=10cm]{../../fig/semantics/semantics-diagram.png}
+\caption[Instruction semantics notation.]{On the left, we have registers with their values, one of which references a map $M_1$ with some entries. On the right, we have the state after execution of the instruction; the register \texttt{reg3} has been changed (highlighted by the grey spot) to reference a new map $M_2$. Because instructions were designed to be "minimal" changes, the grey spot represents the only change and all other state remains untouched.}
+\label{fig:semantics}
+\end{figure}
 
 ## Change Map Entry and Supporting Instructions
 We will now proceed to explain the semantics of `store`, `index`, `deref`, and `load`.
@@ -130,14 +139,14 @@ The `store` instruction, with no parameters, expects a map $M$ in the `map` regi
     \centering\includegraphics[width=10cm]{../../fig/semantics/store.png}
 \end{figure}
 
+\pagebreak
+
 ### Index: Follow Key in Map
 The `index` instruction, like the `store` to which it is dual^[We mean this in an informal sense, but it points to some interesting analysis which we have not undertaken. Compare also `deref` and the register version of `store`, leaving `load` curiously on its own.], takes a map $M$ in `map` and a key string $K$ in `focus`. After execution, `map` contains the value $M.K$, unless this is `undefined`. In that case, it will try the special key `_` as a failsafe and `map` will contain $M.$`_` instead, which could still be `undefined`.
 
 \begin{figure}[!h]
 \centering\includegraphics[width=10cm]{../../fig/semantics/index.png}
 \end{figure}
-
-\pagebreak
 
 ### Store To Register: Change Root Entry
 There are alternate semantics^[This "overloading" of an instruction is straightforward in a map substrate, as compared to a flat binary one (Section\ \ref{let-us-avoid-the-low-level-binary-world}), although an argument could be made for it to be a separate instruction called `store-reg`.] when `store` is executed with a parameter `register` of string value $K$. In this case, given a value $V$ in `focus`, the root-level entry $K$ will have value $V$.
@@ -159,8 +168,6 @@ Finally, `load` takes a parameter `value` with a value $V$. After execution, the
 \begin{figure}[!h]
 \centering\includegraphics[width=10cm]{../../fig/semantics/load.png}
 \end{figure}
-
-\pagebreak
 
 Actually, there is a subtlety if $V$ is a map: the `focus` register then contains a *copy* of $V$. This is to preserve the intended use of the `value` parameter as a "literal"^[We use "literal" by analogy to "string literal", "number literal", etc. In other words, an entity presented in its entirety in the source code, rather than loaded from an external source at run time or built up from separate pieces.], especially when the map is empty (see Section\ \ref{create-new-map} shortly).
 

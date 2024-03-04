@@ -228,7 +228,7 @@ Similarly, it would make no sense to represent instructions as numbers or string
 
 \lstset{language=JavaScript}
 
-\begin{lstlisting}[columns=fixed]
+\begin{lstlisting}[columns=fixed,keepspaces=true]
 {
   operation: 'copy',
        from: [ alice, 'age' ],
@@ -478,13 +478,13 @@ We call it Lisp-*like* because Alignment (Force\ \ref{alignment}) encouraged us 
 \end{figure}
 
 \begin{figure}
-\centering\includegraphics[width=14cm]{masp/masp1-3.png}
+\centering\includegraphics[width=12cm]{masp/masp1-3.png}
 \caption[Masp as ideally rendered.]{The factorial function in Masp, built around maps. Notational Freedom would allow us to present Masp in something like the first, heavily sugared form; the way in which the underlying expressions are built out of maps would only become apparent after user-configurable de-sugaring.}
 \label{fig:masp1-3}
 \end{figure}
 
 \begin{figure}
-\centering\includegraphics[width=14cm]{masp/masp4-5.png}
+\centering\includegraphics[width=12cm]{masp/masp4-5.png}
 \caption[Masp, fully de-sugared.]{The final steps of de-sugaring the Masp factorial function. A technical apples-to-apples comparison with Lisp might involve the final stage, but this would omit the ways its verbosity could be mitigated by Notational Freedom.}
 \label{fig:masp4-5}
 \end{figure}
@@ -544,14 +544,14 @@ Lisp evaluation is done by walking over the expression tree. At any point, we ar
 
 \begin{figure}
 \centering
-\includegraphics[width=8cm]{masp/2-eval-fac-n.png}
+\includegraphics[width=9cm]{masp/2-eval-fac-n.png}
 \caption[Masp Factorial evaluation step 2.]{After some evaluation steps, both the original expression (the name \texttt{fac}) and its value (its function closure) are visible. Similarly, the literal expression \texttt{1} has evaluated to itself. Part of Figure\ \ref{fig:masp1-3} has been included to help deceipher the verbose notation displayed by the state view.}
 \label{fig:masp-2}
 \end{figure}
 
 \begin{figure}
 \centering
-\includegraphics[width=8cm]{masp/3-expand-fac.png}
+\includegraphics[width=9cm]{masp/3-expand-fac.png}
 \caption[Masp Factorial evaluation step 3.]{The next step of evaluation, read as: ``To the value \texttt{1} (which came from the expression \texttt{n}), apply this function literal in an environment where \texttt{n} is bound to \texttt{1}''.}
 \label{fig:masp-3}
 \end{figure}
