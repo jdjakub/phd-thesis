@@ -16,7 +16,7 @@ Our method for achieving this can be illustrated if we start with a hypothetical
 2. Traverse the path `x`, `y` and save the (map) value too
 3. Set the key `z` in the map to the saved value.
 
-If we score *strictly by \ac{JS} implementation size* (a mistake, in hindsight), we could improve by simply splitting up these steps into instructions of their own. Any other "complex" instructions that used some of the same steps (e.g. path traversal) will also be covered by these, and the total \ac{JS} will be reduced.
+If we score *strictly by \ac{JS} implementation size* (a mistake, in hindsight), we could improve by simply splitting up these steps into instructions of their own. Any other "complex" instructions that used some of the same steps (e.g. path traversal) will also be covered by these, and the total \ac{JS} would be reduced.
 
 For the first path traversal, we start at the root map (or more generally, any given starting map) and follow each of the keys in turn. We have only one step here (follow key) repeated three times. That's another micro-instruction!
 

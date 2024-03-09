@@ -8,7 +8,7 @@ Many forms of software have been developed to enable programming. The classic fo
 
 The classic essay by \textcite{PLrev} distinguishes the *languages* and *systems* paradigms in programming research. *Languages* are formal mathematical models of syntax and semantics; researchers might ask what an expression *means* and include code samples in papers. *Systems,* in contrast, are running pieces of software whose current state changes according to the effects of program code. Researchers studying systems are likely to be more concerned with what code *does* to a running system in a specific state instead of the more abstract language properties.
 
-The topic of this thesis, and many of the examples we will use to illustrate concepts, rely on understanding this distinction and only make sense within the systems paradigm.
+The topic of this dissertation, and many of the examples we will use to illustrate concepts, rely on understanding this distinction and only make sense within the systems paradigm.
 Therefore we shift our attention from *programming languages* to the more general notion of "software that enables programming"---in other words, *programming systems*.
 
 \pagebreak
@@ -20,7 +20,7 @@ A \emph{programming system} is an integrated and complete set of tools sufficien
 
 A word about terminology: if we view languages in the sense of Gabriel's "languages paradigm", then it is a "type error" to include languages in the above definition. Abstract mathematical models of syntax and semantics are not the same as software. However, language *implementations* are software. We will use the term "language" to abbreviate "language implementation" since we do not use the other meaning in this dissertation.
 
-With that said, our above notion of programming system covers classic programming languages together with their editors, debuggers, compilers, and other tools. Yet it is intentionally broad enough to *also* accommodate image-based programming environments like Smalltalk, operating systems like Unix, and hypermedia authoring systems like Hypercard, in addition to various other examples we will mention next.
+With that said, our above notion of programming system covers classic programming languages together with their editors, debuggers, compilers, and other tools. Yet it is intentionally broad enough to *also* accommodate image-based programming environments like Smalltalk, operating systems like Unix, and hypermedia authoring systems like Hypercard, in addition to various other examples we will list presently.
 
 # Examples of Programming Systems
 We illustrate the notion of a programming system through a number of example systems. We are not trying to exhaustively cover all possible systems, but simply give an impression based on major examples. We draw them from three broad reference classes:
@@ -42,7 +42,7 @@ There is wiggle room in how we choose to circumscribe these elements. Do we mean
 The Java language\ \parencite{Java} alone does not form a programming system, but it does if we consider it as embedded in an ecosystem of tools. A minimalistic delineation would consist of a text editor to write Java code and a command line compiler. A more realistic one is Java as embedded in the Eclipse \ac{IDE}\ \parencite{Eclipse}. The programming systems view permits us to see whatever there may be beyond the textual code. In the case of Eclipse, this includes the debugger, refactoring tools, testing and modelling tools, \ac{GUI} designers, and so on.
 
 \paragraph{Haskell tools ecosystem.}
-Haskell is another language-focused programming system. It is used through the command-line *GHC*  compiler\ \parencite{GHC} and *GHCi* REPL, alongside a text editor that provides features like syntax highlighting and auto-completion. Any editor that supports the Language Server Protocol\ \parencite{LSP} will suffice to complete the programming system.
+Haskell is another language-focused programming system. It is used through the command-line *GHC*  compiler\ \parencite{GHC} and *GHCi* \ac{REPL}, alongside a text editor that provides features like syntax highlighting and auto-completion. Any editor that supports the Language Server Protocol\ \parencite{LSP} will suffice to complete the programming system.
 
 Haskell is mathematically rooted and relies on mathematical intuition for understanding many of its concepts. This background is also reflected in the notations it uses. In addition to the concrete language syntax for writing code, the ecosystem also uses an informal mathematical notation for writing about Haskell (\eg{} in academic papers or on the whiteboard). This provides an additional tool for manipulating Haskell programs. Experiments on paper can provide a kind of rapid feedback that other systems may provide through live programming.
 
@@ -170,9 +170,9 @@ We mentioned how these \acp{MSL} were supported by \ac{COLA}'s *internal evoluti
 
 The object model is a late-bound, Smalltalk-style objects and messaging environment called "Id", and we will describe it briefly here. An Id *object* is a block of state which can change as a result of messages received by it. Messaging (analogous to *method invocation* in Java-style OOP) works as follows:
 
-* A message is sent by first *bind*-ing its name to its *method implementation*, which is specific code that gets run in the context of the receiver $R$. This binding is a dynamic operation that can use runtime conditions to make its decision---even create a method implementation on the fly. This *late binding* contrasts with *early binding* where the name is bound to the implementation statically and thus holds for the entire running lifetime of the system.
+* A message is sent by first *bind*-ing its name to its *method implementation*, which is specific code that gets run in the context of the receiver $R$. This binding is a dynamic operation that can use run-time conditions to make its decision---even create a method implementation on the fly. This *late binding* contrasts with *early binding* where the name is bound to the implementation statically and thus holds for the entire running lifetime of the system.
 * This "bind" step is accomplished by sending a further message; this time, to the receiver's *vtable* $V(R)$. A vtable is another object that maps "message name" to "implementation code"---analogous to a "class" in Java-style OOP.
-* Because this initial "bind" message is itself a message send, it triggers a similar "bind" to *its* vtable $V(V(R))$, and so on: recursing up the vtable-chain, and terminating at a base case.
+* Because this initial "bind" message is itself a message send, it triggers a similar "bind" to *its* vtable $V(V(R))$, and so on: recursing up the vtable chain, and terminating at a base case.
 * The higher levels of the vtable chain mean that different kinds of vtables can be supported (as well as different kinds of "kinds of vtables", and so on). Each kind of vtable may implement the "bind" operation in its own way. For example, one kind of vtable could employ a simple dictionary mapping names to implementations. A different kind might build the code for the implementation just-in-time, without looking anything up in a data structure.
 
 ## Application-Focused Systems
@@ -291,7 +291,7 @@ This is a specific type of format error where part of a text string violates a g
 These are programs for creating various data structures in the form of files. Editors for 3D models, vector graphics, raster images, audio, and video understand the file formats and strive to save only valid files. It is usually not possible to even *express* a structure in the editor that contains a format error. Such cases are exceptional: for example, a 3D scene might open without errors in another 3D editor, but cause errors in a game engine according to the latter's additional requirements---perhaps it expects specific objects in the scene named `Player`, `Exit`, and so on. Nevertheless, for most editors and most use cases, the consumer-side validity rules are in harmony with the producer-side rules. 
 
 ### Text Editors
-These are a type of editor for plain text files. However, they are widely used to write code in programming languages, which have extra syntax rules beyond the plain text format. Unlike most editors, text editors *can* save files that are invalid from the perspective of their consumers under realistic use-cases. These syntax errors are then discovered at the point of consumption.
+These are a type of editor for plain text files. However, they are widely used to write code in programming languages, which have extra syntax rules beyond the plain text format. Unlike most editors, text editors *can* save files that are invalid from the perspective of their consumers under realistic use cases. These syntax errors are then discovered at the point of consumption.
 
 \hypertarget{es-precursor-conclusion}{%
 \subsubsection{Conclusion}\label{es-precursor-conclusion}}

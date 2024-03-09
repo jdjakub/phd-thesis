@@ -197,7 +197,7 @@ The goal at the end of Section\ \ref{how-should-things-work} is much too ambitio
 ## Importance of the Three Properties
 We are interested in exploring, developing, and achieving the Three Properties in programming systems. We will refine and expand these definitions in later chapters, but they are reasonable to start with. Each one brings its own advantages to a programming system:
 
-1. Self-sustainability reduces the accidental complexity of having to make changes using a separate, unfamiliar programming system. It also permits *innovation feedback:* anything helpful created using the system can benefit not only other programs sitting atop the system, but also the system's own development.
+1. Self-Sustainability reduces the accidental complexity of having to make changes using a separate, unfamiliar programming system. It also permits *innovation feedback:* anything helpful created using the system can benefit not only other programs sitting atop the system, but also the system's own development.
 2. Notational Freedom makes it easier to use the "\RTFJ" (Definition\ \ref{def:right-tool}). Once a programmer has decided what the right tool is in their specific context, Notational Freedom means they can use such a tool more easily as a Domain-Specifc Adaptation (Definition\ \ref{def:dsa}). For example, if diagrams are desired, Notational Freedom removes the traditional limitation to use ASCII art. More generally, Notational Freedom removes the need to describe graphical constructs using language.
 3. Explicit Structure avoids various pitfalls of strings, both in terms of correctness and convenience. Consumers of a structure benefit from an editor that can only save valid structures, and producers benefit by discovering errors early instead of later during consumption. Writing programs to use such structures is improved if one does not have to maintain code for parsing and serialising or think about escaping special characters.
 
@@ -228,7 +228,7 @@ The following essay was adapted into Chapter\ \ref{bl}:
 
 \fullcite{Onward22}
 
-The following paper was adapted into Chapter\ \ref{tech-dims}:
+The following paper was adapted into Chapter\ \ref{tech-dims} and part of Chapter\ \ref{background}:
 
 \fullcite{TechDims}
 

@@ -80,6 +80,13 @@ upd(ctx, 'scene', 'shapes', 'children',
          'yellow_shape', 'color', '0xff0000')
 \end{lstlisting}
 
+In order to obtain a \ac{JS} reference to a value, one gives a path to `map_get()`:
+
+\begin{lstlisting}[language=JavaScript]
+v = map_get(m, 'children', '1', 'color')
+upd(ctx, 'my_value', v)
+\end{lstlisting}
+
 ## Persisting State
 Calling the function `export_state(map, filename)` in the console will walk the state graph from the given `map` and download it as a JSON file with the `filename`; if unspecified, it will default to `bl-state.json`. Calling `import_state(filename)` in the console or the code will yield a \ac{JS} `Promise` that will resolve to the same map, which can then be slotted in via `upd()`. For example, the following is how we load the Masp code in Section\ \ref{real-example-colour-preview} during initialisation:
 
@@ -96,7 +103,7 @@ In keeping with Alignment (Force\ \ref{alignment}), the smallest units of change
 - Change a map entry to a new value (our `store` instruction)
 - Create a new map (our `load` instruction)
 - Actions necessary to support the above (`index` and `deref`)
-- Inheritance of platform changes, \ie{} mutate \ac{JS} state and call any API (`js`)
+- Inheritance of platform changes, \ie{} mutate \ac{JS} state and call any API (the `js` escape hatch)
 
 The result is our instruction set, which we call \ac{BL-ASM}. We will elaborate on these shortly, but first we will specify how instructions are represented as state, and how we will notate them in shorthand and diagrams. We will mostly stick to reference material here; for more in-depth design rationale, see Section\ \ref{the-minimal-random-access-instruction-set-and-its-perils}.
 
