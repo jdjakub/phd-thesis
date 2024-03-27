@@ -212,7 +212,7 @@ This is the process of getting a language into a self-hosting state\ \parencite{
 \begin{figure}
 \centering
 \includegraphics[width=\linewidth]{bootstrapping.png}
-\caption[Bootstrapping Tombstone Diagrams.]{C++ is used to implement a temporary compiler for NovLang, which then compiles a self-hosted compiler to a runnable binary. This binary, plus its original NovLang source code, can then be mutually used to evolve NovLang in the manner shown.}
+\caption[Bootstrapping Tombstone Diagrams.]{In a \emph{tombstone diagram}, each "tombstone" represents a program translating the language on its left to the one on its right, where this program is written in the language at the base of the tombstone. In this example, C++ is used to implement a temporary compiler for NovLang, which then compiles a self-hosted compiler to a runnable binary. This binary, plus its original NovLang source code, can then be mutually used to evolve NovLang in the manner shown.}
 \label{fig:bootstrap}
 \end{figure}
 
